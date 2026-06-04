@@ -32,7 +32,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
 
-        /* ===== HEADER ===== */
         .header {
             background: var(--bg-secondary); border-bottom: 1px solid var(--border);
             padding: 8px 16px; display: flex; align-items: center; justify-content: space-between;
@@ -72,7 +71,6 @@
         .edit-controls { display: none; }
         .edit-controls.visible { display: inline-flex; align-items: center; gap: 5px; }
 
-        /* ===== MAIN LAYOUT ===== */
         .main-container { display: flex; gap: 10px; padding: 10px; height: calc(100vh - 50px); align-items: stretch; }
         .sidebar {
             width: 300px; min-width: 280px; max-width: 320px; background: var(--bg-secondary);
@@ -112,7 +110,6 @@
         .form-field-hidden { display: none; }
         .sidebar.hidden { display: none; }
 
-        /* ===== SCHEDULE ===== */
         .schedule-area {
             flex: 1; background: var(--bg-secondary); border: 1px solid var(--border);
             border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; min-width: 0;
@@ -137,16 +134,37 @@
         .scroll-wrapper { flex: 1; overflow-x: auto; overflow-y: hidden; position: relative; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
         .schedule-header { display: grid; min-width: max-content; position: sticky; top: 0; z-index: 10; background: var(--bg-primary); border-bottom: 2px solid var(--border); }
         .schedule-grid { display: grid; min-width: max-content; }
-        .time-col-header { padding: 6px 4px; font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; text-align: center; border-right: 1px solid var(--border); background: var(--bg-primary); position: sticky; left: 0; z-index: 11; min-width: 50px; }
-        .day-group-header { text-align: center; border-right: 1px solid var(--border); }
+        .time-col-header { 
+            padding: 6px 4px; font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; text-align: center; 
+            border-right: 1px solid var(--border); background: var(--bg-primary); 
+            position: sticky; left: 0; z-index: 11; min-width: 55px;
+        }
+        .day-group-header { text-align: center; border-right: 1px solid var(--border); position: relative; }
         .day-group-header.today { background: rgba(59,130,246,0.1); }
-        .day-label { font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; padding: 4px 0 0; border-bottom: 1px solid var(--border); }
-        .date-label { font-size: 14px; font-weight: 700; color: var(--text-primary); padding-bottom: 2px; }
+        .day-label { 
+            font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; 
+            padding: 4px 0 0; border-bottom: 1px solid var(--border); 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        }
+        .date-label { 
+            font-size: 14px; font-weight: 700; color: var(--text-primary); padding-bottom: 2px; 
+            white-space: nowrap; 
+        }
         .day-group-header.today .date-label {
             background: var(--accent); color: white; width: 24px; height: 24px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 12px;
         }
         .day-group-header.today .day-label { color: #60a5fa; }
+        
+        .staff-btn {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: var(--bg-tertiary); border: 1px solid var(--border);
+            color: var(--text-primary); padding: 3px 8px; border-radius: 4px;
+            font-size: 11px; font-weight: 600; cursor: pointer; margin-top: 4px;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .staff-btn:hover { background: var(--accent); border-color: var(--accent); color: white; }
+
         .self-delivery-badge-wrapper { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 4px; }
         .self-delivery-badge {
             display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px;
@@ -159,17 +177,21 @@
             display: flex; align-items: center; justify-content: center; line-height: 1;
         }
         .self-delivery-badge .sd-delete:hover { background: rgba(239,68,68,0.4); }
-        .receiver-header-row { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); }
-        .receiver-sub-header { font-size: 9px; font-weight: 500; color: var(--text-muted); text-align: center; padding: 2px 0; border-right: 1px solid var(--border); }
+        .receiver-header-row { display: grid; border-top: 1px solid var(--border); }
+        .receiver-sub-header { 
+            font-size: 9px; font-weight: 500; color: var(--text-muted); text-align: center; 
+            padding: 2px 0; border-right: 1px solid var(--border); 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        }
         .receiver-sub-header:last-child { border-right: none; }
         .time-cell {
             padding: 0 4px; font-size: 10px; font-weight: 600; color: var(--text-muted); text-align: right;
             border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
             background: var(--bg-primary); display: flex; align-items: flex-start; justify-content: flex-end;
-            padding-top: 4px; position: sticky; left: 0; z-index: 5; min-width: 50px;
+            padding-top: 4px; position: sticky; left: 0; z-index: 5; min-width: 55px;
         }
         .time-cell.break-time { background: rgba(245,158,11,0.08); color: #f59e0b; font-style: italic; }
-        .slot-cell { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2px; position: relative; transition: background 0.1s; min-width: 60px; }
+        .slot-cell { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2px; position: relative; transition: background 0.1s; min-width: 85px; }
         .edit-mode .slot-cell:hover:not(.occupied) { background: rgba(59,130,246,0.1); cursor: pointer; }
         .slot-cell.occupied { cursor: default; background: var(--bg-primary); }
         .slot-cell.drag-over { background: rgba(245,158,11,0.1); box-shadow: inset 0 0 0 2px #f59e0b; }
@@ -188,7 +210,7 @@
         .supplier-card.type-фрукты { border-left-color: #ef4444; }
         .supplier-card.type-транспортная-компания { border-left-color: #0891b2; }
         .supplier-card .s-name { font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .supplier-card .s-details { display: flex; gap: 3px; font-size: 8px; color: var(--text-muted); margin-top: 1px; }
+        .supplier-card .s-details { display: flex; gap: 3px; font-size: 8px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; }
         .supplier-card .s-type { background: var(--bg-tertiary); padding: 0 3px; border-radius: 2px; font-weight: 500; }
         .supplier-card .s-break { background: rgba(239,68,68,0.15); color: #fca5a5; font-size: 7px; }
         .supplier-card .delete-btn {
@@ -276,8 +298,8 @@
         .toast.success { border-color: var(--success); background: rgba(16,185,129,0.15); color: #6ee7b7; }
         .toast.info { border-color: var(--accent); background: rgba(59,130,246,0.15); color: #60a5fa; }
 
-        /* ===== MOBILE ADAPTATION ===== */
         .sidebar-close-btn, .fab-add { display: none; }
+        .staff-warning { font-size: 10px; color: var(--warning); margin-top: 8px; text-align: center; line-height: 1.4; }
 
         @media (max-width: 768px) {
             .header { flex-direction: column; gap: 8px; padding: 10px; }
@@ -318,7 +340,7 @@
             .submit-btn { padding: 12px; font-size: 14px; min-height: 48px; }
             
             .time-col-header, .time-cell { min-width: 55px; font-size: 11px; }
-            .slot-cell { min-width: 65px; }
+            .slot-cell { min-width: 85px; }
             .supplier-card { font-size: 10px; padding: 4px 6px; }
             .supplier-card .delete-btn { 
                 display: flex !important; width: 28px; height: 28px; font-size: 12px; 
@@ -345,7 +367,6 @@
 </head>
 <body>
 
-<!-- MAIN APP -->
 <div id="mainApp" class="hidden">
     <div class="header">
         <h1>🏭 <span>Портал записи</span>
@@ -425,11 +446,7 @@
                 </div>
                 <div class="form-group">
                     <label>Приемщик</label>
-                    <select id="receiverSelect" onchange="onDateOrReceiverChange()">
-                        <option value="1">Приемщик 1</option>
-                        <option value="2">Приемщик 2</option>
-                        <option value="3">Приемщик 3</option>
-                    </select>
+                    <select id="receiverSelect" onchange="onDateOrReceiverChange()"></select>
                 </div>
             </div>
             <div id="selfDeliveryFields" class="form-field-hidden">
@@ -473,12 +490,11 @@
     <button class="fab-add" onclick="openMobileSidebar()" title="Новая запись">+</button>
 </div>
 
-<!-- EDIT PWD MODAL -->
 <div class="modal-overlay" id="editPwdModal">
     <div class="modal modal-sm">
         <div class="modal-header"><h3>🔒 Введите пароль</h3><button class="modal-close" onclick="closeModal('editPwdModal')">✕</button></div>
         <div class="modal-body">
-            <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Доступ к редактированию записей (удаление, перемещение)</p>
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Доступ к редактированию записей (удаление, перемещение, штат)</p>
             <div class="pwd-input-row">
                 <input type="password" id="editPwd" placeholder="••••••" maxlength="6" onkeydown="if(event.key==='Enter')checkEditPwd()">
                 <button onclick="checkEditPwd()">Войти</button>
@@ -488,7 +504,6 @@
     </div>
 </div>
 
-<!-- PWD MODAL (Normatives) -->
 <div class="modal-overlay" id="pwdModal">
     <div class="modal modal-sm">
         <div class="modal-header"><h3>🔒 Введите пароль</h3><button class="modal-close" onclick="closeModal('pwdModal')">✕</button></div>
@@ -503,7 +518,6 @@
     </div>
 </div>
 
-<!-- NORM MODAL -->
 <div class="modal-overlay" id="normModal">
     <div class="modal modal-md">
         <div class="modal-header"><h3>⚙ Нормативы по времени выгрузки</h3><button class="modal-close" onclick="closeModal('normModal')">✕</button></div>
@@ -519,7 +533,6 @@
     </div>
 </div>
 
-<!-- DAY MODAL -->
 <div class="modal-overlay" id="dayModal">
     <div class="modal modal-md">
         <div class="modal-header"><h3 id="dayModalTitle">Расписание на день</h3><button class="modal-close" onclick="closeModal('dayModal')">✕</button></div>
@@ -527,7 +540,25 @@
     </div>
 </div>
 
-<!-- MOBILE ACTION MODAL -->
+<div class="modal-overlay" id="staffModal">
+    <div class="modal modal-sm">
+        <div class="modal-header"><h3>👥 Штат приемщиков</h3><button class="modal-close" onclick="closeModal('staffModal')">✕</button></div>
+        <div class="modal-body">
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+                Дата: <strong id="staffModalDate" style="color:var(--text-primary);"></strong>
+            </p>
+            <div class="form-group">
+                <label>Количество приемщиков</label>
+                <input type="number" id="staffCountInput" min="1" max="5" value="3" style="font-size:16px; text-align:center;">
+            </div>
+            <button class="submit-btn" onclick="saveStaff()">💾 Сохранить штат</button>
+            <p class="staff-warning">
+                ⚠️ Внимание: уменьшение количества приемщиков скроет существующие записи для удаленных приемщиков на эту дату.
+            </p>
+        </div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="mobileActionModal">
     <div class="modal modal-sm">
         <div class="modal-header"><h3>Действия с записью</h3><button class="modal-close" onclick="closeModal('mobileActionModal')">✕</button></div>
@@ -552,7 +583,6 @@ const STORAGE_KEY = 'rc_booking_portal_v1';
 const VERSION = '1.0';
 const START_HOUR = 6, END_HOUR = 18;
 const HOURS = []; for (let h = START_HOUR; h < END_HOUR; h++) HOURS.push(h);
-const RECEIVERS = [1, 2, 3];
 const DEFAULT_NORMS = { 'фура': 60, 'контейнер': 180, 'газель': 30, 'фрукты': 180, 'транспортная компания': 120 };
 const TYPE_INFO = {
     'фура': { icon: '🚛', label: 'Фура' }, 'контейнер': { icon: '📦', label: 'Контейнер' },
@@ -570,11 +600,17 @@ let currentDate = new Date();
 let isEditMode = false;
 let bookings = {};
 let selfDeliveries = [];
+let receiversPerDate = {};
 let draggedData = null;
 let normativeHistory = [];
 let firebaseDb = null;
 let firebaseReady = false;
 let syncDebounceTimer = null;
+
+function getReceiversForDate(dateStr) {
+    const count = receiversPerDate[dateStr] || 3;
+    return Array.from({length: count}, (_, i) => i + 1);
+}
 
 function requestEditMode() {
     document.getElementById('editPwd').value = '';
@@ -603,7 +639,6 @@ function checkEditPwd() {
 function initFirebase() {
     try {
         if (FIREBASE_CONFIG.apiKey === 'YOUR_API_KEY') {
-            console.log('Firebase не настроен. Данные сохраняются локально.');
             loadFromStorage();
             showMainApp();
             updateSyncIndicator(false);
@@ -620,6 +655,7 @@ function initFirebase() {
                 if (data.bookings) bookings = data.bookings;
                 if (data.normativeHistory) normativeHistory = data.normativeHistory;
                 if (data.selfDeliveries) selfDeliveries = data.selfDeliveries;
+                if (data.receiversPerDate) receiversPerDate = data.receiversPerDate;
                 showToast('🔄 Данные загружены из облака', 'success');
             } else {
                 loadFromStorage();
@@ -629,7 +665,6 @@ function initFirebase() {
             showMainApp();
             updateSyncIndicator(true);
         }).catch(err => {
-            console.error('Firebase load error:', err);
             loadFromStorage();
             showMainApp();
             updateSyncIndicator(false);
@@ -637,15 +672,14 @@ function initFirebase() {
         dataRef.on('value', snapshot => {
             const data = snapshot.val();
             if (data) {
-                const nb = data.bookings || {}, ns = data.selfDeliveries || [], nn = data.normativeHistory || [];
-                if (JSON.stringify(nb) !== JSON.stringify(bookings) || JSON.stringify(ns) !== JSON.stringify(selfDeliveries)) {
-                    bookings = nb; selfDeliveries = ns; normativeHistory = nn;
+                const nb = data.bookings || {}, ns = data.selfDeliveries || [], nn = data.normativeHistory || [], nr = data.receiversPerDate || {};
+                if (JSON.stringify(nb) !== JSON.stringify(bookings) || JSON.stringify(ns) !== JSON.stringify(selfDeliveries) || JSON.stringify(nr) !== JSON.stringify(receiversPerDate)) {
+                    bookings = nb; selfDeliveries = ns; normativeHistory = nn; receiversPerDate = nr;
                     renderSchedule(); updateStats();
                 }
             }
         });
     } catch (e) {
-        console.error('Firebase init error:', e);
         loadFromStorage();
         showMainApp();
         updateSyncIndicator(false);
@@ -658,7 +692,7 @@ function saveToCloud() {
     syncDebounceTimer = setTimeout(() => {
         try {
             firebaseDb.ref('bookingPortalData').set({
-                bookings, normativeHistory, selfDeliveries, updatedAt: new Date().toISOString()
+                bookings, normativeHistory, selfDeliveries, receiversPerDate, updatedAt: new Date().toISOString()
             }).catch(e => console.error('Cloud save error:', e));
         } catch (e) {}
     }, 300);
@@ -712,10 +746,9 @@ function showMainApp() {
     onTypeChange(); updateSteps(); renderSchedule(); updateStats();
 }
 
-// ===== STORAGE =====
 function saveToStorage() {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ bookings, normativeHistory, selfDeliveries, savedAt: new Date().toISOString(), version: VERSION }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ bookings, normativeHistory, selfDeliveries, receiversPerDate, savedAt: new Date().toISOString(), version: VERSION }));
     } catch (e) {}
 }
 function loadFromStorage() {
@@ -726,11 +759,11 @@ function loadFromStorage() {
         if (data.bookings) bookings = data.bookings;
         if (data.normativeHistory) normativeHistory = data.normativeHistory;
         if (data.selfDeliveries) selfDeliveries = data.selfDeliveries;
+        if (data.receiversPerDate) receiversPerDate = data.receiversPerDate;
         return true;
     } catch (e) { return false; }
 }
 
-// ===== UTILS =====
 function getMonday(d) { const date = new Date(d); const day = date.getDay(); const diff = date.getDate() - day + (day === 0 ? -6 : 1); date.setDate(diff); date.setHours(0,0,0,0); return date; }
 function getWeekDates(d) { const m = getMonday(d); const a = []; for (let i = 0; i < 7; i++) { const dd = new Date(m); dd.setDate(dd.getDate() + i); a.push(dd); } return a; }
 function formatDate(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
@@ -779,7 +812,6 @@ function getBookingById(id) { for (const k in bookings) { const b = bookings[k].
 function placeBooking(bk) { for (let h = bk.startHour; h < bk.endHour; h++) addBookingToSlot(bk.dateStr, h, bk.receiver, bk); }
 function getSelfDeliveriesByDate(dateStr) { return selfDeliveries.filter(sd => sd.dateStr === dateStr); }
 
-// ===== FORM =====
 function onTypeChange() {
     const type = document.getElementById('unloadType').value;
     const display = document.getElementById('durationDisplay');
@@ -813,7 +845,22 @@ function onDateOrReceiverChange() { updateTimeOptions(); onTypeChange(); updateS
 
 function updateTimeOptions() {
     const ds = document.getElementById('bookingDate').value;
-    const rc = parseInt(document.getElementById('receiverSelect').value);
+    const rcSelect = document.getElementById('receiverSelect');
+    
+    if (ds) {
+        const rcList = getReceiversForDate(ds);
+        const currentVal = rcSelect.value;
+        rcSelect.innerHTML = rcList.map(r => `<option value="${r}">Приемщик ${r}</option>`).join('');
+        if (rcList.includes(parseInt(currentVal))) {
+            rcSelect.value = currentVal;
+        } else {
+            rcSelect.value = rcList[0];
+        }
+    } else {
+        rcSelect.innerHTML = '<option value="1">Приемщик 1</option><option value="2">Приемщик 2</option><option value="3">Приемщик 3</option>';
+    }
+
+    const rc = parseInt(rcSelect.value);
     const sel = document.getElementById('bookingTime');
     const curVal = sel.value;
     const type = document.getElementById('unloadType').value;
@@ -884,7 +931,6 @@ function submitBooking() {
 function resetForm() {
     ['supplierName','palletCount','unloadType','bookingDate','bookingTime','selfDeliveryDate'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     document.getElementById('durationDisplay').style.display = 'none';
-    document.getElementById('receiverSelect').value = '1';
     document.getElementById('bookingTime').innerHTML = '<option value="">Выберите...</option>';
     document.getElementById('normalFields').classList.remove('form-field-hidden');
     document.getElementById('selfDeliveryFields').classList.add('form-field-hidden');
@@ -968,36 +1014,55 @@ function updatePeriodLabel() {
 function renderSchedule() { updatePeriodLabel(); if (currentView === 'month') renderMonthView(); else renderDayWeekView(currentView === 'day' ? [currentDate] : getWeekDates(currentDate)); updateStats(); }
 
 function renderDayWeekView(dates) {
-    const numDays = dates.length;
     const sw = document.getElementById('scrollWrapper');
-    const ww = sw.clientWidth;
-    const tcw = 50;
-    const cw = Math.max(65, Math.floor((ww - tcw) / (numDays * 3)));
-    const gt = `${tcw}px repeat(${numDays*3}, ${cw}px)`;
+    const tcw = 55;
+    const colWidth = 85;
+    
+    let totalReceiverCols = 0;
+    dates.forEach(d => {
+        totalReceiverCols += getReceiversForDate(formatDate(d)).length;
+    });
+    
+    const gt = `${tcw}px repeat(${totalReceiverCols}, ${colWidth}px)`;
     document.getElementById('weekHeader').style.gridTemplateColumns = gt;
     document.getElementById('weekGrid').style.gridTemplateColumns = gt;
+    
     const wh = sw.clientHeight;
     const ch = Math.max(32, Math.floor((wh - 60) / HOURS.length));
 
-    let h = '<div class="time-col-header">Время</div>';
+    let h = `<div class="time-col-header" style="min-width:${tcw}px">Время</div>`;
+    
     dates.forEach((d, i) => {
         const tc = isToday(d) ? ' today' : '';
         const ds = formatDate(d);
+        const rcList = getReceiversForDate(ds);
+        const rcCount = rcList.length;
         const sdList = getSelfDeliveriesByDate(ds);
         let sdBadges = sdList.map(sd => `<div class="self-delivery-badge-wrapper"><div class="self-delivery-badge">🏷 ${escapeHtml(sd.supplierName)}${isEditMode ? `<button class="sd-delete" onclick="deleteSelfDelivery('${sd.id}')" title="Удалить">✕</button>` : ''}</div></div>`).join('');
-        h += `<div class="day-group-header${tc}" style="grid-column:span 3"><div class="day-label">${DAY_NAMES[i]}</div><div class="date-label">${d.getDate()}</div>${sdBadges}<div class="receiver-header-row">${RECEIVERS.map(r => `<div class="receiver-sub-header">Пр.${r}</div>`).join('')}</div></div>`;
+        const staffBtn = isEditMode ? `<button class="staff-btn" onclick="openStaffModal('${ds}')" title="Изменить количество приемщиков">👥 ${rcCount}</button>` : '';
+        
+        h += `<div class="day-group-header${tc}" style="grid-column:span ${rcCount}; min-width: ${rcCount * colWidth}px">
+            <div class="day-label">${DAY_NAMES[i]}</div>
+            <div class="date-label">${d.getDate()}</div>
+            ${staffBtn}
+            ${sdBadges}
+            <div class="receiver-header-row" style="grid-template-columns: repeat(${rcCount}, 1fr);">
+                ${rcList.map(r => `<div class="receiver-sub-header">Пр.${r}</div>`).join('')}
+            </div>
+        </div>`;
     });
     document.getElementById('weekHeader').innerHTML = h;
 
     let g = '';
     HOURS.forEach(hr => {
         const isBr = hr === 10 || hr === 11;
-        g += `<div class="time-cell${isBr ? ' break-time' : ''}" style="height:${ch}px">${padHour(hr)}:00</div>`;
+        g += `<div class="time-cell${isBr ? ' break-time' : ''}" style="height:${ch}px; min-width:${tcw}px">${padHour(hr)}:00</div>`;
         dates.forEach(d => {
             const ds = formatDate(d);
-            RECEIVERS.forEach(rc => {
+            const rcList = getReceiversForDate(ds);
+            rcList.forEach(rc => {
                 const sb = getBookings(ds, hr, rc);
-                g += `<div class="slot-cell${sb.length>0?' occupied':''}" style="height:${ch}px" data-date="${ds}" data-hour="${hr}" data-receiver="${rc}"${isEditMode ? ` ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : ''}>`;
+                g += `<div class="slot-cell${sb.length>0?' occupied':''}" style="height:${ch}px; min-width:${colWidth}px" data-date="${ds}" data-hour="${hr}" data-receiver="${rc}"${isEditMode ? ` ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : ''}>`;
                 sb.forEach(b => {
                     if (b.startHour !== hr) return;
                     const hPx = (b.endHour - b.startHour) * ch - 4;
@@ -1028,7 +1093,14 @@ function renderMonthView() {
         let sdBadges = sdList.map(sd => `<div class="self-delivery-day-badge-wrapper"><div class="self-delivery-day-badge">🏷 ${escapeHtml(sd.supplierName)}${isEditMode ? `<button class="sd-delete" onclick="deleteSelfDelivery('${sd.id}')">✕</button>` : ''}</div></div>`).join('');
         g += `<div class="month-day-cell${isCur?'':' other-month'}${isT?' today':''}" onclick="openDayModal('${ds}')"><div class="md-date">${cur.getDate()}</div>${sdBadges}`;
         const db = [];
-        for (let hr = START_HOUR; hr < END_HOUR; hr++) RECEIVERS.forEach(r => { getBookings(ds, hr, r).forEach(b => { if (b.startHour===hr && !db.find(x=>x.id===b.id)) db.push(b); }); });
+        const rcList = getReceiversForDate(ds);
+        for (let hr = START_HOUR; hr < END_HOUR; hr++) {
+            rcList.forEach(r => { 
+                getBookings(ds, hr, r).forEach(b => { 
+                    if (b.startHour===hr && !db.find(x=>x.id===b.id)) db.push(b); 
+                }); 
+            });
+        }
         db.sort((a,b) => a.startHour-b.startHour);
         db.slice(0,3).forEach(b => { const tc = b.type==='транспортная компания'?'транспортная-компания':b.type; g += `<div class="md-card type-${tc}">${escapeHtml(b.name)}</div>`; });
         if (db.length > 3) g += `<div class="md-more">+${db.length-3}</div>`;
@@ -1048,7 +1120,8 @@ function openDayModal(ds) {
         sdList.forEach(sd => { html += `<div class="modal-card type-собственная-доставка"><div class="mc-info"><div class="mc-name">${escapeHtml(sd.supplierName)}</div><div class="mc-details">Собственная доставка</div></div>${isEditMode ? `<button class="mc-delete" onclick="deleteBooking('${sd.id}')">✕</button>` : ''}</div>`; });
         html += `</div>`;
     }
-    RECEIVERS.forEach(rc => {
+    const rcList = getReceiversForDate(ds);
+    rcList.forEach(rc => {
         const rb = [];
         for (let hr = START_HOUR; hr < END_HOUR; hr++) getBookings(ds, hr, rc).forEach(b => { if (b.startHour===hr && !rb.find(x=>x.id===b.id)) rb.push(b); });
         rb.sort((a,b) => a.startHour-b.startHour);
@@ -1069,6 +1142,30 @@ function openDayModal(ds) {
 function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
 document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('visible'); }));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.visible').forEach(m => m.classList.remove('visible')); });
+
+function openStaffModal(dateStr) {
+    currentStaffDate = dateStr;
+    const count = receiversPerDate[dateStr] || 3;
+    document.getElementById('staffModalDate').textContent = formatDateRu(new Date(dateStr + 'T00:00:00'));
+    document.getElementById('staffCountInput').value = count;
+    document.getElementById('staffModal').classList.add('visible');
+}
+
+let currentStaffDate = '';
+function saveStaff() {
+    const count = parseInt(document.getElementById('staffCountInput').value);
+    if (count >= 1 && count <= 5) {
+        receiversPerDate[currentStaffDate] = count;
+        closeModal('staffModal');
+        saveToStorage();
+        saveToCloud();
+        renderSchedule();
+        updateStats();
+        showToast('Штат приемщиков обновлен', 'success');
+    } else {
+        showToast('Введите число от 1 до 5', 'error');
+    }
+}
 
 function openNormativesPassword() {
     document.getElementById('normPwd').value = '';
@@ -1145,10 +1242,13 @@ function updateStats() {
     let total=0, pallets=0, types={}, sdCount=0; const counted = new Set();
     dates.forEach(d => {
         const ds = formatDate(d);
+        const rcList = getReceiversForDate(ds);
         selfDeliveries.filter(sd => sd.dateStr===ds).forEach(sd => { if (!counted.has(sd.id)) { counted.add(sd.id); sdCount++; } });
-        for (let h = START_HOUR; h < END_HOUR; h++) RECEIVERS.forEach(r => {
-            getBookings(ds, h, r).forEach(b => { if (!counted.has(b.id)) { counted.add(b.id); total++; pallets += b.pallets; types[b.type] = (types[b.type]||0)+1; } });
-        });
+        for (let h = START_HOUR; h < END_HOUR; h++) {
+            rcList.forEach(r => {
+                getBookings(ds, h, r).forEach(b => { if (!counted.has(b.id)) { counted.add(b.id); total++; pallets += b.pallets; types[b.type] = (types[b.type]||0)+1; } });
+            });
+        }
     });
     let html = `<div class="stat-item">📦 Записей: <span class="stat-value">${total}</span></div>`;
     if (sdCount > 0) html += `<div class="stat-item">🏷 Собств. доставка: <span class="stat-value">${sdCount}</span></div>`;
@@ -1176,7 +1276,6 @@ function createDemoData() {
     saveToStorage();
 }
 
-// ===== MOBILE HELPERS =====
 function openMobileSidebar() {
     document.getElementById('sidebar').classList.add('mobile-open');
 }
