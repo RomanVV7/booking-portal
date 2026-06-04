@@ -1,0 +1,1131 @@
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Портал записи поставщиков</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.18/index.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: #f0f2f5; color: #1a1a2e; min-height: 100vh; overflow: hidden; }
+
+        /* LOGIN SCREEN */
+        .login-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            z-index: 9999; display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 20px;
+        }
+        .login-overlay.hidden { display: none; }
+        .login-box {
+            background: white; border-radius: 16px; padding: 40px; width: 380px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;
+        }
+        .login-box h2 { font-size: 20px; margin-bottom: 8px; color: #1a1a2e; }
+        .login-box p { font-size: 12px; color: #888; margin-bottom: 20px; }
+        .login-box .lock-icon { font-size: 48px; margin-bottom: 12px; }
+        .login-input {
+            width: 100%; padding: 12px 16px; border: 2px solid #e8e8e8; border-radius: 10px;
+            font-size: 20px; font-family: inherit; text-align: center; letter-spacing: 8px;
+            transition: border-color 0.2s;
+        }
+        .login-input:focus { outline: none; border-color: #4361ee; }
+        .login-btn {
+            width: 100%; padding: 12px; background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
+            color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600;
+            cursor: pointer; margin-top: 12px; transition: all 0.2s; font-family: inherit;
+        }
+        .login-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(67,97,238,0.4); }
+        .login-error { color: #dc2626; font-size: 12px; margin-top: 8px; display: none; }
+        .login-status {
+            font-size: 11px; color: #999; margin-top: 12px; padding-top: 12px;
+            border-top: 1px solid #eee;
+        }
+        .login-status .sync-ok { color: #10b981; }
+        .login-status .sync-off { color: #f59e0b; }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white;
+            padding: 8px 16px; display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100;
+        }
+        .header h1 { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .nav-controls { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+        .nav-btn {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;
+            padding: 4px 8px; border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: 500;
+            transition: all 0.2s; font-family: inherit; white-space: nowrap;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.2); }
+        .nav-btn.active { background: #4361ee; border-color: #4361ee; }
+        .nav-btn.settings-btn { background: rgba(245,158,11,0.2); border-color: rgba(245,158,11,0.4); color: #fbbf24; }
+        .nav-btn.settings-btn:hover { background: rgba(245,158,11,0.35); }
+        .nav-btn.logout-btn { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); color: #fca5a5; }
+        .nav-btn.logout-btn:hover { background: rgba(239,68,68,0.35); }
+        .nav-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.25); margin: 0 3px; }
+        .current-period { font-size: 12px; font-weight: 600; min-width: 160px; text-align: center; }
+        .sync-indicator {
+            font-size: 10px; display: flex; align-items: center; gap: 4px;
+            padding: 2px 8px; border-radius: 4px;
+        }
+        .sync-indicator.online { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+        .sync-indicator.offline { background: rgba(245,158,11,0.2); color: #fcd34d; }
+        .sync-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .sync-indicator.online .sync-dot { background: #6ee7b7; animation: pulse 2s infinite; }
+        .sync-indicator.offline .sync-dot { background: #fcd34d; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        .main-container { display: flex; gap: 10px; padding: 10px; height: calc(100vh - 42px); align-items: stretch; }
+        .sidebar {
+            width: 300px; min-width: 280px; max-width: 320px; background: white; border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 12px; overflow-y: auto; flex-shrink: 0;
+        }
+        .sidebar h2 { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+        .form-group { margin-bottom: 8px; }
+        .form-group label {
+            display: block; font-size: 9px; font-weight: 600; color: #666; margin-bottom: 3px;
+            text-transform: uppercase; letter-spacing: 0.3px;
+        }
+        .form-group input, .form-group select {
+            width: 100%; padding: 5px 7px; border: 2px solid #e8e8e8; border-radius: 6px;
+            font-size: 12px; font-family: inherit; transition: border-color 0.2s; background: #fafafa;
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #4361ee; background: white; }
+        .form-row { display: flex; gap: 6px; }
+        .form-row .form-group { flex: 1; }
+        .duration-display {
+            background: #e8f5e9; border: 2px solid #a5d6a7; border-radius: 6px; padding: 4px 7px;
+            font-size: 10px; color: #2e7d32; font-weight: 500; margin-top: 3px; display: none;
+        }
+        .duration-display.custom { background: #fff3e0; border-color: #ffcc02; color: #e65100; }
+        .duration-display.break-warn { background: #fce4ec; border-color: #f48fb1; color: #c62828; }
+        .submit-btn {
+            width: 100%; padding: 8px; background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
+            color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; font-family: inherit; margin-top: 4px;
+        }
+        .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(67, 97, 238, 0.3); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        .divider { height: 1px; background: #e8e8e8; margin: 8px 0; }
+        .step-indicator { display: flex; gap: 3px; margin-bottom: 8px; }
+        .step-dot { flex: 1; height: 3px; border-radius: 2px; background: #e0e0e0; transition: background 0.3s; }
+        .step-dot.active { background: #4361ee; }
+        .step-dot.completed { background: #10b981; }
+        .form-field-hidden { display: none; }
+
+        .schedule-area {
+            flex: 1; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex; flex-direction: column; overflow: hidden; min-width: 0;
+        }
+        .legend {
+            display: flex; gap: 8px; padding: 4px 10px; background: #fafafa; border-bottom: 1px solid #e8e8e8;
+            font-size: 9px; flex-wrap: wrap; align-items: center;
+        }
+        .legend-item { display: flex; align-items: center; gap: 3px; }
+        .legend-color { width: 8px; height: 8px; border-radius: 2px; }
+        .legend-color.c-фура { background: #4361ee; }
+        .legend-color.c-контейнер { background: #7c3aed; }
+        .legend-color.c-газель { background: #10b981; }
+        .legend-color.c-фрукты { background: #ef4444; }
+        .legend-color.c-транспортная-компания { background: #0891b2; }
+        .legend-color.c-собственная-доставка { background: #8b5cf6; }
+        .legend-receiver { margin-left: auto; display: flex; gap: 5px; align-items: center; }
+        .receiver-badge { font-size: 8px; padding: 1px 4px; border-radius: 2px; font-weight: 500; }
+        .receiver-badge.r1 { background: #e3f2fd; color: #1565c0; }
+        .receiver-badge.r2 { background: #f3e5f5; color: #7b1fa2; }
+        .receiver-badge.r3 { background: #e8f5e9; color: #2e7d32; }
+
+        .stats-bar { display: flex; gap: 10px; padding: 4px 10px; background: #f8f9fa; border-bottom: 1px solid #e8e8e8; font-size: 10px; color: #666; flex-wrap: wrap; }
+        .stat-item { display: flex; align-items: center; gap: 2px; }
+        .stat-value { font-weight: 700; color: #1a1a2e; }
+
+        .scroll-wrapper { flex: 1; overflow-x: auto; overflow-y: hidden; position: relative; }
+        .schedule-header { display: grid; min-width: max-content; position: sticky; top: 0; z-index: 10; background: #f8f9fa; border-bottom: 2px solid #ddd; }
+        .schedule-grid { display: grid; min-width: max-content; }
+        .time-col-header { padding: 4px 2px; font-size: 8px; font-weight: 600; color: #888; text-transform: uppercase; text-align: center; border-right: 1px solid #ddd; background: #f8f9fa; position: sticky; left: 0; z-index: 11; }
+        .day-group-header { text-align: center; border-right: 1px solid #ddd; }
+        .day-group-header.today { background: #e3f2fd; }
+        .day-label { font-size: 8px; font-weight: 600; color: #888; text-transform: uppercase; padding: 2px 0 0; border-bottom: 1px solid #eee; }
+        .date-label { font-size: 13px; font-weight: 700; color: #1a1a2e; padding-bottom: 1px; }
+        .day-group-header.today .date-label {
+            background: #4361ee; color: white; width: 20px; height: 20px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 11px;
+        }
+        .day-group-header.today .day-label { color: #4361ee; }
+        .self-delivery-badge {
+            display: inline-block; margin-top: 2px; padding: 1px 6px; background: #ede9fe;
+            color: #7c3aed; font-size: 8px; font-weight: 600; border-radius: 3px;
+            border: 1px solid #c4b5fd;
+        }
+        .receiver-header-row { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid #eee; }
+        .receiver-sub-header { font-size: 8px; font-weight: 500; color: #999; text-align: center; padding: 1px 0; border-right: 1px solid #f0f0f0; }
+        .receiver-sub-header:last-child { border-right: none; }
+        .time-cell {
+            padding: 0 3px; font-size: 9px; font-weight: 600; color: #666; text-align: right;
+            border-right: 1px solid #ddd; border-bottom: 1px solid #f0f0f0; background: #fafafa;
+            display: flex; align-items: flex-start; justify-content: flex-end; padding-top: 2px;
+            position: sticky; left: 0; z-index: 5;
+        }
+        .time-cell.break-time { background: #fff8e1; color: #f57f17; font-style: italic; }
+        .slot-cell { border-right: 1px solid #f5f5f5; border-bottom: 1px solid #f0f0f0; padding: 1px; position: relative; transition: background 0.1s; }
+        .slot-cell:hover:not(.occupied) { background: #e8f0ff; cursor: pointer; }
+        .slot-cell.occupied { cursor: default; background: #fafafa; }
+        .slot-cell.drag-over { background: #fff3e0; box-shadow: inset 0 0 0 2px #ff9800; }
+        .supplier-card {
+            background: white; border: 1px solid #e0e0e0; border-left: 2px solid #4361ee; border-radius: 2px;
+            padding: 1px 3px; font-size: 8px; margin-bottom: 1px; cursor: grab; transition: all 0.1s;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.04); position: relative; overflow: hidden;
+        }
+        .supplier-card:hover { box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .supplier-card:active { cursor: grabbing; }
+        .supplier-card.dragging { opacity: 0.5; }
+        .supplier-card.type-фура { border-left-color: #4361ee; }
+        .supplier-card.type-контейнер { border-left-color: #7c3aed; }
+        .supplier-card.type-газель { border-left-color: #10b981; }
+        .supplier-card.type-фрукты { border-left-color: #ef4444; }
+        .supplier-card.type-транспортная-компания { border-left-color: #0891b2; }
+        .supplier-card .s-name { font-weight: 600; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .supplier-card .s-details { display: flex; gap: 2px; font-size: 7px; color: #777; }
+        .supplier-card .s-type { background: #f0f0f0; padding: 0 2px; border-radius: 1px; font-weight: 500; }
+        .supplier-card .s-break { background: #fce4ec; color: #c62828; font-size: 6px; }
+        .supplier-card .delete-btn {
+            position: absolute; top: 0; right: 0; width: 12px; height: 12px; border-radius: 50%;
+            border: none; background: #fee2e2; color: #dc2626; font-size: 7px; cursor: pointer;
+            display: none; align-items: center; justify-content: center; line-height: 1;
+        }
+        .supplier-card:hover .delete-btn { display: flex; }
+        .month-view { display: none; }
+        .week-view { display: flex; flex-direction: column; height: 100%; }
+        .hidden { display: none !important; }
+        .month-header-row { display: grid; grid-template-columns: repeat(7, 1fr); background: #f8f9fa; border-bottom: 2px solid #e8e8e8; position: sticky; top: 0; z-index: 10; }
+        .month-day-header { padding: 4px; text-align: center; font-size: 9px; font-weight: 600; color: #888; text-transform: uppercase; border-right: 1px solid #e8e8e8; }
+        .month-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); flex: 1; overflow-y: auto; }
+        .month-day-cell { border-right: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; min-height: 50px; padding: 2px; overflow: hidden; cursor: pointer; transition: background 0.15s; }
+        .month-day-cell:hover { background: #f0f4ff; }
+        .month-day-cell.other-month { background: #f8f8f8; }
+        .month-day-cell.today { background: #e3f2fd; }
+        .month-day-cell .md-date { font-size: 9px; font-weight: 600; color: #1a1a2e; margin-bottom: 1px; padding: 0 2px; }
+        .month-day-cell.today .md-date { background: #4361ee; color: white; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 8px; }
+        .month-day-cell.other-month .md-date { color: #ccc; }
+        .month-day-cell .md-card { background: white; border: 1px solid #e0e0e0; border-left: 2px solid #4361ee; border-radius: 1px; padding: 0 2px; font-size: 7px; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .month-day-cell .md-card.type-фура { border-left-color: #4361ee; }
+        .month-day-cell .md-card.type-контейнер { border-left-color: #7c3aed; }
+        .month-day-cell .md-card.type-газель { border-left-color: #10b981; }
+        .month-day-cell .md-card.type-фрукты { border-left-color: #ef4444; }
+        .month-day-cell .md-card.type-транспортная-компания { border-left-color: #0891b2; }
+        .month-day-cell .md-more { font-size: 7px; color: #4361ee; padding: 0 2px; }
+        .self-delivery-day-badge {
+            display: inline-block; background: #ede9fe; color: #7c3aed; font-size: 7px;
+            font-weight: 600; border-radius: 2px; padding: 1px 3px; margin-top: 1px;
+            border: 1px solid #c4b5fd; white-space: nowrap;
+        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-overlay.visible { display: flex; }
+        .modal { background: white; border-radius: 8px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .modal-sm { width: 320px; }
+        .modal-md { width: 480px; }
+        .modal-header { padding: 10px 14px; border-bottom: 1px solid #e8e8e8; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { font-size: 13px; font-weight: 600; }
+        .modal-close { width: 22px; height: 22px; border: none; background: #f0f0f0; border-radius: 50%; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+        .modal-close:hover { background: #e0e0e0; }
+        .modal-body { padding: 12px 14px; }
+        .norm-row { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #fafafa; border: 1px solid #e8e8e8; border-radius: 5px; margin-bottom: 5px; }
+        .norm-row .norm-icon { font-size: 18px; width: 24px; text-align: center; }
+        .norm-row .norm-name { font-weight: 600; font-size: 11px; flex: 1; }
+        .norm-row .norm-cur { font-size: 10px; color: #888; margin-right: 3px; }
+        .norm-row input[type="number"] { width: 60px; padding: 4px; border: 2px solid #d0d8f0; border-radius: 4px; font-size: 11px; font-family: inherit; text-align: center; }
+        .norm-row input[type="number"]:focus { outline: none; border-color: #4361ee; }
+        .norm-row .norm-unit { font-size: 9px; color: #888; }
+        .norm-apply-note { margin-top: 10px; padding: 8px; background: #fff8e1; border: 1px solid #ffe082; border-radius: 5px; font-size: 10px; color: #8d6e00; line-height: 1.4; }
+        .norm-save-btn { margin-top: 8px; width: 100%; padding: 7px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; }
+        .norm-save-btn:hover { box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4); }
+        .norm-history { margin-top: 12px; }
+        .norm-history h4 { font-size: 10px; font-weight: 600; margin-bottom: 5px; color: #555; }
+        .norm-history-item { font-size: 9px; padding: 4px 6px; background: #f5f5f5; border-radius: 4px; margin-bottom: 3px; color: #666; }
+        .norm-history-item strong { color: #333; }
+        .pwd-input-row { display: flex; gap: 5px; margin-top: 6px; }
+        .pwd-input-row input { flex: 1; padding: 6px 8px; border: 2px solid #e8e8e8; border-radius: 5px; font-size: 13px; font-family: inherit; text-align: center; letter-spacing: 4px; }
+        .pwd-input-row input:focus { outline: none; border-color: #4361ee; }
+        .pwd-input-row button { padding: 6px 12px; background: #4361ee; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: 600; font-family: inherit; }
+        .modal-receiver-section { margin-bottom: 10px; }
+        .modal-receiver-title { font-size: 10px; font-weight: 600; color: #555; margin-bottom: 3px; padding-bottom: 2px; border-bottom: 1px solid #eee; }
+        .modal-card { display: flex; align-items: center; gap: 5px; padding: 5px 7px; background: #fafafa; border: 1px solid #e8e8e8; border-left: 3px solid #4361ee; border-radius: 4px; margin-bottom: 3px; font-size: 10px; }
+        .modal-card.type-фура { border-left-color: #4361ee; }
+        .modal-card.type-контейнер { border-left-color: #7c3aed; }
+        .modal-card.type-газель { border-left-color: #10b981; }
+        .modal-card.type-фрукты { border-left-color: #ef4444; }
+        .modal-card.type-транспортная-компания { border-left-color: #0891b2; }
+        .modal-card.type-собственная-доставка { border-left-color: #8b5cf6; background: #ede9fe; }
+        .modal-card .mc-info { flex: 1; }
+        .modal-card .mc-name { font-weight: 600; }
+        .modal-card .mc-details { font-size: 9px; color: #777; margin-top: 1px; }
+        .modal-card .mc-delete { width: 18px; height: 18px; border: none; background: #fee2e2; color: #dc2626; border-radius: 50%; cursor: pointer; font-size: 9px; display: flex; align-items: center; justify-content: center; }
+        .self-delivery-section { background: #ede9fe; border: 1px solid #c4b5fd; border-radius: 6px; padding: 8px 10px; margin-bottom: 10px; }
+        .self-delivery-section h4 { font-size: 11px; color: #7c3aed; font-weight: 600; margin-bottom: 4px; }
+        .toast { position: fixed; bottom: 14px; right: 14px; background: #1a1a2e; color: white; padding: 8px 12px; border-radius: 6px; font-size: 10px; z-index: 2000; transform: translateY(100px); opacity: 0; transition: all 0.3s; max-width: 280px; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.error { background: #dc2626; }
+        .toast.success { background: #10b981; }
+        @media (max-width: 900px) {
+            .main-container { flex-direction: column; height: auto; }
+            .sidebar { width: 100%; min-width: auto; max-width: none; max-height: none; margin-bottom: 8px; }
+            .header { justify-content: center; }
+            .nav-controls { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+        <div class="lock-icon">🔐</div>
+        <h2>Авторизация</h2>
+        <p>Введите пароль для доступа к порталу</p>
+        <input type="password" class="login-input" id="loginPassword" placeholder="••••••" maxlength="6" onkeydown="if(event.key==='Enter')attemptLogin()" autofocus>
+        <button class="login-btn" onclick="attemptLogin()">Войти</button>
+        <div class="login-error" id="loginError">Неверный пароль</div>
+        <div class="login-status" id="loginStatus">
+            <span class="sync-off">⚠ Данные будут сохранены только локально</span>
+            <br>Для синхронизации между ПК используйте пароль <strong>000000</strong>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" class="hidden">
+    <div class="header">
+        <h1>🏭 <span>Портал записи поставщиков</span></h1>
+        <div class="nav-controls">
+            <button class="nav-btn active" id="btnDayView" onclick="switchView('day')">День</button>
+            <button class="nav-btn" id="btnWeekView" onclick="switchView('week')">Неделя</button>
+            <button class="nav-btn" id="btnMonthView" onclick="switchView('month')">Месяц</button>
+            <div class="nav-divider"></div>
+            <button class="nav-btn" onclick="navigate(-1)">‹</button>
+            <button class="nav-btn" style="background:#4361ee;border-color:#4361ee" onclick="goToday()">Сегодня</button>
+            <button class="nav-btn" onclick="navigate(1)">›</button>
+            <div class="current-period" id="currentPeriod"></div>
+            <div class="nav-divider"></div>
+            <div class="sync-indicator" id="syncIndicator">
+                <div class="sync-dot"></div>
+                <span id="syncText">Загрузка...</span>
+            </div>
+            <button class="nav-btn settings-btn" onclick="openNormativesPassword()">⚙ Нормативы</button>
+            <button class="nav-btn logout-btn" onclick="logout()">🚪 Выход</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="step-indicator">
+                <div class="step-dot active" id="step1"></div>
+                <div class="step-dot" id="step2"></div>
+                <div class="step-dot" id="step3"></div>
+                <div class="step-dot" id="step4"></div>
+                <div class="step-dot" id="step5"></div>
+            </div>
+            <h2>📋 Новая запись</h2>
+            <div class="form-group">
+                <label>Наименование поставщика</label>
+                <input type="text" id="supplierName" placeholder="Введите название..." oninput="updateSteps()">
+            </div>
+            <div class="form-group">
+                <label>Количество паллет</label>
+                <input type="number" id="palletCount" placeholder="0" min="1" max="200" oninput="updateSteps()">
+            </div>
+            <div class="form-group">
+                <label>Тип ТС</label>
+                <select id="unloadType" onchange="onTypeChange()">
+                    <option value="">Выберите тип...</option>
+                    <option value="фура">🚛 Фура</option>
+                    <option value="контейнер">📦 Контейнер</option>
+                    <option value="газель">🚐 Газель</option>
+                    <option value="фрукты">🍎 Фрукты</option>
+                    <option value="транспортная компания">🚚 Транспортная компания</option>
+                    <option value="собственная доставка">🏷 Собственная доставка</option>
+                </select>
+                <div class="duration-display" id="durationDisplay"></div>
+            </div>
+            <div id="normalFields">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Дата выгрузки</label>
+                        <input type="date" id="bookingDate" onchange="onDateOrReceiverChange()">
+                    </div>
+                    <div class="form-group">
+                        <label>Время начала</label>
+                        <select id="bookingTime" onchange="updateSteps()"><option value="">Выберите...</option></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Приемщик</label>
+                    <select id="receiverSelect" onchange="onDateOrReceiverChange()">
+                        <option value="1">Приемщик 1</option>
+                        <option value="2">Приемщик 2</option>
+                        <option value="3">Приемщик 3</option>
+                    </select>
+                </div>
+            </div>
+            <div id="selfDeliveryFields" class="form-field-hidden">
+                <div class="form-group">
+                    <label>Дата собственной доставки</label>
+                    <input type="date" id="selfDeliveryDate" onchange="updateSteps()">
+                </div>
+            </div>
+            <div class="divider"></div>
+            <button class="submit-btn" id="submitBtn" disabled onclick="submitBooking()">✓ Записать поставщика</button>
+        </div>
+
+        <div class="schedule-area">
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color c-фура"></div> Фура</div>
+                <div class="legend-item"><div class="legend-color c-контейнер"></div> Контейнер</div>
+                <div class="legend-item"><div class="legend-color c-газель"></div> Газель</div>
+                <div class="legend-item"><div class="legend-color c-фрукты"></div> Фрукты</div>
+                <div class="legend-item"><div class="legend-color c-транспортная-компания"></div> ТК</div>
+                <div class="legend-item"><div class="legend-color c-собственная-доставка"></div> Собств. доставка</div>
+                <div class="legend-receiver" id="receiverLegend">
+                    <span class="receiver-badge r1">Пр. 1</span>
+                    <span class="receiver-badge r2">Пр. 2</span>
+                    <span class="receiver-badge r3">Пр. 3</span>
+                </div>
+            </div>
+            <div class="stats-bar" id="statsBar"></div>
+            <div class="scroll-wrapper" id="scrollWrapper">
+                <div class="week-view" id="weekView">
+                    <div class="schedule-header" id="weekHeader"></div>
+                    <div class="schedule-grid" id="weekGrid"></div>
+                </div>
+                <div class="month-view" id="monthView">
+                    <div class="month-header-row" id="monthHeader"></div>
+                    <div class="month-calendar-grid" id="monthGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="pwdModal">
+    <div class="modal modal-sm">
+        <div class="modal-header"><h3>🔒 Введите пароль</h3><button class="modal-close" onclick="closeModal('pwdModal')">✕</button></div>
+        <div class="modal-body">
+            <p style="font-size:11px;color:#666;margin-bottom:4px;">Доступ к нормативам времени выгрузки</p>
+            <div class="pwd-input-row">
+                <input type="password" id="normPwd" placeholder="••••••" onkeydown="if(event.key==='Enter')checkPwd()">
+                <button onclick="checkPwd()">Войти</button>
+            </div>
+            <p id="pwdError" style="color:#dc2626;font-size:10px;margin-top:4px;display:none;">Неверный пароль</p>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="normModal">
+    <div class="modal modal-md">
+        <div class="modal-header"><h3>⚙ Нормативы по времени выгрузки</h3><button class="modal-close" onclick="closeModal('normModal')">✕</button></div>
+        <div class="modal-body">
+            <div class="norm-apply-note">
+                📌 <strong>Важно:</strong> Изменение нормативов применяется ко всем записям, начиная с даты, следующей за датой изменения.
+                Записи, дата выгрузки которых раньше даты применения, сохраняют прежние нормативы.
+                <br>Дата применения: <strong id="normApplyDate"></strong>.
+            </div>
+            <div id="normRows"></div>
+            <button class="norm-save-btn" onclick="saveNormatives()">💾 Сохранить изменения</button>
+            <div class="norm-history" id="normHistory"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="dayModal">
+    <div class="modal modal-md">
+        <div class="modal-header"><h3 id="dayModalTitle">Расписание на день</h3><button class="modal-close" onclick="closeModal('dayModal')">✕</button></div>
+        <div class="modal-body" id="dayModalBody"></div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// FIREBASE CONFIGURATION
+// Для синхронизации между ПК создайте бесплатный проект в Firebase:
+// 1. Перейдите на https://console.firebase.google.com
+// 2. Создайте новый проект
+// 3. В разделе Realtime Database создайте базу данных
+// 4. В настройках проекта скопируйте конфигурацию и замените ниже
+// 5. В правилах базы данных установите: { "rules": { ".read": true, ".write": true } }
+// ============================================================
+const FIREBASE_CONFIG = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+const STORAGE_KEY = 'rc_booking_portal_v3';
+const START_HOUR = 6, END_HOUR = 18;
+const HOURS = []; for (let h = START_HOUR; h < END_HOUR; h++) HOURS.push(h);
+const RECEIVERS = [1, 2, 3];
+const DEFAULT_NORMS = { 'фура': 60, 'контейнер': 180, 'газель': 30, 'фрукты': 180, 'транспортная компания': 120 };
+const TYPE_INFO = {
+    'фура': { icon: '🚛', label: 'Фура' }, 'контейнер': { icon: '📦', label: 'Контейнер' },
+    'газель': { icon: '🚐', label: 'Газель' }, 'фрукты': { icon: '🍎', label: 'Фрукты' },
+    'транспортная компания': { icon: '🚚', label: 'ТК' },
+    'собственная доставка': { icon: '🏷', label: 'Собств. доставка' }
+};
+const BREAK_PERIODS = [
+    { start: 10 * 60 + 30, end: 11 * 60 },
+    { start: 11 * 60 + 30, end: 12 * 60 }
+];
+
+let currentView = 'week';
+let currentDate = new Date();
+let bookings = {};
+let selfDeliveries = [];
+let draggedData = null;
+let normativeHistory = [];
+let isSyncEnabled = false;
+let firebaseDb = null;
+let firebaseReady = false;
+let syncDebounceTimer = null;
+
+// ==================== AUTH ====================
+const ACCESS_PASSWORD = '000000';
+
+function attemptLogin() {
+    const pwd = document.getElementById('loginPassword').value;
+    if (!pwd) {
+        document.getElementById('loginError').textContent = 'Введите пароль';
+        document.getElementById('loginError').style.display = 'block';
+        return;
+    }
+    if (pwd === ACCESS_PASSWORD) {
+        isSyncEnabled = true;
+        initFirebase();
+    } else {
+        isSyncEnabled = false;
+        loadFromLocalStorage();
+        showMainApp();
+    }
+}
+
+function initFirebase() {
+    try {
+        if (FIREBASE_CONFIG.apiKey === 'YOUR_API_KEY') {
+            // Firebase не настроен - работаем локально
+            console.log('Firebase не настроен. Данные сохраняются локально.');
+            loadFromLocalStorage();
+            showMainApp();
+            updateSyncIndicator(false);
+            return;
+        }
+        firebase.initializeApp(FIREBASE_CONFIG);
+        firebaseDb = firebase.database();
+        firebaseReady = true;
+
+        // Загрузка данных из Firebase
+        const dataRef = firebaseDb.ref('bookingPortalData');
+        dataRef.once('value').then(snapshot => {
+            const data = snapshot.val();
+            if (data) {
+                if (data.bookings) bookings = data.bookings;
+                if (data.normativeHistory) normativeHistory = data.normativeHistory;
+                if (data.selfDeliveries) selfDeliveries = data.selfDeliveries;
+                showToast('🔄 Данные загружены из облака', 'success');
+            } else {
+                // Нет данных в Firebase - загрузим локальные или создадим демо
+                loadFromLocalStorage();
+                if (Object.keys(bookings).length === 0) createDemoData();
+                saveToCloud();
+            }
+            showMainApp();
+            updateSyncIndicator(true);
+        }).catch(err => {
+            console.error('Firebase load error:', err);
+            loadFromLocalStorage();
+            showMainApp();
+            updateSyncIndicator(false);
+            showToast('⚠ Ошибка загрузки из облака, работа локально', 'error');
+        });
+
+        // Подписка на изменения в реальном времени
+        dataRef.on('value', snapshot => {
+            const data = snapshot.val();
+            if (data) {
+                const newBookings = data.bookings || {};
+                const newSelfDeliveries = data.selfDeliveries || [];
+                const newNorms = data.normativeHistory || [];
+                
+                // Проверяем, изменились ли данные
+                if (JSON.stringify(newBookings) !== JSON.stringify(bookings) ||
+                    JSON.stringify(newSelfDeliveries) !== JSON.stringify(selfDeliveries)) {
+                    bookings = newBookings;
+                    selfDeliveries = newSelfDeliveries;
+                    normativeHistory = newNorms;
+                    renderSchedule();
+                    updateStats();
+                }
+            }
+        });
+    } catch (e) {
+        console.error('Firebase init error:', e);
+        loadFromLocalStorage();
+        showMainApp();
+        updateSyncIndicator(false);
+    }
+}
+
+function saveToCloud() {
+    if (!firebaseReady || !firebaseDb) return;
+    clearTimeout(syncDebounceTimer);
+    syncDebounceTimer = setTimeout(() => {
+        try {
+            const data = {
+                bookings: bookings,
+                normativeHistory: normativeHistory,
+                selfDeliveries: selfDeliveries,
+                updatedAt: new Date().toISOString()
+            };
+            firebaseDb.ref('bookingPortalData').set(data).catch(err => {
+                console.error('Firebase save error:', err);
+            });
+        } catch (e) {
+            console.error('Cloud save error:', e);
+        }
+    }, 500); // Debounce 500ms
+}
+
+function updateSyncIndicator(online) {
+    const indicator = document.getElementById('syncIndicator');
+    const text = document.getElementById('syncText');
+    if (online) {
+        indicator.className = 'sync-indicator online';
+        text.textContent = 'Синхронизация';
+    } else {
+        indicator.className = 'sync-indicator offline';
+        text.textContent = isSyncEnabled ? 'Нет подключения' : 'Локально';
+    }
+}
+
+function logout() {
+    if (firebaseDb) {
+        try { firebaseDb.ref('bookingPortalData').off(); } catch(e) {}
+    }
+    firebaseReady = false;
+    firebaseDb = null;
+    isSyncEnabled = false;
+    bookings = {};
+    selfDeliveries = [];
+    normativeHistory = [];
+    document.getElementById('mainApp').classList.add('hidden');
+    document.getElementById('loginOverlay').classList.remove('hidden');
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginError').style.display = 'none';
+}
+
+function showMainApp() {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('mainApp').classList.remove('hidden');
+    const today = new Date(); const ds = formatDate(today);
+    document.getElementById('bookingDate').value = ds; document.getElementById('bookingDate').min = ds;
+    document.getElementById('selfDeliveryDate').value = ds; document.getElementById('selfDeliveryDate').min = ds;
+    const nxt = new Date(today); nxt.setDate(nxt.getDate() + 21);
+    document.getElementById('bookingDate').max = formatDate(nxt);
+    document.getElementById('selfDeliveryDate').max = formatDate(nxt);
+    onTypeChange(); updateSteps(); renderSchedule(); updateStats();
+}
+
+// ==================== LOCAL STORAGE ====================
+function loadFromLocalStorage() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        if (data.bookings) bookings = data.bookings;
+        if (data.normativeHistory) normativeHistory = data.normativeHistory;
+        if (data.selfDeliveries) selfDeliveries = data.selfDeliveries;
+        return true;
+    } catch (e) { return false; }
+}
+
+function saveToLocalStorage() {
+    try {
+        const data = { bookings, normativeHistory, selfDeliveries, savedAt: new Date().toISOString() };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) { console.warn('LocalStorage error:', e); }
+}
+
+function saveData() {
+    saveToLocalStorage();
+    saveToCloud();
+}
+
+// ==================== UTILS ====================
+function getMonday(d) { const date = new Date(d); const day = date.getDay(); const diff = date.getDate() - day + (day === 0 ? -6 : 1); date.setDate(diff); date.setHours(0,0,0,0); return date; }
+function getWeekDates(d) { const m = getMonday(d); const a = []; for (let i = 0; i < 7; i++) { const dd = new Date(m); dd.setDate(dd.getDate() + i); a.push(dd); } return a; }
+function formatDate(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function formatDateRu(d) { const m = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря']; return d.getDate() + ' ' + m[d.getMonth()] + ' ' + d.getFullYear(); }
+function formatDateShort(d) { return String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0'); }
+function isToday(d) { const t = new Date(); return d.getFullYear() === t.getFullYear() && d.getMonth() === t.getMonth() && d.getDate() === t.getDate(); }
+function padHour(h) { return String(h).padStart(2, '0'); }
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function nextDay(dateStr) { const d = new Date(dateStr + 'T00:00:00'); d.setDate(d.getDate() + 1); return formatDate(d); }
+function generateId() { return 'b_' + Date.now() + '_' + Math.random().toString(36).substr(2,5); }
+
+const DAY_NAMES = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const DAY_NAMES_FULL = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
+const MONTH_NAMES = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+
+function getEffectiveDuration(type, dateStr) {
+    let duration = DEFAULT_NORMS[type];
+    for (const entry of normativeHistory) {
+        if (entry.date <= dateStr && entry.changes[type] !== undefined) duration = entry.changes[type];
+    }
+    return duration;
+}
+function calcBreakMinutes(startHr, endHr) {
+    const startMin = startHr * 60; const endMin = endHr * 60; let total = 0;
+    for (const bp of BREAK_PERIODS) { const oS = Math.max(startMin, bp.start); const oE = Math.min(endMin, bp.end); if (oS < oE) total += (oE - oS); }
+    return total;
+}
+function calcBookingDuration(baseDuration, startHr) {
+    const baseEndHr = startHr + Math.ceil(baseDuration / 60);
+    const breakMins = calcBreakMinutes(startHr, baseEndHr);
+    const totalDuration = baseDuration + breakMins;
+    const effectiveHours = Math.ceil(totalDuration / 60);
+    return { baseDuration, breakMinutes: breakMins, totalDuration, endHour: startHr + effectiveHours };
+}
+function getBookingKey(ds, hr, rc) { return `${ds}_${hr}_${rc}`; }
+function getBookings(ds, hr, rc) { return bookings[getBookingKey(ds, hr, rc)] || []; }
+function addBookingToSlot(ds, hr, rc, bk) { const k = getBookingKey(ds, hr, rc); if (!bookings[k]) bookings[k] = []; bookings[k].push(bk); }
+function removeBookingFromSlot(ds, hr, rc, id) {
+    const k = getBookingKey(ds, hr, rc);
+    if (bookings[k]) { bookings[k] = bookings[k].filter(b => b.id !== id); if (bookings[k].length === 0) delete bookings[k]; }
+}
+function isSlotFree(ds, hr, rc) { return getBookings(ds, hr, rc).length === 0; }
+function canPlaceBooking(ds, startHr, rc, baseDuration) {
+    const calc = calcBookingDuration(baseDuration, startHr);
+    for (let h = startHr; h < calc.endHour; h++) { if (h >= END_HOUR) return false; if (!isSlotFree(ds, h, rc)) return false; }
+    return true;
+}
+function getBookingById(id) { for (const k in bookings) { const b = bookings[k].find(x => x.id === id); if (b) return { booking: b, key: k }; } return null; }
+function placeBooking(bk) { for (let h = bk.startHour; h < bk.endHour; h++) addBookingToSlot(bk.dateStr, h, bk.receiver, bk); }
+function getSelfDeliveriesByDate(dateStr) { return selfDeliveries.filter(sd => sd.dateStr === dateStr); }
+
+// ==================== FORM ====================
+function onTypeChange() {
+    const type = document.getElementById('unloadType').value;
+    const display = document.getElementById('durationDisplay');
+    const normalFields = document.getElementById('normalFields');
+    const selfDeliveryFields = document.getElementById('selfDeliveryFields');
+    if (type === 'собственная доставка') {
+        normalFields.classList.add('form-field-hidden');
+        selfDeliveryFields.classList.remove('form-field-hidden');
+        display.textContent = '🏷 Только дата, время не требуется';
+        display.className = 'duration-display';
+        display.style.display = 'block';
+    } else {
+        normalFields.classList.remove('form-field-hidden');
+        selfDeliveryFields.classList.add('form-field-hidden');
+        if (type && DEFAULT_NORMS.hasOwnProperty(type)) {
+            const ds = document.getElementById('bookingDate').value || formatDate(new Date());
+            const baseDur = getEffectiveDuration(type, ds);
+            const startHr = parseInt(document.getElementById('bookingTime').value) || START_HOUR;
+            const calc = calcBookingDuration(baseDur, startHr);
+            const baseHrs = Math.floor(calc.baseDuration / 60); const baseMins = calc.baseDuration % 60;
+            let txt = '⏱ ';
+            if (baseHrs > 0) txt += baseHrs + ' ч ';
+            if (baseMins > 0) txt += baseMins + ' мин';
+            if (calc.breakMinutes > 0) { txt += ` + ${calc.breakMinutes} мин (перерыв) = ${calc.totalDuration} мин`; display.className = 'duration-display break-warn'; }
+            else if (baseDur !== DEFAULT_NORMS[type]) { display.className = 'duration-display custom'; txt += ' (изменено)'; }
+            else { display.className = 'duration-display'; }
+            display.textContent = txt; display.style.display = 'block';
+        } else { display.style.display = 'none'; }
+        updateTimeOptions();
+    }
+    updateSteps();
+}
+
+function onDateOrReceiverChange() { updateTimeOptions(); onTypeChange(); updateSteps(); }
+
+function updateTimeOptions() {
+    const ds = document.getElementById('bookingDate').value;
+    const rc = parseInt(document.getElementById('receiverSelect').value);
+    const sel = document.getElementById('bookingTime');
+    const curVal = sel.value;
+    const type = document.getElementById('unloadType').value;
+    const baseDur = type ? getEffectiveDuration(type, ds) : 60;
+    sel.innerHTML = '<option value="">Выберите...</option>';
+    if (!ds) return;
+    for (let h = START_HOUR; h < END_HOUR; h++) {
+        const avail = canPlaceBooking(ds, h, rc, baseDur);
+        const opt = document.createElement('option');
+        opt.value = h;
+        const calc = calcBookingDuration(baseDur, h);
+        let label = `${padHour(h)}:00-${padHour(calc.endHour)}:00`;
+        if (calc.breakMinutes > 0) label += ` (+${calc.breakMinutes}м перерыв)`;
+        if (!avail) label += ' (занято)';
+        opt.textContent = label; opt.disabled = !avail;
+        sel.appendChild(opt);
+    }
+    if (curVal && sel.querySelector('option[value="' + curVal + '"]')) sel.value = curVal;
+}
+
+function updateSteps() {
+    const name = document.getElementById('supplierName').value.trim();
+    const pal = document.getElementById('palletCount').value;
+    const type = document.getElementById('unloadType').value;
+    let steps;
+    if (type === 'собственная доставка') {
+        steps = [!!name, true, true, !!document.getElementById('selfDeliveryDate').value, true];
+    } else {
+        steps = [!!name, !!pal && parseInt(pal) > 0, !!type, !!document.getElementById('bookingDate').value, !!document.getElementById('bookingTime').value];
+    }
+    for (let i = 1; i <= 5; i++) {
+        const dot = document.getElementById('step' + i);
+        dot.classList.remove('active', 'completed');
+        if (steps[i-1]) dot.classList.add('completed');
+        else if (i === 1 || steps.slice(0, i-1).every(s => s)) dot.classList.add('active');
+    }
+    document.getElementById('submitBtn').disabled = !steps.every(s => s);
+}
+
+function submitBooking() {
+    const name = document.getElementById('supplierName').value.trim();
+    const pal = parseInt(document.getElementById('palletCount').value);
+    const type = document.getElementById('unloadType').value;
+    if (type === 'собственная доставка') {
+        const ds = document.getElementById('selfDeliveryDate').value;
+        if (!ds) { showToast('Укажите дату', 'error'); return; }
+        selfDeliveries.push({ id: generateId(), dateStr: ds, supplierName: name });
+        saveData();
+        showToast(`✓ Собственная доставка: ${formatDateRu(new Date(ds + 'T00:00:00'))} — ${name}`, 'success');
+        resetForm(); renderSchedule(); updateStats();
+        return;
+    }
+    const ds = document.getElementById('bookingDate').value;
+    const startHr = parseInt(document.getElementById('bookingTime').value);
+    const rc = parseInt(document.getElementById('receiverSelect').value);
+    const baseDur = getEffectiveDuration(type, ds);
+    const calc = calcBookingDuration(baseDur, startHr);
+    if (calc.endHour > END_HOUR) { showToast('Запись выходит за рабочее время (18:00)', 'error'); return; }
+    if (!canPlaceBooking(ds, startHr, rc, baseDur)) { showToast('Слот занят у приемщика ' + rc, 'error'); return; }
+    const bk = { id: generateId(), name, pallets: pal, type, baseDuration: baseDur, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, startHour: startHr, endHour: calc.endHour, dateStr: ds, receiver: rc };
+    placeBooking(bk);
+    saveData();
+    const dObj = new Date(ds + 'T00:00:00');
+    let msg = `✓ ${name}: ${DAY_NAMES_FULL[(dObj.getDay()+6)%7]} ${padHour(startHr)}:00-${padHour(calc.endHour)}:00 | Пр.${rc}`;
+    if (calc.breakMinutes > 0) msg += ` (+${calc.breakMinutes}м перерыв)`;
+    showToast(msg, 'success');
+    resetForm(); renderSchedule(); updateStats();
+}
+
+function resetForm() {
+    ['supplierName','palletCount','unloadType','bookingDate','bookingTime','selfDeliveryDate'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    document.getElementById('durationDisplay').style.display = 'none';
+    document.getElementById('receiverSelect').value = '1';
+    document.getElementById('bookingTime').innerHTML = '<option value="">Выберите...</option>';
+    document.getElementById('normalFields').classList.remove('form-field-hidden');
+    document.getElementById('selfDeliveryFields').classList.add('form-field-hidden');
+    updateSteps();
+}
+
+function deleteBooking(id) {
+    const res = getBookingById(id);
+    if (res) { const b = res.booking; for (let h = b.startHour; h < b.endHour; h++) removeBookingFromSlot(b.dateStr, h, b.receiver, id); }
+    const sdIdx = selfDeliveries.findIndex(sd => sd.id === id);
+    if (sdIdx !== -1) selfDeliveries.splice(sdIdx, 1);
+    saveData();
+    showToast('Запись удалена', 'success');
+    renderSchedule(); updateStats(); closeModal('dayModal');
+}
+
+function startDrag(e, id) {
+    const res = getBookingById(id); if (!res) return;
+    draggedData = res.booking;
+    e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id);
+    for (let h = draggedData.startHour; h < draggedData.endHour; h++) removeBookingFromSlot(draggedData.dateStr, h, draggedData.receiver, id);
+    setTimeout(() => { const el = e.target.closest('.supplier-card'); if (el) el.classList.add('dragging'); }, 0);
+}
+function endDrag(e) {
+    if (draggedData) { if (!getBookingById(draggedData.id)) { placeBooking(draggedData); renderSchedule(); } draggedData = null; }
+    document.querySelectorAll('.supplier-card.dragging').forEach(el => el.classList.remove('dragging'));
+}
+function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; const c = e.target.closest('.slot-cell'); if (c) c.classList.add('drag-over'); }
+function handleDragLeave(e) { const c = e.target.closest('.slot-cell'); if (c) c.classList.remove('drag-over'); }
+function handleDrop(e) {
+    e.preventDefault(); const c = e.target.closest('.slot-cell'); if (!c || !draggedData) return;
+    c.classList.remove('drag-over');
+    const ds = c.dataset.date, hr = parseInt(c.dataset.hour), rc = parseInt(c.dataset.receiver);
+    if (isNaN(hr) || isNaN(rc)) return;
+    const calc = calcBookingDuration(draggedData.baseDuration, hr);
+    if (calc.endHour > END_HOUR) { showToast('Перемещение выходит за рабочее время', 'error'); endDrag(); return; }
+    for (let h = hr; h < calc.endHour; h++) { if (!isSlotFree(ds, h, rc)) { showToast(`Слот ${padHour(h)}:00 занят`, 'error'); endDrag(); return; } }
+    const nb = { ...draggedData, dateStr: ds, startHour: hr, endHour: calc.endHour, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, receiver: rc };
+    placeBooking(nb);
+    saveData();
+    draggedData = null;
+    showToast(`"${nb.name}" → Пр.${rc}, ${padHour(hr)}:00`, 'success');
+    renderSchedule(); updateStats();
+}
+
+function switchView(v) {
+    currentView = v;
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn' + v.charAt(0).toUpperCase() + v.slice(1) + 'View').classList.add('active');
+    document.getElementById('weekView').classList.toggle('hidden', v === 'month');
+    document.getElementById('monthView').classList.toggle('hidden', v !== 'month');
+    document.getElementById('receiverLegend').classList.toggle('hidden', v === 'month');
+    renderSchedule();
+}
+function navigate(dir) {
+    if (currentView === 'day') currentDate.setDate(currentDate.getDate() + dir);
+    else if (currentView === 'week') currentDate.setDate(currentDate.getDate() + dir * 7);
+    else currentDate.setMonth(currentDate.getMonth() + dir);
+    renderSchedule();
+}
+function goToday() { currentDate = new Date(); renderSchedule(); }
+
+function updatePeriodLabel() {
+    const el = document.getElementById('currentPeriod');
+    if (currentView === 'day') el.textContent = formatDateRu(currentDate);
+    else if (currentView === 'week') { const d = getWeekDates(currentDate); el.textContent = `${formatDateShort(d[0])} — ${formatDateShort(d[6])} ${MONTH_NAMES[d[0].getMonth()]}`; }
+    else el.textContent = `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+}
+
+function renderSchedule() {
+    updatePeriodLabel();
+    if (currentView === 'month') renderMonthView();
+    else renderDayWeekView(currentView === 'day' ? [currentDate] : getWeekDates(currentDate));
+    updateStats();
+}
+
+function renderDayWeekView(dates) {
+    const numDays = dates.length;
+    const scrollWrapper = document.getElementById('scrollWrapper');
+    const wrapperWidth = scrollWrapper.clientWidth;
+    const timeColWidth = 40;
+    const remainingWidth = wrapperWidth - timeColWidth;
+    const colWidth = Math.max(60, Math.floor(remainingWidth / (numDays * 3)));
+    const gt = `${timeColWidth}px repeat(${numDays * 3}, ${colWidth}px)`;
+    document.getElementById('weekHeader').style.gridTemplateColumns = gt;
+    document.getElementById('weekGrid').style.gridTemplateColumns = gt;
+    const wrapperHeight = scrollWrapper.clientHeight;
+    const headerHeight = 55;
+    const cellHeight = Math.max(28, Math.floor((wrapperHeight - headerHeight) / HOURS.length));
+
+    let h = '<div class="time-col-header">Время</div>';
+    dates.forEach((d, i) => {
+        const tc = isToday(d) ? ' today' : '';
+        const ds = formatDate(d);
+        const sdList = getSelfDeliveriesByDate(ds);
+        let sdBadge = sdList.length > 0 ? sdList.map(sd => `<div class="self-delivery-badge">🏷 ${escapeHtml(sd.supplierName)}</div>`).join('') : '';
+        h += `<div class="day-group-header${tc}" style="grid-column:span 3"><div class="day-label">${DAY_NAMES[i]}</div><div class="date-label">${d.getDate()}</div>${sdBadge}<div class="receiver-header-row">${RECEIVERS.map(r => `<div class="receiver-sub-header">Пр.${r}</div>`).join('')}</div></div>`;
+    });
+    document.getElementById('weekHeader').innerHTML = h;
+
+    let g = '';
+    HOURS.forEach(hr => {
+        const isBreakHour = hr === 10 || hr === 11;
+        g += `<div class="time-cell${isBreakHour ? ' break-time' : ''}" style="height:${cellHeight}px">${padHour(hr)}:00</div>`;
+        dates.forEach(d => {
+            const ds = formatDate(d);
+            RECEIVERS.forEach(rc => {
+                const sb = getBookings(ds, hr, rc);
+                const occ = sb.length > 0;
+                g += `<div class="slot-cell${occ ? ' occupied' : ''}" style="height:${cellHeight}px" data-date="${ds}" data-hour="${hr}" data-receiver="${rc}" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">`;
+                sb.forEach(b => {
+                    if (b.startHour !== hr) return;
+                    const hPx = (b.endHour - b.startHour) * cellHeight - 2;
+                    const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type;
+                    const breakHtml = b.breakMinutes > 0 ? `<span class="s-break">+${b.breakMinutes}м</span>` : '';
+                    g += `<div class="supplier-card type-${tc}" style="position:absolute;top:1px;left:1px;right:1px;height:${hPx}px;overflow:hidden;z-index:5;" draggable="true" ondragstart="startDrag(event, '${b.id}')" ondragend="endDrag()" title="${b.name} | ${padHour(b.startHour)}:00-${padHour(b.endHour)}:00 | ${b.pallets}п${b.breakMinutes > 0 ? ' (+' + b.breakMinutes + 'м)' : ''}">
+                        <div class="s-name">${escapeHtml(b.name)}</div>
+                        <div class="s-details"><span class="s-type">${TYPE_INFO[b.type]?.icon||''} ${TYPE_INFO[b.type]?.label||b.type}</span><span>${b.pallets}п</span>${breakHtml}</div>
+                        <button class="delete-btn" onclick="event.stopPropagation();deleteBooking('${b.id}')">✕</button></div>`;
+                });
+                g += '</div>';
+            });
+        });
+    });
+    document.getElementById('weekGrid').innerHTML = g;
+}
+
+function renderMonthView() {
+    const yr = currentDate.getFullYear(), mo = currentDate.getMonth();
+    const fd = new Date(yr, mo, 1), ld = new Date(yr, mo + 1, 0);
+    const so = (fd.getDay() + 6) % 7;
+    document.getElementById('monthHeader').innerHTML = DAY_NAMES.map(d => `<div class="month-day-header">${d}</div>`).join('');
+    let g = ''; let cur = new Date(yr, mo, 1 - so); let w = 0;
+    while (w < 6 && cur <= new Date(yr, mo + 1, 0)) {
+        const isCur = cur.getMonth() === mo, isT = isToday(cur), ds = formatDate(cur);
+        const sdList = getSelfDeliveriesByDate(ds);
+        let sdBadge = sdList.map(sd => `<div class="self-delivery-day-badge">🏷 ${escapeHtml(sd.supplierName)}</div>`).join('');
+        g += `<div class="month-day-cell${isCur ? '' : ' other-month'}${isT ? ' today' : ''}" onclick="openDayModal('${ds}')"><div class="md-date">${cur.getDate()}</div>${sdBadge}`;
+        const db = [];
+        for (let hr = START_HOUR; hr < END_HOUR; hr++) RECEIVERS.forEach(r => { getBookings(ds, hr, r).forEach(b => { if (b.startHour === hr && !db.find(x => x.id === b.id)) db.push(b); }); });
+        db.sort((a, b) => a.startHour - b.startHour);
+        db.slice(0, 3).forEach(b => { const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type; g += `<div class="md-card type-${tc}" title="${padHour(b.startHour)}:00-${padHour(b.endHour)}:00">${escapeHtml(b.name)}</div>`; });
+        if (db.length > 3) g += `<div class="md-more">+${db.length - 3}</div>`;
+        g += '</div>';
+        cur.setDate(cur.getDate() + 1); w++;
+    }
+    document.getElementById('monthGrid').innerHTML = g;
+}
+
+function openDayModal(ds) {
+    const d = new Date(ds + 'T00:00:00');
+    document.getElementById('dayModalTitle').textContent = `${DAY_NAMES_FULL[(d.getDay()+6)%7]}, ${formatDateRu(d)}`;
+    let html = '';
+    const sdList = getSelfDeliveriesByDate(ds);
+    if (sdList.length > 0) {
+        html += `<div class="self-delivery-section"><h4>🏷 Собственная доставка</h4>`;
+        sdList.forEach(sd => { html += `<div class="modal-card type-собственная-доставка"><div class="mc-info"><div class="mc-name">${escapeHtml(sd.supplierName)}</div><div class="mc-details">Собственная доставка</div></div><button class="mc-delete" onclick="deleteBooking('${sd.id}')">✕</button></div>`; });
+        html += `</div>`;
+    }
+    RECEIVERS.forEach(rc => {
+        const rb = [];
+        for (let hr = START_HOUR; hr < END_HOUR; hr++) getBookings(ds, hr, rc).forEach(b => { if (b.startHour === hr && !rb.find(x => x.id === b.id)) rb.push(b); });
+        rb.sort((a, b) => a.startHour - b.startHour);
+        if (rb.length > 0) {
+            html += `<div class="modal-receiver-section"><div class="modal-receiver-title">Приемщик ${rc} (${rb.length})</div>`;
+            rb.forEach(b => {
+                const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type;
+                const breakTxt = b.breakMinutes > 0 ? ` +${b.breakMinutes}м перерыв` : '';
+                html += `<div class="modal-card type-${tc}"><div class="mc-info"><div class="mc-name">${escapeHtml(b.name)}</div><div class="mc-details">${TYPE_INFO[b.type]?.icon} ${b.pallets}п | ${padHour(b.startHour)}:00-${padHour(b.endHour)}:00${breakTxt}</div></div><button class="mc-delete" onclick="deleteBooking('${b.id}')">✕</button></div>`;
+            });
+            html += `</div>`;
+        }
+    });
+    if (!html) html = `<div style="color:#999;font-size:11px;text-align:center;padding:16px;">Нет записей на этот день</div>`;
+    document.getElementById('dayModalBody').innerHTML = html;
+    document.getElementById('dayModal').classList.add('visible');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('visible'); }));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.visible').forEach(m => m.classList.remove('visible')); });
+
+function openNormativesPassword() {
+    document.getElementById('normPwd').value = '';
+    document.getElementById('pwdError').style.display = 'none';
+    document.getElementById('pwdModal').classList.add('visible');
+    setTimeout(() => document.getElementById('normPwd').focus(), 100);
+}
+function checkPwd() {
+    const pwd = document.getElementById('normPwd').value;
+    if (pwd === '147963') { closeModal('pwdModal'); openNormatives(); }
+    else { document.getElementById('pwdError').style.display = 'block'; document.getElementById('normPwd').value = ''; document.getElementById('normPwd').focus(); }
+}
+
+function openNormatives() {
+    const applyDate = nextDay(formatDate(new Date()));
+    document.getElementById('normApplyDate').textContent = formatDateRu(new Date(applyDate + 'T00:00:00')) + ' (начиная с этой даты)';
+    let rows = '';
+    for (const [type, def] of Object.entries(DEFAULT_NORMS)) {
+        const cur = getEffectiveDuration(type, applyDate);
+        const info = TYPE_INFO[type];
+        rows += `<div class="norm-row"><div class="norm-icon">${info.icon}</div><div class="norm-name">${info.label}</div><div class="norm-cur">сейчас: ${cur} мин</div><input type="number" id="norm_${type}" value="${cur}" min="15" max="480" step="15"><div class="norm-unit">мин</div></div>`;
+    }
+    document.getElementById('normRows').innerHTML = rows;
+    let hist = '';
+    if (normativeHistory.length > 0) {
+        hist = '<div class="norm-history"><h4>📜 История изменений</h4>';
+        const sorted = [...normativeHistory].sort((a, b) => b.date.localeCompare(a.date));
+        sorted.forEach(entry => {
+            const ed = new Date(entry.date + 'T00:00:00');
+            const changes = Object.entries(entry.changes).map(([t, v]) => `${TYPE_INFO[t]?.icon} ${TYPE_INFO[t]?.label}: ${v} мин`).join(', ');
+            hist += `<div class="norm-history-item"><strong>${formatDateRu(ed)}</strong> — ${changes}</div>`;
+        });
+        hist += '</div>';
+    }
+    document.getElementById('normHistory').innerHTML = hist;
+    document.getElementById('normModal').classList.add('visible');
+}
+
+function saveNormatives() {
+    const changes = {}; let hasChange = false;
+    for (const type of Object.keys(DEFAULT_NORMS)) {
+        const input = document.getElementById('norm_' + type);
+        const val = parseInt(input.value);
+        if (val >= 15 && val <= 480) { changes[type] = val; hasChange = true; }
+    }
+    if (!hasChange) { showToast('Нет изменений', 'error'); return; }
+    const applyDate = nextDay(formatDate(new Date()));
+    normativeHistory.push({ date: applyDate, changes });
+    let updatedCount = 0;
+    for (const key in bookings) {
+        bookings[key].forEach(bk => {
+            if (bk.dateStr >= applyDate) {
+                const newDur = changes[bk.type];
+                if (newDur !== undefined && newDur !== bk.baseDuration) {
+                    const calc = calcBookingDuration(newDur, bk.startHour);
+                    if (calc.endHour <= END_HOUR) {
+                        for (let h = bk.startHour; h < bk.endHour; h++) removeBookingFromSlot(bk.dateStr, h, bk.receiver, bk.id);
+                        bk.baseDuration = newDur; bk.breakMinutes = calc.breakMinutes;
+                        bk.duration = calc.totalDuration; bk.endHour = calc.endHour;
+                        for (let h = bk.startHour; h < bk.endHour; h++) addBookingToSlot(bk.dateStr, h, bk.receiver, bk);
+                        updatedCount++;
+                    }
+                }
+            }
+        });
+    }
+    saveData();
+    closeModal('normModal');
+    showToast(`Нормативы сохранены! Обновлено записей: ${updatedCount}`, 'success');
+    renderSchedule(); updateStats(); onTypeChange();
+}
+
+function updateStats() {
+    const dates = currentView === 'month' ? getDaysInMonth(currentDate) : (currentView === 'day' ? [currentDate] : getWeekDates(currentDate));
+    let total = 0, pallets = 0, types = {}, selfDeliveryCount = 0; const counted = new Set();
+    dates.forEach(d => {
+        const ds = formatDate(d);
+        selfDeliveries.filter(sd => sd.dateStr === ds).forEach(sd => { if (!counted.has(sd.id)) { counted.add(sd.id); selfDeliveryCount++; } });
+        for (let h = START_HOUR; h < END_HOUR; h++) RECEIVERS.forEach(r => {
+            getBookings(ds, h, r).forEach(b => { if (!counted.has(b.id)) { counted.add(b.id); total++; pallets += b.pallets; types[b.type] = (types[b.type] || 0) + 1; } });
+        });
+    });
+    let html = `<div class="stat-item">📦 Записей: <span class="stat-value">${total}</span></div>`;
+    if (selfDeliveryCount > 0) html += `<div class="stat-item">🏷 Собств. доставка: <span class="stat-value">${selfDeliveryCount}</span></div>`;
+    html += `<div class="stat-item">🏗 Паллет: <span class="stat-value">${pallets}</span></div>`;
+    for (const [t, c] of Object.entries(types)) { if (TYPE_INFO[t]) html += `<div class="stat-item">${TYPE_INFO[t].icon} ${TYPE_INFO[t].label}: ${c}</div>`; }
+    document.getElementById('statsBar').innerHTML = html;
+}
+function getDaysInMonth(d) { const a = []; for (let i = 1; i <= new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(); i++) a.push(new Date(d.getFullYear(), d.getMonth(), i)); return a; }
+function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = `toast ${type} show`; setTimeout(() => t.classList.remove('show'), 3500); }
+
+function createDemoData() {
+    const today = new Date(); const ds = formatDate(today);
+    const demo = [
+        { n: 'ООО "Альфа"', p: 24, t: 'фура', h: 7, r: 1 },
+        { n: 'ИП Сидоров', p: 8, t: 'газель', h: 10, r: 2 },
+        { n: 'ООО "Бета"', p: 16, t: 'контейнер', h: 9, r: 1 },
+        { n: 'Фрукт-Трейд', p: 30, t: 'фрукты', h: 11, r: 2 },
+        { n: 'ТК-Логистик', p: 14, t: 'транспортная компания', h: 11, r: 3 }
+    ];
+    demo.forEach(b => {
+        const baseDur = DEFAULT_NORMS[b.t];
+        const calc = calcBookingDuration(baseDur, b.h);
+        const bk = { id: generateId(), name: b.n, pallets: b.p, type: b.t, baseDuration: baseDur, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, startHour: b.h, endHour: calc.endHour, dateStr: ds, receiver: b.r };
+        placeBooking(bk);
+    });
+    selfDeliveries.push({ id: generateId(), dateStr: ds, supplierName: 'Собственная доставка — ООО "Альфа-Строй"' });
+}
+
+function init() {
+    // При загрузке показываем экран входа
+    // Данные загружаются после ввода пароля в attemptLogin()
+    document.getElementById('loginPassword').focus();
+}
+init();
+</script>
+</body>
+</html>
+```
