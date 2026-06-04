@@ -32,47 +32,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow: hidden; }
 
-        /* ===== AUTH OVERLAY ===== */
-        .auth-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg-primary); z-index: 9999;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .auth-overlay.hidden { display: none; }
-        .auth-box {
-            background: var(--bg-secondary); border: 1px solid var(--border);
-            border-radius: 16px; padding: 40px; width: 400px; text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
-        .auth-box .lock-icon { font-size: 56px; margin-bottom: 16px; }
-        .auth-box h2 { font-size: 22px; color: var(--text-primary); margin-bottom: 6px; }
-        .auth-box p { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
-        .auth-mode-btns { display: flex; gap: 10px; margin-bottom: 16px; }
-        .auth-mode-btn {
-            flex: 1; padding: 14px; border-radius: 10px; cursor: pointer;
-            font-size: 14px; font-weight: 600; font-family: inherit;
-            transition: all 0.2s; border: 2px solid var(--border);
-        }
-        .auth-mode-btn.view { background: var(--bg-tertiary); color: var(--text-primary); }
-        .auth-mode-btn.view:hover { border-color: var(--accent); background: var(--bg-hover); }
-        .auth-mode-btn.edit { background: var(--accent); color: white; border-color: var(--accent); }
-        .auth-mode-btn.edit:hover { background: var(--accent-hover); }
-        .pwd-input-group { margin-top: 16px; }
-        .pwd-input-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .auth-pwd-input {
-            width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px;
-            background: var(--bg-primary); color: var(--text-primary); font-size: 20px;
-            font-family: inherit; text-align: center; letter-spacing: 8px;
-        }
-        .auth-pwd-input:focus { outline: none; border-color: var(--accent); }
-        .auth-enter-btn {
-            width: 100%; padding: 12px; margin-top: 12px; background: var(--accent);
-            color: white; border: none; border-radius: 8px; font-size: 14px;
-            font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s;
-        }
-        .auth-enter-btn:hover { background: var(--accent-hover); }
-        .auth-error { color: var(--danger); font-size: 12px; margin-top: 8px; display: none; }
-
         /* ===== HEADER ===== */
         .header {
             background: var(--bg-secondary); border-bottom: 1px solid var(--border);
@@ -326,25 +285,6 @@
 </head>
 <body>
 
-<!-- AUTH SCREEN -->
-<div class="auth-overlay" id="authOverlay">
-    <div class="auth-box">
-        <div class="lock-icon">🏭</div>
-        <h2>Портал записи поставщиков</h2>
-        <p>Выберите режим работы</p>
-        <div class="auth-mode-btns">
-            <button class="auth-mode-btn view" onclick="enterViewMode()">👁 Просмотр</button>
-            <button class="auth-mode-btn edit" onclick="showPwdForm()">✏️ Редактировать</button>
-        </div>
-        <div class="pwd-input-group" id="pwdGroup" style="display:none;">
-            <label>Введите пароль для редактирования</label>
-            <input type="password" class="auth-pwd-input" id="authPwd" maxlength="6" onkeydown="if(event.key==='Enter')attemptLogin()" autofocus>
-            <button class="auth-enter-btn" onclick="attemptLogin()">Войти</button>
-            <div class="auth-error" id="authError">Неверный пароль</div>
-        </div>
-    </div>
-</div>
-
 <!-- MAIN APP -->
 <div id="mainApp" class="hidden">
     <div class="header">
@@ -375,7 +315,7 @@
                 <button class="nav-btn" style="background:var(--accent);border-color:var(--accent)" onclick="goToday()">Сегодня</button>
                 <button class="nav-btn" onclick="navigate(1)">›</button>
                 <div class="nav-divider"></div>
-                <button class="nav-btn edit-btn" onclick="showPwdForm()">✏️ Редактировать</button>
+                <button class="nav-btn edit-btn" onclick="requestEditMode()">✏️ Редактировать</button>
             </div>
             <div class="current-period" id="currentPeriod"></div>
             <div class="nav-divider"></div>
@@ -387,7 +327,7 @@
     </div>
 
     <div class="main-container">
-        <div class="sidebar hidden" id="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="step-indicator">
                 <div class="step-dot active" id="step1"></div>
                 <div class="step-dot" id="step2"></div>
@@ -470,7 +410,22 @@
     </div>
 </div>
 
-<!-- PWD MODAL -->
+<!-- EDIT PWD MODAL -->
+<div class="modal-overlay" id="editPwdModal">
+    <div class="modal modal-sm">
+        <div class="modal-header"><h3>🔒 Введите пароль</h3><button class="modal-close" onclick="closeModal('editPwdModal')">✕</button></div>
+        <div class="modal-body">
+            <p style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Доступ к редактированию записей (удаление, перемещение)</p>
+            <div class="pwd-input-row">
+                <input type="password" id="editPwd" placeholder="••••••" maxlength="6" onkeydown="if(event.key==='Enter')checkEditPwd()">
+                <button onclick="checkEditPwd()">Войти</button>
+            </div>
+            <p id="editPwdError" style="color:var(--danger);font-size:10px;margin-top:4px;display:none;">Неверный пароль</p>
+        </div>
+    </div>
+</div>
+
+<!-- PWD MODAL (Normatives) -->
 <div class="modal-overlay" id="pwdModal">
     <div class="modal modal-sm">
         <div class="modal-header"><h3>🔒 Введите пароль</h3><button class="modal-close" onclick="closeModal('pwdModal')">✕</button></div>
@@ -524,7 +479,6 @@ const FIREBASE_CONFIG = {
 
 const STORAGE_KEY = 'rc_booking_portal_v1';
 const VERSION = '1.0';
-const EDIT_PASSWORD = '000000';
 const START_HOUR = 6, END_HOUR = 18;
 const HOURS = []; for (let h = START_HOUR; h < END_HOUR; h++) HOURS.push(h);
 const RECEIVERS = [1, 2, 3];
@@ -551,31 +505,28 @@ let firebaseDb = null;
 let firebaseReady = false;
 let syncDebounceTimer = null;
 
-// ===== AUTH =====
-function showPwdForm() {
-    document.getElementById('pwdGroup').style.display = 'block';
-    document.getElementById('authPwd').value = '';
-    document.getElementById('authError').style.display = 'none';
-    setTimeout(() => document.getElementById('authPwd').focus(), 100);
+function requestEditMode() {
+    document.getElementById('editPwd').value = '';
+    document.getElementById('editPwdError').style.display = 'none';
+    document.getElementById('editPwdModal').classList.add('visible');
+    setTimeout(() => document.getElementById('editPwd').focus(), 100);
 }
 
-function attemptLogin() {
-    const pwd = document.getElementById('authPwd').value;
-    if (pwd === EDIT_PASSWORD) {
+function checkEditPwd() {
+    const pwd = document.getElementById('editPwd').value;
+    if (pwd === '000000') {
+        closeModal('editPwdModal');
         isEditMode = true;
-        initFirebase();
+        if (!firebaseReady) {
+            initFirebase();
+        } else {
+            showMainApp();
+        }
     } else {
-        document.getElementById('authError').style.display = 'block';
-        document.getElementById('authPwd').value = '';
-        document.getElementById('authPwd').focus();
+        document.getElementById('editPwdError').style.display = 'block';
+        document.getElementById('editPwd').value = '';
+        document.getElementById('editPwd').focus();
     }
-}
-
-function enterViewMode() {
-    isEditMode = false;
-    loadFromStorage();
-    showMainApp();
-    updateSyncIndicator(false);
 }
 
 function initFirebase() {
@@ -656,18 +607,12 @@ function updateSyncIndicator(online) {
 }
 
 function logout() {
-    if (firebaseDb) { try { firebaseDb.ref('bookingPortalData').off(); } catch(e) {} }
-    firebaseReady = false; firebaseDb = null;
-    isEditMode = false; bookings = {}; selfDeliveries = []; normativeHistory = [];
-    document.getElementById('mainApp').classList.add('hidden');
-    document.getElementById('authOverlay').classList.remove('hidden');
-    document.getElementById('authPwd').value = '';
-    document.getElementById('authError').style.display = 'none';
-    document.getElementById('pwdGroup').style.display = 'none';
+    isEditMode = false;
+    showMainApp();
+    showToast('🔒 Режим просмотра', 'info');
 }
 
 function showMainApp() {
-    document.getElementById('authOverlay').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
     const today = new Date(); const ds = formatDate(today);
     document.getElementById('bookingDate').value = ds; document.getElementById('bookingDate').min = ds;
@@ -687,7 +632,7 @@ function showMainApp() {
     } else {
         modeBadge.textContent = 'Просмотр';
         modeBadge.className = 'mode-badge view';
-        document.getElementById('sidebar').classList.add('hidden');
+        document.getElementById('sidebar').classList.remove('hidden');
         document.getElementById('editControls').classList.remove('visible');
         document.getElementById('viewControls').style.display = '';
         document.getElementById('weekView').classList.remove('edit-mode');
@@ -925,7 +870,6 @@ function switchView(v) {
     document.querySelectorAll('.nav-btn').forEach(b => { if (b.id.startsWith('btn') && b.id.endsWith('View')) b.classList.remove('active'); });
     const activeBtn = document.getElementById('btn' + v.charAt(0).toUpperCase() + v.slice(1) + (isEditMode ? 'View' : 'ViewV'));
     if (activeBtn) activeBtn.classList.add('active');
-    // Also set the other set
     const otherBtn = document.getElementById('btn' + v.charAt(0).toUpperCase() + v.slice(1) + (isEditMode ? 'ViewV' : 'View'));
     if (otherBtn) otherBtn.classList.add('active');
     document.getElementById('weekView').classList.toggle('hidden', v === 'month');
@@ -1160,6 +1104,8 @@ function createDemoData() {
 
 function init() {
     if (!loadFromStorage()) createDemoData();
+    isEditMode = false;
+    initFirebase();
 }
 init();
 </script>
