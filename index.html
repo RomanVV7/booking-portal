@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Портал записи поставщиков v1.1</title>
+    <title>Портал записи поставщиков v1.2</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.18/index.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -85,7 +85,6 @@
         .scroll-wrapper::-webkit-scrollbar-thumb:hover { background-color: var(--border-light); }
         .scroll-wrapper::-webkit-scrollbar-corner { background: var(--bg-primary); }
 
-        /* ===== HORIZONTAL SCHEDULE ===== */
         .h-schedule { display: grid; min-width: max-content; }
         .h-corner { background: var(--bg-primary); border-right: 1px solid var(--border); border-bottom: 2px solid var(--border); padding: 6px 4px; font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; text-align: center; display: flex; align-items: center; justify-content: center; position: sticky; left: 0; top: 0; z-index: 15; }
         .h-hour-head { background: var(--bg-primary); border-right: 1px solid var(--border); border-bottom: 2px solid var(--border); padding: 6px 4px; font-size: 10px; font-weight: 600; color: var(--text-muted); text-align: center; position: sticky; top: 0; z-index: 10; }
@@ -102,10 +101,9 @@
         .h-slot { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2px; position: relative; transition: background 0.1s; background: var(--bg-secondary); }
         .h-slot.break-slot { background: rgba(245,158,11,0.04); }
         .edit-mode .h-slot:hover { background: rgba(59,130,246,0.08); cursor: pointer; }
-        .h-slot.occupied { background: var(--bg-primary); }
         .h-slot.drag-over { background: rgba(245,158,11,0.1); box-shadow: inset 0 0 0 2px #f59e0b; }
 
-        .supplier-card { background: var(--bg-secondary); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 3px; padding: 3px 5px; font-size: 9px; cursor: default; transition: all 0.1s; position: relative; overflow: hidden; height: calc(100% - 4px); }
+        .supplier-card { background: var(--bg-secondary); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 3px; padding: 3px 5px; font-size: 9px; cursor: default; transition: all 0.1s; position: absolute; overflow: hidden; z-index: 5; top: 2px; height: calc(100% - 4px); }
         .edit-mode .supplier-card { cursor: grab; }
         .edit-mode .supplier-card:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
         .supplier-card:active { cursor: grabbing; }
@@ -123,7 +121,6 @@
         .supplier-card .delete-btn { position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border: none; background: rgba(239,68,68,0.2); color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 10px; display: none; align-items: center; justify-content: center; line-height: 1; }
         .edit-mode .supplier-card:hover .delete-btn { display: flex; }
 
-        /* Month view */
         .month-view { display: none; flex-direction: column; height: 100%; }
         .month-view.active { display: flex; }
         .week-view { display: none; height: 100%; }
@@ -187,8 +184,6 @@
         .modal-card .mc-name { font-weight: 600; }
         .modal-card .mc-details { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
         .modal-card .mc-delete { width: 32px; height: 32px; border: none; background: rgba(239,68,68,0.15); color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .self-delivery-section { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
-        .self-delivery-section h4 { font-size: 12px; color: #a78bfa; font-weight: 600; margin-bottom: 6px; }
         .toast { position: fixed; bottom: 20px; right: 20px; background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); padding: 12px 16px; border-radius: 10px; font-size: 12px; z-index: 2000; transform: translateY(100px); opacity: 0; transition: all 0.3s; max-width: 320px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.error { border-color: var(--danger); background: rgba(239,68,68,0.15); color: #fca5a5; }
@@ -235,7 +230,7 @@
 
 <div id="mainApp" class="hidden" style="display: flex; flex-direction: column; height: 100vh;">
     <div class="header">
-        <h1>🏭 <span>Портал записи</span><span class="version-tag">v1.1</span><span class="mode-badge" id="modeBadge">Просмотр</span></h1>
+        <h1>🏭 <span>Портал записи</span><span class="version-tag">v1.2</span><span class="mode-badge" id="modeBadge">Просмотр</span></h1>
         <div class="nav-controls">
             <div class="edit-controls" id="editControls">
                 <button class="nav-btn" id="btnDay1View" onclick="setDaysView(1)">1 день</button>
@@ -488,10 +483,11 @@ const CONFIG = {
         messagingSenderId: "999416511549",
         appId: "1:999416511549:web:da386e6254da66043dfe54"
     },
-    storageKey: 'rc_booking_portal_v1_1',
-    version: '1.1',
+    storageKey: 'rc_booking_portal_v1_2',
+    version: '1.2',
     startHour: 6,
     endHour: 18,
+    slotMinutes: 60, // Visual grid slot size in minutes
     defaultNorms: { 'фура': 60, 'контейнер': 180, 'газель': 30, 'фрукты': 180, 'транспортная компания': 120, 'собственная доставка': 60 },
     typeInfo: {
         'фура': { icon: '🚛', label: 'Фура' },
@@ -507,7 +503,12 @@ const CONFIG = {
     monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
 };
 
-const HOURS = Array.from({length: CONFIG.endHour - CONFIG.startHour}, (_, i) => CONFIG.startHour + i);
+// Generate time slots every 30 minutes for finer granularity
+const TIME_SLOTS = [];
+for (let h = CONFIG.startHour; h < CONFIG.endHour; h++) {
+    TIME_SLOTS.push(h);
+    TIME_SLOTS.push(h + 0.5);
+}
 
 let state = {
     currentView: 'day',
@@ -527,7 +528,7 @@ let state = {
 };
 
 const $ = id => document.getElementById(id);
-const pad = n => String(n).padStart(2, '0');
+const pad = n => String(Math.floor(n)).padStart(2, '0');
 const escapeHtml = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
 
 const dateUtils = {
@@ -595,60 +596,94 @@ function getEffectiveDuration(type, dateStr) {
     return duration;
 }
 
-function calcBreakMinutes(startHr, endHrDecimal) {
-    const s = startHr * 60;
-    const e = Math.ceil(endHrDecimal) * 60;
+function calcBreakMinutes(startMins, endMins) {
     let total = 0;
     for (const bp of CONFIG.breakPeriods) {
-        const oS = Math.max(s, bp.start);
-        const oE = Math.min(e, bp.end);
+        const oS = Math.max(startMins, bp.start);
+        const oE = Math.min(endMins, bp.end);
         if (oS < oE) total += (oE - oS);
     }
     return total;
 }
 
-function calcBookingDuration(baseDuration, startHr) {
-    const startMins = startHr * 60;
-    const endMinsDecimal = startMins + baseDuration;
-    const endHrDecimal = endMinsDecimal / 60;
-    const breakMins = calcBreakMinutes(startHr, endHrDecimal);
+function calcBookingDuration(baseDuration, startHourDecimal) {
+    const startMins = startHourDecimal * 60;
+    const rawEndMins = startMins + baseDuration;
+    
+    // Calculate breaks iteratively since adding break time might push into another break
+    let currentEndMins = rawEndMins;
+    let breakMins = calcBreakMinutes(startMins, currentEndMins);
+    let prevBreak = -1;
+    
+    while (breakMins !== prevBreak) {
+        prevBreak = breakMins;
+        currentEndMins = rawEndMins + breakMins;
+        breakMins = calcBreakMinutes(startMins, currentEndMins);
+    }
+    
     const totalDuration = baseDuration + breakMins;
-    const finalEndHrDecimal = (startMins + totalDuration) / 60;
+    const finalEndHourDecimal = (startMins + totalDuration) / 60;
     
     return {
         baseDuration,
         breakMinutes: breakMins,
         totalDuration,
-        endHourDecimal: finalEndHrDecimal,
-        endHour: Math.ceil(finalEndHrDecimal)
+        endHourDecimal: finalEndHourDecimal,
+        endHour: Math.ceil(finalEndHourDecimal)
     };
 }
 
-const bookingKey = (ds, hr, rc) => `${ds}_${hr}_${rc}`;
-const getBookings = (ds, hr, rc) => state.bookings[bookingKey(ds, hr, rc)] || [];
+// Key uses decimal hour to support 30-min slots
+const bookingKey = (ds, hrDecimal, rc) => `${ds}_${hrDecimal}_${rc}`;
 
-function addBookingToSlot(ds, hr, rc, bk) {
-    const k = bookingKey(ds, hr, rc);
+function getBookingsAtSlot(ds, hrDecimal, rc) {
+    return state.bookings[bookingKey(ds, hrDecimal, rc)] || [];
+}
+
+function addBookingToSlot(ds, hrDecimal, rc, bk) {
+    const k = bookingKey(ds, hrDecimal, rc);
     if (!state.bookings[k]) state.bookings[k] = [];
     state.bookings[k].push(bk);
 }
 
-function removeBookingFromSlot(ds, hr, rc, id) {
-    const k = bookingKey(ds, hr, rc);
+function removeBookingFromSlot(ds, hrDecimal, rc, id) {
+    const k = bookingKey(ds, hrDecimal, rc);
     if (state.bookings[k]) {
         state.bookings[k] = state.bookings[k].filter(b => b.id !== id);
         if (state.bookings[k].length === 0) delete state.bookings[k];
     }
 }
 
-const isSlotFree = (ds, hr, rc) => getBookings(ds, hr, rc).length === 0;
-
-function canPlaceBooking(ds, startHr, rc, baseDuration) {
-    const calc = calcBookingDuration(baseDuration, startHr);
-    for (let h = startHr; h < calc.endHour; h++) {
-        if (h >= CONFIG.endHour || !isSlotFree(ds, h, rc)) return false;
+// Check if a specific time range is free for a given receiver
+function isTimeRangeFree(ds, startHourDecimal, durationMinutes, rc) {
+    const startMins = startHourDecimal * 60;
+    const endMins = startMins + durationMinutes;
+    
+    // Check each 30-min slot that overlaps with this range
+    for (let slotHr = CONFIG.startHour; slotHr < CONFIG.endHour; slotHr += 0.5) {
+        const slotStartMins = slotHr * 60;
+        const slotEndMins = slotStartMins + 30;
+        
+        // Check if this slot overlaps with our desired range
+        if (slotStartMins < endMins && slotEndMins > startMins) {
+            const bookings = getBookingsAtSlot(ds, slotHr, rc);
+            for (const b of bookings) {
+                const bStartMins = b.startHourDecimal * 60;
+                const bEndMins = bStartMins + b.totalDuration;
+                // Overlap check
+                if (startMins < bEndMins && endMins > bStartMins) {
+                    return false;
+                }
+            }
+        }
     }
     return true;
+}
+
+function canPlaceBooking(ds, startHourDecimal, rc, baseDuration) {
+    const calc = calcBookingDuration(baseDuration, startHourDecimal);
+    if (calc.endHourDecimal > CONFIG.endHour) return false;
+    return isTimeRangeFree(ds, startHourDecimal, calc.totalDuration, rc);
 }
 
 function getBookingById(id) {
@@ -660,9 +695,9 @@ function getBookingById(id) {
 }
 
 function placeBooking(bk) {
-    for (let h = bk.startHour; h < bk.endHour; h++) {
-        addBookingToSlot(bk.dateStr, h, bk.receiver, bk);
-    }
+    // Store booking at its start slot (30-min granularity)
+    const startSlot = Math.floor(bk.startHourDecimal * 2) / 2;
+    addBookingToSlot(bk.dateStr, startSlot, bk.receiver, bk);
 }
 
 function requestEditMode() {
@@ -852,7 +887,7 @@ function onTypeChange() {
     if (type && CONFIG.defaultNorms.hasOwnProperty(type)) {
         const ds = $('bookingDate').value || dateUtils.format(new Date());
         const baseDur = getEffectiveDuration(type, ds);
-        const startHr = parseInt($('bookingTime').value) || CONFIG.startHour;
+        const startHr = parseFloat($('bookingTime').value) || CONFIG.startHour;
         const calc = calcBookingDuration(baseDur, startHr);
         const baseHrs = Math.floor(calc.baseDuration/60);
         const baseMins = calc.baseDuration%60;
@@ -886,6 +921,12 @@ function onDateOrReceiverChange() {
     updateSteps();
 }
 
+function formatTimeLabel(hrDecimal) {
+    const hrs = Math.floor(hrDecimal);
+    const mins = Math.round((hrDecimal - hrs) * 60);
+    return `${pad(hrs)}:${pad(mins)}`;
+}
+
 function updateTimeOptions() {
     const ds = $('bookingDate').value;
     const rcSelect = $('receiverSelect');
@@ -908,14 +949,14 @@ function updateTimeOptions() {
     sel.innerHTML = '<option value="">Выберите...</option>';
     if (!ds) return;
     
-    for (let h = CONFIG.startHour; h < CONFIG.endHour; h++) {
+    // Generate options every 30 minutes
+    for (let h = CONFIG.startHour; h < CONFIG.endHour; h += 0.5) {
         const avail = canPlaceBooking(ds, h, rc, baseDur);
         const opt = document.createElement('option');
         opt.value = h;
         const calc = calcBookingDuration(baseDur, h);
-        const endHrDisplay = Math.floor(calc.endHourDecimal);
-        const endMinDisplay = Math.round((calc.endHourDecimal - endHrDisplay) * 60);
-        let label = `${pad(h)}:00-${pad(endHrDisplay)}:${pad(endMinDisplay)}`;
+        const endLabel = formatTimeLabel(calc.endHourDecimal);
+        let label = `${formatTimeLabel(h)}-${endLabel}`;
         if (calc.breakMinutes > 0) label += ` (+${calc.breakMinutes}м)`;
         if (!avail) label += ' (занято)';
         opt.textContent = label;
@@ -949,12 +990,12 @@ function submitBooking() {
     const pal = parseInt($('palletCount').value);
     const type = $('unloadType').value;
     const ds = $('bookingDate').value;
-    const startHr = parseInt($('bookingTime').value);
+    const startHr = parseFloat($('bookingTime').value);
     const rc = parseInt($('receiverSelect').value);
     const baseDur = getEffectiveDuration(type, ds);
     const calc = calcBookingDuration(baseDur, startHr);
     
-    if (calc.endHour > CONFIG.endHour) {
+    if (calc.endHourDecimal > CONFIG.endHour) {
         showToast('Запись выходит за рабочее время (18:00)', 'error');
         return;
     }
@@ -972,8 +1013,7 @@ function submitBooking() {
         baseDuration: baseDur,
         breakMinutes: calc.breakMinutes,
         duration: calc.totalDuration,
-        startHour: startHr,
-        endHour: calc.endHour,
+        startHourDecimal: startHr,
         endHourDecimal: calc.endHourDecimal,
         dateStr: ds,
         receiver: rc
@@ -983,9 +1023,8 @@ function submitBooking() {
     saveToCloud();
     
     const dObj = new Date(ds + 'T00:00:00');
-    const endHrDisplay = Math.floor(calc.endHourDecimal);
-    const endMinDisplay = Math.round((calc.endHourDecimal - endHrDisplay) * 60);
-    let msg = `✓ ${name}: ${CONFIG.dayNamesFull[(dObj.getDay()+6)%7]} ${pad(startHr)}:00-${pad(endHrDisplay)}:${pad(endMinDisplay)} | Пр.${rc}`;
+    const endLabel = formatTimeLabel(calc.endHourDecimal);
+    let msg = `✓ ${name}: ${CONFIG.dayNamesFull[(dObj.getDay()+6)%7]} ${formatTimeLabel(startHr)}-${endLabel} | Пр.${rc}`;
     if (calc.breakMinutes > 0) msg += ` (+${calc.breakMinutes}м)`;
     
     showToast(msg, 'success');
@@ -1010,9 +1049,8 @@ function deleteBooking(id) {
     const res = getBookingById(id);
     if (res) {
         const b = res.booking;
-        for (let h = b.startHour; h < b.endHour; h++) {
-            removeBookingFromSlot(b.dateStr, h, b.receiver, id);
-        }
+        const startSlot = Math.floor(b.startHourDecimal * 2) / 2;
+        removeBookingFromSlot(b.dateStr, startSlot, b.receiver, id);
     }
     
     saveToStorage();
@@ -1032,9 +1070,8 @@ function startDrag(e, id) {
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', id);
     
-    for (let h = state.draggedData.startHour; h < state.draggedData.endHour; h++) {
-        removeBookingFromSlot(state.draggedData.dateStr, h, state.draggedData.receiver, id);
-    }
+    const startSlot = Math.floor(state.draggedData.startHourDecimal * 2) / 2;
+    removeBookingFromSlot(state.draggedData.dateStr, startSlot, state.draggedData.receiver, id);
     
     setTimeout(() => {
         const el = e.target.closest('.supplier-card');
@@ -1072,31 +1109,28 @@ function handleDrop(e) {
     
     c.classList.remove('drag-over');
     const ds = c.dataset.date;
-    const hr = parseInt(c.dataset.hour);
+    const hr = parseFloat(c.dataset.hour);
     const rc = parseInt(c.dataset.receiver);
     
     if (isNaN(hr) || isNaN(rc)) return;
     
     const calc = calcBookingDuration(state.draggedData.baseDuration, hr);
-    if (calc.endHour > CONFIG.endHour) {
+    if (calc.endHourDecimal > CONFIG.endHour) {
         showToast('Выходит за рабочее время', 'error');
         endDrag();
         return;
     }
     
-    for (let h = hr; h < calc.endHour; h++) {
-        if (!isSlotFree(ds, h, rc)) {
-            showToast(`Слот ${pad(h)}:00 занят`, 'error');
-            endDrag();
-            return;
-        }
+    if (!isTimeRangeFree(ds, hr, calc.totalDuration, rc)) {
+        showToast(`Слот ${formatTimeLabel(hr)} занят`, 'error');
+        endDrag();
+        return;
     }
     
     placeBooking({
         ...state.draggedData,
         dateStr: ds,
-        startHour: hr,
-        endHour: calc.endHour,
+        startHourDecimal: hr,
         endHourDecimal: calc.endHourDecimal,
         breakMinutes: calc.breakMinutes,
         duration: calc.totalDuration,
@@ -1203,10 +1237,10 @@ function renderHorizontalSchedule(dates) {
     
     const dayLabelW = window.innerWidth <= 768 ? 70 : 90;
     const rcLabelW = window.innerWidth <= 768 ? 45 : 50;
-    const hourCount = CONFIG.endHour - CONFIG.startHour;
+    const slotCount = TIME_SLOTS.length;
     
     const availW = sw.clientWidth - dayLabelW - rcLabelW;
-    const hourColW = Math.max(70, Math.floor(availW / hourCount));
+    const slotColW = Math.max(50, Math.floor(availW / slotCount));
     
     let totalRows = 0;
     dates.forEach(d => { totalRows += getReceiversForDate(dateUtils.format(d)).length; });
@@ -1214,16 +1248,17 @@ function renderHorizontalSchedule(dates) {
     const availH = sw.clientHeight - 40;
     const rowH = Math.max(44, Math.floor(availH / totalRows));
     
-    const gtCols = `${dayLabelW}px ${rcLabelW}px repeat(${hourCount}, ${hourColW}px)`;
+    const gtCols = `${dayLabelW}px ${rcLabelW}px repeat(${slotCount}, ${slotColW}px)`;
     sched.style.gridTemplateColumns = gtCols;
     
     let html = '';
     
-    // Header row: corner + hours
+    // Header row: corner + time slots
     html += `<div class="h-corner" style="grid-column: span 2; height: 40px;">Время →</div>`;
-    for (let hr = CONFIG.startHour; hr < CONFIG.endHour; hr++) {
-        const isBr = hr === 10 || hr === 11;
-        html += `<div class="h-hour-head${isBr ? ' break-time' : ''}" style="height: 40px;">${pad(hr)}:00</div>`;
+    for (const slotHr of TIME_SLOTS) {
+        const isBr = (slotHr >= 10.5 && slotHr < 11) || (slotHr >= 11.5 && slotHr < 12);
+        const label = Number.isInteger(slotHr) ? `${pad(slotHr)}:00` : `${pad(Math.floor(slotHr))}:30`;
+        html += `<div class="h-hour-head${isBr ? ' break-time' : ''}" style="height: 40px;">${label}</div>`;
     }
     
     // Data rows
@@ -1233,7 +1268,6 @@ function renderHorizontalSchedule(dates) {
         const rcCount = rcList.length;
         const isTd = dateUtils.isToday(d);
         
-        // Day label (spans rcCount rows)
         const staffBtn = state.isEditMode ? 
             `<button class="staff-btn" onclick="openStaffModal('${ds}')" title="Изменить количество приемщиков">👥 ${rcCount}</button>` : '';
         
@@ -1246,25 +1280,22 @@ function renderHorizontalSchedule(dates) {
         rcList.forEach(rc => {
             html += `<div class="h-rc-label" style="height: ${rowH}px;">Пр.${rc}</div>`;
             
-            for (let hr = CONFIG.startHour; hr < CONFIG.endHour; hr++) {
-                const isBr = hr === 10 || hr === 11;
-                const sb = getBookings(ds, hr, rc);
-                const occupied = sb.length > 0 ? ' occupied' : '';
+            for (const slotHr of TIME_SLOTS) {
+                const isBr = (slotHr >= 10.5 && slotHr < 11) || (slotHr >= 11.5 && slotHr < 12);
                 const brClass = isBr ? ' break-slot' : '';
                 
-                html += `<div class="h-slot${occupied}${brClass}" style="height: ${rowH}px;" data-date="${ds}" data-hour="${hr}" data-receiver="${rc}"${state.isEditMode ? ` ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : ''}>`;
+                html += `<div class="h-slot${brClass}" style="height: ${rowH}px;" data-date="${ds}" data-hour="${slotHr}" data-receiver="${rc}"${state.isEditMode ? ` ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : ''}>`;
                 
-                sb.forEach(b => {
-                    if (b.startHour !== hr) return;
-                    
-                    const wPx = (b.duration / 60) * hourColW - 2;
+                // Render bookings that START at this slot
+                const slotBookings = getBookingsAtSlot(ds, slotHr, rc);
+                slotBookings.forEach(b => {
+                    const wPx = (b.duration / 30) * slotColW - 2;
                     const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type;
                     const brHtml = b.breakMinutes > 0 ? `<span class="s-break">+${b.breakMinutes}м</span>` : '';
-                    const endHrDisplay = Math.floor(b.endHourDecimal);
-                    const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
+                    const endLabel = formatTimeLabel(b.endHourDecimal);
                     const mobileClick = state.isEditMode ? `onclick="handleMobileCardClick(event, '${b.id}')"` : '';
                     
-                    html += `<div class="supplier-card type-${tc}" style="position:absolute; top:2px; left:2px; width:${wPx}px; z-index:5;"${state.isEditMode ? ` draggable="true" ondragstart="startDrag(event, '${b.id}')" ondragend="endDrag()"` : ''} ${mobileClick} title="${escapeHtml(b.name)} | ${pad(b.startHour)}:00-${pad(endHrDisplay)}:${pad(endMinDisplay)} | ${b.pallets}п">
+                    html += `<div class="supplier-card type-${tc}" style="left:2px; width:${wPx}px;"${state.isEditMode ? ` draggable="true" ondragstart="startDrag(event, '${b.id}')" ondragend="endDrag()"` : ''} ${mobileClick} title="${escapeHtml(b.name)} | ${formatTimeLabel(b.startHourDecimal)}-${endLabel} | ${b.pallets}п">
                         <div class="s-name">${escapeHtml(b.name)}</div>
                         <div class="s-details"><span class="s-type">${CONFIG.typeInfo[b.type]?.icon || ''} ${CONFIG.typeInfo[b.type]?.label || b.type}</span><span>${b.pallets}п</span>${brHtml}</div>
                         ${state.isEditMode ? `<button class="delete-btn" onclick="event.stopPropagation();deleteBooking('${b.id}')">✕</button>` : ''}
@@ -1301,18 +1332,18 @@ function renderMonthView() {
         const db = [];
         const rcList = getReceiversForDate(ds);
         
-        for (let hr = CONFIG.startHour; hr < CONFIG.endHour; hr++) {
+        for (const slotHr of TIME_SLOTS) {
             rcList.forEach(r => {
-                getBookings(ds, hr, r).forEach(b => {
-                    if (b.startHour === hr && !db.find(x => x.id === b.id)) db.push(b);
+                getBookingsAtSlot(ds, slotHr, r).forEach(b => {
+                    if (!db.find(x => x.id === b.id)) db.push(b);
                 });
             });
         }
         
-        db.sort((a, b) => a.startHour - b.startHour);
+        db.sort((a, b) => a.startHourDecimal - b.startHourDecimal);
         db.slice(0, 4).forEach(b => {
             const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type;
-            g += `<div class="md-card type-${tc}">${pad(b.startHour)}:00 ${escapeHtml(b.name)}</div>`;
+            g += `<div class="md-card type-${tc}">${formatTimeLabel(b.startHourDecimal)} ${escapeHtml(b.name)}</div>`;
         });
         
         if (db.length > 4) g += `<div class="md-more">+${db.length-4} еще</div>`;
@@ -1333,21 +1364,20 @@ function openDayModal(ds) {
     
     rcList.forEach(rc => {
         const rb = [];
-        for (let hr = CONFIG.startHour; hr < CONFIG.endHour; hr++) {
-            getBookings(ds, hr, rc).forEach(b => {
-                if (b.startHour === hr && !rb.find(x => x.id === b.id)) rb.push(b);
+        for (const slotHr of TIME_SLOTS) {
+            getBookingsAtSlot(ds, slotHr, rc).forEach(b => {
+                if (!rb.find(x => x.id === b.id)) rb.push(b);
             });
         }
         
-        rb.sort((a, b) => a.startHour - b.startHour);
+        rb.sort((a, b) => a.startHourDecimal - b.startHourDecimal);
         
         if (rb.length > 0) {
             html += `<div class="modal-receiver-section"><div class="modal-receiver-title">Приемщик ${rc} (${rb.length})</div>`;
             rb.forEach(b => {
                 const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type;
-                const endHrDisplay = Math.floor(b.endHourDecimal);
-                const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
-                html += `<div class="modal-card type-${tc}"><div class="mc-info"><div class="mc-name">${escapeHtml(b.name)}</div><div class="mc-details">${CONFIG.typeInfo[b.type]?.icon} ${b.pallets}п | ${pad(b.startHour)}:00-${pad(endHrDisplay)}:${pad(endMinDisplay)}${b.breakMinutes > 0 ? ' (+'+b.breakMinutes+'м)' : ''}</div></div>${state.isEditMode ? `<button class="mc-delete" onclick="deleteBooking('${b.id}')">✕</button>` : ''}</div>`;
+                const endLabel = formatTimeLabel(b.endHourDecimal);
+                html += `<div class="modal-card type-${tc}"><div class="mc-info"><div class="mc-name">${escapeHtml(b.name)}</div><div class="mc-details">${CONFIG.typeInfo[b.type]?.icon} ${b.pallets}п | ${formatTimeLabel(b.startHourDecimal)}-${endLabel}${b.breakMinutes > 0 ? ' (+'+b.breakMinutes+'м)' : ''}</div></div>${state.isEditMode ? `<button class="mc-delete" onclick="deleteBooking('${b.id}')">✕</button>` : ''}</div>`;
             });
             html += `</div>`;
         }
@@ -1471,19 +1501,15 @@ function saveNormatives() {
             if (bk.dateStr >= applyDate) {
                 const newDur = changes[bk.type];
                 if (newDur !== undefined && newDur !== bk.baseDuration) {
-                    const calc = calcBookingDuration(newDur, bk.startHour);
-                    if (calc.endHour <= CONFIG.endHour) {
-                        for (let h = bk.startHour; h < bk.endHour; h++) {
-                            removeBookingFromSlot(bk.dateStr, h, bk.receiver, bk.id);
-                        }
+                    const calc = calcBookingDuration(newDur, bk.startHourDecimal);
+                    if (calc.endHourDecimal <= CONFIG.endHour) {
+                        const oldSlot = Math.floor(bk.startHourDecimal * 2) / 2;
+                        removeBookingFromSlot(bk.dateStr, oldSlot, bk.receiver, bk.id);
                         bk.baseDuration = newDur;
                         bk.breakMinutes = calc.breakMinutes;
                         bk.duration = calc.totalDuration;
-                        bk.endHour = calc.endHour;
                         bk.endHourDecimal = calc.endHourDecimal;
-                        for (let h = bk.startHour; h < bk.endHour; h++) {
-                            addBookingToSlot(bk.dateStr, h, bk.receiver, bk);
-                        }
+                        placeBooking(bk);
                         updatedCount++;
                     }
                 }
@@ -1512,9 +1538,9 @@ function updateStats() {
         const ds = dateUtils.format(d);
         const rcList = getReceiversForDate(ds);
         
-        for (let h = CONFIG.startHour; h < CONFIG.endHour; h++) {
+        for (const slotHr of TIME_SLOTS) {
             rcList.forEach(r => {
-                getBookings(ds, h, r).forEach(b => {
+                getBookingsAtSlot(ds, slotHr, r).forEach(b => {
                     if (!counted.has(b.id)) {
                         counted.add(b.id);
                         total++;
@@ -1552,7 +1578,9 @@ function createDemoData() {
         { n: 'ООО "Бета"', p: 16, t: 'контейнер', h: 9, r: 1 },
         { n: 'Фрукт-Трейд', p: 30, t: 'фрукты', h: 11, r: 2 },
         { n: 'ТК-Логистик', p: 14, t: 'транспортная компания', h: 11, r: 3 },
-        { n: 'Собств. доставка "Гамма"', p: 10, t: 'собственная доставка', h: 14, r: 1 }
+        { n: 'Собств. доставка "Гамма"', p: 10, t: 'собственная доставка', h: 14, r: 1 },
+        // Demonstrate 30-min slot: Gazel at 10:00 (30 min), then another at 10:30
+        { n: 'Быстрая доставка', p: 5, t: 'газель', h: 10.5, r: 2 }
     ];
     
     demo.forEach(b => {
@@ -1565,8 +1593,7 @@ function createDemoData() {
             baseDuration: CONFIG.defaultNorms[b.t],
             breakMinutes: calc.breakMinutes,
             duration: calc.totalDuration,
-            startHour: b.h,
-            endHour: calc.endHour,
+            startHourDecimal: b.h,
             endHourDecimal: calc.endHourDecimal,
             dateStr: ds,
             receiver: b.r
@@ -1644,12 +1671,11 @@ function generateReport() {
                 if (!allDaysOfWeek && !selectedDaysOfWeek.includes(dayOfWeek)) return;
                 if (!allSuppliers && supplierFilter && !b.name.toLowerCase().includes(supplierFilter)) return;
 
-                const endHrDisplay = Math.floor(b.endHourDecimal);
-                const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
+                const endLabel = formatTimeLabel(b.endHourDecimal);
                 state.currentReportData.push({
                     date: b.dateStr,
                     dayName: CONFIG.dayNamesFull[(dayOfWeek + 6) % 7],
-                    time: `${pad(b.startHour)}:00 - ${pad(endHrDisplay)}:${pad(endMinDisplay)}`,
+                    time: `${formatTimeLabel(b.startHourDecimal)} - ${endLabel}`,
                     supplier: b.name,
                     type: CONFIG.typeInfo[b.type]?.label || b.type,
                     pallets: b.pallets,
@@ -1725,14 +1751,13 @@ function handleMobileCardAction(id) {
     
     const b = res.booking;
     const body = $('mobileActionBody');
-    const endHrDisplay = Math.floor(b.endHourDecimal);
-    const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
+    const endLabel = formatTimeLabel(b.endHourDecimal);
     
     body.innerHTML = `
         <div class="modal-card type-${b.type === 'транспортная компания' ? 'транспортная-компания' : b.type}" style="margin-bottom: 16px;">
             <div class="mc-info">
                 <div class="mc-name">${escapeHtml(b.name)}</div>
-                <div class="mc-details">${CONFIG.typeInfo[b.type]?.icon} ${b.pallets}п | ${pad(b.startHour)}:00-${pad(endHrDisplay)}:${pad(endMinDisplay)} | Пр.${b.receiver}</div>
+                <div class="mc-details">${CONFIG.typeInfo[b.type]?.icon} ${b.pallets}п | ${formatTimeLabel(b.startHourDecimal)}-${endLabel} | Пр.${b.receiver}</div>
             </div>
         </div>
         <button class="submit-btn" style="background: var(--warning); color: #1a1a2e; margin-bottom: 10px;" onclick="promptMoveBooking('${b.id}')">↔ Переместить</button>
@@ -1747,37 +1772,33 @@ function promptMoveBooking(id) {
     if (!res) return;
     
     const b = res.booking;
-    const newHrStr = prompt(`Текущее время: ${pad(b.startHour)}:00\nВведите новое время начала (от ${CONFIG.startHour} до ${CONFIG.endHour-1}):`, b.startHour);
+    const newHrStr = prompt(`Текущее время: ${formatTimeLabel(b.startHourDecimal)}\nВведите новое время начала (например, 10 или 10.5):`, b.startHourDecimal);
     
     if (newHrStr === null) return;
     
-    const newHr = parseInt(newHrStr);
+    const newHr = parseFloat(newHrStr);
     if (isNaN(newHr) || newHr < CONFIG.startHour || newHr >= CONFIG.endHour) {
         showToast('Некорректное время', 'error');
         return;
     }
     
     const calc = calcBookingDuration(b.baseDuration, newHr);
-    if (calc.endHour > CONFIG.endHour) {
+    if (calc.endHourDecimal > CONFIG.endHour) {
         showToast('Выходит за рабочее время', 'error');
         return;
     }
     
-    for (let h = newHr; h < calc.endHour; h++) {
-        if (!isSlotFree(b.dateStr, h, b.receiver)) {
-            showToast(`Слот ${pad(h)}:00 занят`, 'error');
-            return;
-        }
+    if (!isTimeRangeFree(b.dateStr, newHr, calc.totalDuration, b.receiver)) {
+        showToast(`Слот ${formatTimeLabel(newHr)} занят`, 'error');
+        return;
     }
     
-    for (let h = b.startHour; h < b.endHour; h++) {
-        removeBookingFromSlot(b.dateStr, h, b.receiver, b.id);
-    }
+    const oldSlot = Math.floor(b.startHourDecimal * 2) / 2;
+    removeBookingFromSlot(b.dateStr, oldSlot, b.receiver, b.id);
     
     placeBooking({
         ...b,
-        startHour: newHr,
-        endHour: calc.endHour,
+        startHourDecimal: newHr,
         endHourDecimal: calc.endHourDecimal,
         breakMinutes: calc.breakMinutes,
         duration: calc.totalDuration
