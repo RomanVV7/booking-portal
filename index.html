@@ -222,7 +222,36 @@
         }
         .edit-mode .supplier-card:hover .delete-btn { display: flex; }
         .week-view { display: flex; flex-direction: column; height: 100%; }
+        .month-view { display: none; }
         .hidden { display: none !important; }
+        .month-header-row { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--bg-primary); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 10; }
+        .month-day-header { padding: 6px; text-align: center; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; border-right: 1px solid var(--border); }
+        .month-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); flex: 1; overflow-y: auto; }
+        .month-day-cell { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); min-height: 60px; padding: 4px; overflow: hidden; cursor: pointer; transition: background 0.15s; }
+        .month-day-cell:hover { background: var(--bg-hover); }
+        .month-day-cell.other-month { background: var(--bg-primary); opacity: 0.5; }
+        .month-day-cell.today { background: rgba(59,130,246,0.1); }
+        .month-day-cell .md-date { font-size: 10px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; padding: 0 2px; }
+        .month-day-cell.today .md-date { background: var(--accent); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 9px; }
+        .month-day-cell.other-month .md-date { color: var(--text-muted); }
+        .month-day-cell .md-card { background: var(--bg-secondary); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 2px; padding: 1px 3px; font-size: 8px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .month-day-cell .md-card.type-фура { border-left-color: #3b82f6; }
+        .month-day-cell .md-card.type-контейнер { border-left-color: #7c3aed; }
+        .month-day-cell .md-card.type-газель { border-left-color: #10b981; }
+        .month-day-cell .md-card.type-фрукты { border-left-color: #ef4444; }
+        .month-day-cell .md-card.type-транспортная-компания { border-left-color: #0891b2; }
+        .month-day-cell .md-more { font-size: 8px; color: var(--accent); padding: 0 2px; }
+        .self-delivery-day-badge-wrapper { display: flex; align-items: center; gap: 2px; margin-top: 2px; }
+        .self-delivery-day-badge {
+            display: inline-flex; align-items: center; gap: 2px; background: rgba(139,92,246,0.15);
+            color: #a78bfa; font-size: 8px; font-weight: 600; border-radius: 2px;
+            padding: 1px 4px; border: 1px solid rgba(139,92,246,0.3);
+        }
+        .self-delivery-day-badge .sd-delete {
+            width: 14px; height: 14px; border: none; background: rgba(239,68,68,0.2);
+            color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 8px;
+            display: flex; align-items: center; justify-content: center; line-height: 1;
+        }
         
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .modal-overlay.visible { display: flex; }
@@ -346,6 +375,7 @@
             <div class="edit-controls" id="editControls">
                 <button class="nav-btn active" id="btnDayView" onclick="switchView('day')">День</button>
                 <button class="nav-btn" id="btnWeekView" onclick="switchView('week')">Неделя</button>
+                <button class="nav-btn" id="btnMonthView" onclick="switchView('month')">Месяц</button>
                 <div class="nav-divider"></div>
                 <button class="nav-btn" onclick="navigate(-1)">‹</button>
                 <button class="nav-btn" style="background:var(--accent);border-color:var(--accent)" onclick="goToday()">Сегодня</button>
@@ -359,6 +389,7 @@
             <div class="view-controls" id="viewControls">
                 <button class="nav-btn active" id="btnDayViewV" onclick="switchView('day')">День</button>
                 <button class="nav-btn" id="btnWeekViewV" onclick="switchView('week')">Неделя</button>
+                <button class="nav-btn" id="btnMonthViewV" onclick="switchView('month')">Месяц</button>
                 <div class="nav-divider"></div>
                 <button class="nav-btn" onclick="navigate(-1)">‹</button>
                 <button class="nav-btn" style="background:var(--accent);border-color:var(--accent)" onclick="goToday()">Сегодня</button>
@@ -448,6 +479,10 @@
                     <div class="schedule-header" id="weekHeader"></div>
                     <div class="schedule-grid" id="weekGrid"></div>
                 </div>
+                <div class="month-view" id="monthView">
+                    <div class="month-header-row" id="monthHeader"></div>
+                    <div class="month-calendar-grid" id="monthGrid"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -528,12 +563,16 @@
     <div class="modal modal-md">
         <div class="modal-header"><h3>📊 Отчеты</h3><button class="modal-close" onclick="closeModal('reportsModal')">✕</button></div>
         <div class="modal-body">
+            <div class="form-group" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="reportAllSuppliers" checked onchange="toggleSupplierInput()" style="width: 16px; height: 16px; cursor: pointer;">
+                <label for="reportAllSuppliers" style="margin:0; cursor:pointer; font-size: 12px;">Все поставщики</label>
+            </div>
+            <div class="form-group" id="reportSupplierGroup">
+                <label>Наименование поставщика</label>
+                <input type="text" id="reportSupplier" list="supplierList" placeholder="Введите название..." disabled>
+                <datalist id="supplierList"></datalist>
+            </div>
             <div class="form-row" style="margin-bottom:12px;">
-                <div class="form-group" style="flex:2;">
-                    <label>Наименование поставщика</label>
-                    <input type="text" id="reportSupplier" list="supplierList" placeholder="Все поставщики">
-                    <datalist id="supplierList"></datalist>
-                </div>
                 <div class="form-group" style="flex:1;">
                     <label>Дата с</label>
                     <input type="date" id="reportDateFrom">
@@ -543,12 +582,29 @@
                     <input type="date" id="reportDateTo">
                 </div>
             </div>
+            <div class="form-group" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="reportAllDaysOfWeek" checked onchange="toggleDaysOfWeekInput()" style="width: 16px; height: 16px; cursor: pointer;">
+                <label for="reportAllDaysOfWeek" style="margin:0; cursor:pointer; font-size: 12px;">Все дни недели</label>
+            </div>
+            <div class="form-group" id="reportDaysOfWeekGroup" style="display:none;">
+                <label>Дни недели</label>
+                <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px;">
+                    <label style="font-size: 12px; font-weight: normal; display: flex; align-items: center; gap: 4px; cursor: pointer;"><input type="checkbox" class="dow-checkbox" value="1" style="width: 14px; height: 14px;"> Пн</label>
+                    <label style="font-size: 12px; font-weight: normal; display: flex; align-items: center; gap: 4px; cursor: pointer;"><input type="checkbox" class="dow-checkbox" value="2" style="width: 14px; height: 14px;"> Вт</label>
+                    <label style="font-size: 12px; font-weight: normal; display: flex; align-items: center; gap: 4px; cursor: pointer;"><input type="checkbox" class="dow-checkbox" value="3" style="width: 14px; height: 14px;"> Ср</label>
+                    <label style="font-size: 12px; font-weight: normal; display: flex; align-items: center; gap: 4px; cursor: pointer;"><input type="checkbox" class="dow-checkbox" value="4" style="width: 14px; height: 14px;"> Чт</label>
+                    <label style="font-size: 12px; font-weight: normal; display: flex; align-items: center; gap: 4px; cursor: pointer;"><input type="checkbox" class="dow-checkbox" value="5" style="width: 14px; height: 14px;"> Пт</label>
+                    <label style="font-size: 12px; font-weight: normal; display: flex; align-items: center; gap: 4px; cursor: pointer;"><input type="checkbox" class="dow-checkbox" value="6" style="width: 14px; height: 14px;"> Сб</label>
+                    <label style="font-size: 12px; font-weight: normal; display: flex; align-items: center; gap: 4px; cursor: pointer;"><input type="checkbox" class="dow-checkbox" value="0" style="width: 14px; height: 14px;"> Вс</label>
+                </div>
+            </div>
             <button class="submit-btn" onclick="generateReport()" style="margin-bottom:12px;">Сформировать отчет</button>
             <div id="reportResults" style="max-height:300px; overflow-y:auto; margin-bottom:12px; display:none; border: 1px solid var(--border); border-radius: 6px;">
                 <table style="width:100%; border-collapse:collapse; font-size:11px;">
                     <thead>
                         <tr style="background:var(--bg-tertiary); text-align:left; position: sticky; top: 0;">
                             <th style="padding:6px; border:1px solid var(--border);">Дата</th>
+                            <th style="padding:6px; border:1px solid var(--border);">День</th>
                             <th style="padding:6px; border:1px solid var(--border);">Время</th>
                             <th style="padding:6px; border:1px solid var(--border);">Поставщик</th>
                             <th style="padding:6px; border:1px solid var(--border);">Тип ТС</th>
@@ -1018,11 +1074,15 @@ function switchView(v) {
     if (activeBtn) activeBtn.classList.add('active');
     const otherBtn = document.getElementById('btn' + v.charAt(0).toUpperCase() + v.slice(1) + (isEditMode ? 'ViewV' : 'View'));
     if (otherBtn) otherBtn.classList.add('active');
+    document.getElementById('weekView').classList.toggle('hidden', v === 'month');
+    document.getElementById('monthView').classList.toggle('hidden', v !== 'month');
+    document.getElementById('receiverLegend').classList.toggle('hidden', v === 'month');
     renderSchedule();
 }
 function navigate(dir) {
     if (currentView === 'day') currentDate.setDate(currentDate.getDate() + dir);
     else if (currentView === 'week') currentDate.setDate(currentDate.getDate() + dir * 7);
+    else currentDate.setMonth(currentDate.getMonth() + dir);
     renderSchedule();
 }
 function goToday() { currentDate = new Date(); renderSchedule(); }
@@ -1031,58 +1091,21 @@ function updatePeriodLabel() {
     const el = document.getElementById('currentPeriod');
     if (currentView === 'day') el.textContent = formatDateRu(currentDate);
     else if (currentView === 'week') { const d = getWeekDates(currentDate); el.textContent = `${formatDateShort(d[0])} — ${formatDateShort(d[6])}`; }
+    else el.textContent = `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
 }
 
 function renderSchedule() { 
     updatePeriodLabel(); 
-    if (currentView === 'day') renderDayViewHorizontal(); 
-    else renderWeekView(); 
+    if (currentView === 'month') {
+        renderMonthView(); 
+    } else {
+        renderDayWeekView(currentView === 'day' ? [currentDate] : getWeekDates(currentDate)); 
+    }
     updateStats(); 
 }
 
-function renderDayViewHorizontal() {
-    const ds = formatDate(currentDate);
-    const rcList = getReceiversForDate(ds);
-    const colWidth = 85;
-    const labelWidth = 100;
-    const gt = `${labelWidth}px repeat(12, ${colWidth}px)`;
-    document.getElementById('weekHeader').style.gridTemplateColumns = gt;
-    document.getElementById('weekGrid').style.gridTemplateColumns = gt;
-
-    let h = `<div class="time-col-header" style="min-width:${labelWidth}px; position:sticky; left:0; z-index:12;">Приемщик / Время</div>`;
-    for (let hr = START_HOUR; hr < END_HOUR; hr++) {
-        h += `<div class="time-col-header" style="min-width:${colWidth}px">${padHour(hr)}:00</div>`;
-    }
-    document.getElementById('weekHeader').innerHTML = h;
-
-    let g = '';
-    rcList.forEach(rc => {
-        g += `<div class="time-cell" style="min-width:${labelWidth}px; position:sticky; left:0; z-index:5; justify-content:center; font-weight:700; background:var(--bg-secondary);">Приемщик ${rc}</div>`;
-        for (let hr = START_HOUR; hr < END_HOUR; hr++) {
-            const sb = getBookings(ds, hr, rc);
-            g += `<div class="slot-cell" style="min-width:${colWidth}px; height: 60px; position:relative;" data-date="${ds}" data-hour="${hr}" data-receiver="${rc}" ${isEditMode ? `ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : ''}>`;
-            sb.forEach(b => {
-                if (b.startHour !== hr) return;
-                const wPx = (b.duration / 60) * colWidth - 2;
-                const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type;
-                const brHtml = b.breakMinutes > 0 ? `<span class="s-break">+${b.breakMinutes}м</span>` : '';
-                const endHrDisplay = Math.floor(b.endHourDecimal);
-                const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
-                const mobileClick = isEditMode ? `onclick="handleMobileCardClick(event, '${b.id}')"` : '';
-                g += `<div class="supplier-card type-${tc}" style="position:absolute; top:2px; left:2px; width:${wPx}px; height:calc(100% - 4px); overflow:hidden; z-index:5;" ${isEditMode ? `draggable="true" ondragstart="startDrag(event, '${b.id}')" ondragend="endDrag()"` : ''} ${mobileClick} title="${b.name} | ${padHour(b.startHour)}:00-${padHour(endHrDisplay)}:${padHour(endMinDisplay)} | ${b.pallets}п">
-                    <div class="s-name">${escapeHtml(b.name)}</div>
-                    <div class="s-details"><span class="s-type">${TYPE_INFO[b.type]?.icon||''} ${TYPE_INFO[b.type]?.label||b.type}</span><span>${b.pallets}п</span>${brHtml}</div>
-                    ${isEditMode ? `<button class="delete-btn" onclick="event.stopPropagation();deleteBooking('${b.id}')">✕</button>` : ''}
-                </div>`;
-            });
-            g += '</div>';
-        }
-    });
-    document.getElementById('weekGrid').innerHTML = g;
-}
-
-function renderWeekView() {
-    const dates = getWeekDates(currentDate);
+function renderDayWeekView(dates) {
+    const numDays = dates.length;
     const sw = document.getElementById('scrollWrapper');
     const tcw = 55;
     const colWidth = 85;
@@ -1150,6 +1173,35 @@ function renderWeekView() {
         });
     });
     document.getElementById('weekGrid').innerHTML = g;
+}
+
+function renderMonthView() {
+    const yr = currentDate.getFullYear(), mo = currentDate.getMonth();
+    const fd = new Date(yr, mo, 1), ld = new Date(yr, mo+1, 0);
+    const so = (fd.getDay()+6)%7;
+    document.getElementById('monthHeader').innerHTML = DAY_NAMES.map(d => `<div class="month-day-header">${d}</div>`).join('');
+    let g = ''; let cur = new Date(yr, mo, 1-so); let w = 0;
+    while (w < 6 && cur <= new Date(yr, mo+1, 0)) {
+        const isCur = cur.getMonth()===mo, isT = isToday(cur), ds = formatDate(cur);
+        const sdList = getSelfDeliveriesByDate(ds);
+        let sdBadges = sdList.map(sd => `<div class="self-delivery-day-badge-wrapper"><div class="self-delivery-day-badge">🏷 ${escapeHtml(sd.supplierName)}${isEditMode ? `<button class="sd-delete" onclick="deleteSelfDelivery('${sd.id}')">✕</button>` : ''}</div></div>`).join('');
+        g += `<div class="month-day-cell${isCur?'':' other-month'}${isT?' today':''}" onclick="openDayModal('${ds}')"><div class="md-date">${cur.getDate()}</div>${sdBadges}`;
+        const db = [];
+        const rcList = getReceiversForDate(ds);
+        for (let hr = START_HOUR; hr < END_HOUR; hr++) {
+            rcList.forEach(r => { 
+                getBookings(ds, hr, r).forEach(b => { 
+                    if (b.startHour===hr && !db.find(x=>x.id===b.id)) db.push(b); 
+                }); 
+            });
+        }
+        db.sort((a,b) => a.startHour-b.startHour);
+        db.slice(0,3).forEach(b => { const tc = b.type==='транспортная компания'?'транспортная-компания':b.type; g += `<div class="md-card type-${tc}">${escapeHtml(b.name)}</div>`; });
+        if (db.length > 3) g += `<div class="md-more">+${db.length-3}</div>`;
+        g += '</div>';
+        cur.setDate(cur.getDate()+1); w++;
+    }
+    document.getElementById('monthGrid').innerHTML = g;
 }
 
 function openDayModal(ds) {
@@ -1282,7 +1334,7 @@ function saveNormatives() {
 }
 
 function updateStats() {
-    const dates = currentView === 'day' ? [currentDate] : getWeekDates(currentDate);
+    const dates = currentView === 'month' ? getDaysInMonth(currentDate) : (currentView === 'day' ? [currentDate] : getWeekDates(currentDate));
     let total=0, pallets=0, types={}, sdCount=0; const counted = new Set();
     dates.forEach(d => {
         const ds = formatDate(d);
@@ -1300,7 +1352,7 @@ function updateStats() {
     for (const [t,c] of Object.entries(types)) { if (TYPE_INFO[t]) html += `<div class="stat-item">${TYPE_INFO[t].icon} ${TYPE_INFO[t].label}: ${c}</div>`; }
     document.getElementById('statsBar').innerHTML = html;
 }
-
+function getDaysInMonth(d) { const a=[]; for(let i=1;i<=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();i++) a.push(new Date(d.getFullYear(),d.getMonth(),i)); return a; }
 function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = `toast ${type} show`; setTimeout(() => t.classList.remove('show'), 3500); }
 
 function createDemoData() {
@@ -1379,6 +1431,17 @@ function promptMoveBooking(id) {
     renderSchedule(); updateStats();
 }
 
+function toggleSupplierInput() {
+    const all = document.getElementById('reportAllSuppliers').checked;
+    document.getElementById('reportSupplier').disabled = all;
+    if (all) document.getElementById('reportSupplier').value = '';
+}
+
+function toggleDaysOfWeekInput() {
+    const all = document.getElementById('reportAllDaysOfWeek').checked;
+    document.getElementById('reportDaysOfWeekGroup').style.display = all ? 'none' : 'block';
+}
+
 function openReportsModal() {
     const datalist = document.getElementById('supplierList');
     datalist.innerHTML = '';
@@ -1396,15 +1459,28 @@ function openReportsModal() {
     const today = formatDate(new Date());
     document.getElementById('reportDateFrom').value = today;
     document.getElementById('reportDateTo').value = today;
+    document.getElementById('reportAllSuppliers').checked = true;
+    document.getElementById('reportAllDaysOfWeek').checked = true;
+    toggleSupplierInput();
+    toggleDaysOfWeekInput();
     document.getElementById('reportResults').style.display = 'none';
     document.getElementById('downloadReportBtn').style.display = 'none';
     document.getElementById('reportsModal').classList.add('visible');
 }
 
 function generateReport() {
+    const allSuppliers = document.getElementById('reportAllSuppliers').checked;
     const supplierFilter = document.getElementById('reportSupplier').value.trim().toLowerCase();
     const dateFrom = document.getElementById('reportDateFrom').value;
     const dateTo = document.getElementById('reportDateTo').value;
+    const allDaysOfWeek = document.getElementById('reportAllDaysOfWeek').checked;
+    
+    const selectedDaysOfWeek = [];
+    if (!allDaysOfWeek) {
+        document.querySelectorAll('.dow-checkbox:checked').forEach(cb => {
+            selectedDaysOfWeek.push(parseInt(cb.value));
+        });
+    }
 
     if (!dateFrom || !dateTo) {
         showToast('Укажите период', 'error');
@@ -1416,36 +1492,46 @@ function generateReport() {
     for (const key in bookings) {
         bookings[key].forEach(b => {
             if (b.dateStr >= dateFrom && b.dateStr <= dateTo) {
-                if (!supplierFilter || b.name.toLowerCase().includes(supplierFilter)) {
-                    const endHrDisplay = Math.floor(b.endHourDecimal);
-                    const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
-                    currentReportData.push({
-                        date: b.dateStr,
-                        time: `${padHour(b.startHour)}:00 - ${padHour(endHrDisplay)}:${padHour(endMinDisplay)}`,
-                        supplier: b.name,
-                        type: TYPE_INFO[b.type]?.label || b.type,
-                        pallets: b.pallets,
-                        receiver: b.receiver,
-                        isSelfDelivery: false
-                    });
-                }
+                const d = new Date(b.dateStr + 'T00:00:00');
+                const dayOfWeek = d.getDay();
+                
+                if (!allDaysOfWeek && !selectedDaysOfWeek.includes(dayOfWeek)) return;
+                if (!allSuppliers && supplierFilter && !b.name.toLowerCase().includes(supplierFilter)) return;
+
+                const endHrDisplay = Math.floor(b.endHourDecimal);
+                const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
+                currentReportData.push({
+                    date: b.dateStr,
+                    dayName: DAY_NAMES_FULL[(dayOfWeek + 6) % 7],
+                    time: `${padHour(b.startHour)}:00 - ${padHour(endHrDisplay)}:${padHour(endMinDisplay)}`,
+                    supplier: b.name,
+                    type: TYPE_INFO[b.type]?.label || b.type,
+                    pallets: b.pallets,
+                    receiver: b.receiver,
+                    isSelfDelivery: false
+                });
             }
         });
     }
 
     selfDeliveries.forEach(sd => {
         if (sd.dateStr >= dateFrom && sd.dateStr <= dateTo) {
-            if (!supplierFilter || sd.supplierName.toLowerCase().includes(supplierFilter)) {
-                currentReportData.push({
-                    date: sd.dateStr,
-                    time: 'Весь день',
-                    supplier: sd.supplierName,
-                    type: 'Собственная доставка',
-                    pallets: '-',
-                    receiver: '-',
-                    isSelfDelivery: true
-                });
-            }
+            const d = new Date(sd.dateStr + 'T00:00:00');
+            const dayOfWeek = d.getDay();
+            
+            if (!allDaysOfWeek && !selectedDaysOfWeek.includes(dayOfWeek)) return;
+            if (!allSuppliers && supplierFilter && !sd.supplierName.toLowerCase().includes(supplierFilter)) return;
+
+            currentReportData.push({
+                date: sd.dateStr,
+                dayName: DAY_NAMES_FULL[(dayOfWeek + 6) % 7],
+                time: 'Весь день',
+                supplier: sd.supplierName,
+                type: 'Собственная доставка',
+                pallets: '-',
+                receiver: '-',
+                isSelfDelivery: true
+            });
         }
     });
 
@@ -1457,6 +1543,7 @@ function generateReport() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td style="padding:6px; border:1px solid var(--border); white-space:nowrap;">${formatDateRu(new Date(row.date + 'T00:00:00'))}</td>
+            <td style="padding:6px; border:1px solid var(--border); white-space:nowrap;">${row.dayName}</td>
             <td style="padding:6px; border:1px solid var(--border); white-space:nowrap;">${row.time}</td>
             <td style="padding:6px; border:1px solid var(--border);">${escapeHtml(row.supplier)}</td>
             <td style="padding:6px; border:1px solid var(--border);">${row.type}</td>
@@ -1474,9 +1561,9 @@ function generateReport() {
 function downloadReport() {
     if (currentReportData.length === 0) return;
     let csv = '\uFEFF';
-    csv += 'Дата;Время;Поставщик;Тип ТС;Паллеты;Приемщик\n';
+    csv += 'Дата;День недели;Время;Поставщик;Тип ТС;Паллеты;Приемщик\n';
     currentReportData.forEach(row => {
-        csv += `${row.date};${row.time};${row.supplier};${row.type};${row.pallets};${row.receiver}\n`;
+        csv += `${row.date};${row.dayName};${row.time};${row.supplier};${row.type};${row.pallets};${row.receiver}\n`;
     });
     
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
