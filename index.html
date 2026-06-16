@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Портал записи поставщиков v1.2</title>
+    <title>Портал записи поставщиков v1.3</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.18/index.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -230,7 +230,7 @@
 
 <div id="mainApp" class="hidden" style="display: flex; flex-direction: column; height: 100vh;">
     <div class="header">
-        <h1>🏭 <span>Портал записи</span><span class="version-tag">v1.2</span><span class="mode-badge" id="modeBadge">Просмотр</span></h1>
+        <h1>🏭 <span>Портал записи</span><span class="version-tag">v1.3</span><span class="mode-badge" id="modeBadge">Просмотр</span></h1>
         <div class="nav-controls">
             <div class="edit-controls" id="editControls">
                 <button class="nav-btn" id="btnDay1View" onclick="setDaysView(1)">1 день</button>
@@ -483,11 +483,11 @@ const CONFIG = {
         messagingSenderId: "999416511549",
         appId: "1:999416511549:web:da386e6254da66043dfe54"
     },
-    storageKey: 'rc_booking_portal_v1_2',
-    version: '1.2',
+    storageKey: 'rc_booking_portal_v1_3',
+    version: '1.3',
     startHour: 6,
     endHour: 18,
-    slotMinutes: 60, // Visual grid slot size in minutes
+    slotMinutes: 30,
     defaultNorms: { 'фура': 60, 'контейнер': 180, 'газель': 30, 'фрукты': 180, 'транспортная компания': 120, 'собственная доставка': 60 },
     typeInfo: {
         'фура': { icon: '🚛', label: 'Фура' },
@@ -503,11 +503,10 @@ const CONFIG = {
     monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
 };
 
-// Generate time slots every 30 minutes for finer granularity
+// Generate time slots every 30 minutes
 const TIME_SLOTS = [];
-for (let h = CONFIG.startHour; h < CONFIG.endHour; h++) {
+for (let h = CONFIG.startHour; h < CONFIG.endHour; h += 0.5) {
     TIME_SLOTS.push(h);
-    TIME_SLOTS.push(h + 0.5);
 }
 
 let state = {
@@ -610,7 +609,6 @@ function calcBookingDuration(baseDuration, startHourDecimal) {
     const startMins = startHourDecimal * 60;
     const rawEndMins = startMins + baseDuration;
     
-    // Calculate breaks iteratively since adding break time might push into another break
     let currentEndMins = rawEndMins;
     let breakMins = calcBreakMinutes(startMins, currentEndMins);
     let prevBreak = -1;
@@ -633,7 +631,6 @@ function calcBookingDuration(baseDuration, startHourDecimal) {
     };
 }
 
-// Key uses decimal hour to support 30-min slots
 const bookingKey = (ds, hrDecimal, rc) => `${ds}_${hrDecimal}_${rc}`;
 
 function getBookingsAtSlot(ds, hrDecimal, rc) {
@@ -654,26 +651,26 @@ function removeBookingFromSlot(ds, hrDecimal, rc, id) {
     }
 }
 
-// Check if a specific time range is free for a given receiver
+/**
+ * CORE FIX: Checks if a specific time range is free for a given receiver.
+ * Iterates through ALL existing bookings for that receiver on that date
+ * and checks for temporal overlap with the proposed range.
+ */
 function isTimeRangeFree(ds, startHourDecimal, durationMinutes, rc) {
-    const startMins = startHourDecimal * 60;
-    const endMins = startMins + durationMinutes;
+    const proposedStartMins = startHourDecimal * 60;
+    const proposedEndMins = proposedStartMins + durationMinutes;
     
-    // Check each 30-min slot that overlaps with this range
-    for (let slotHr = CONFIG.startHour; slotHr < CONFIG.endHour; slotHr += 0.5) {
-        const slotStartMins = slotHr * 60;
-        const slotEndMins = slotStartMins + 30;
-        
-        // Check if this slot overlaps with our desired range
-        if (slotStartMins < endMins && slotEndMins > startMins) {
-            const bookings = getBookingsAtSlot(ds, slotHr, rc);
-            for (const b of bookings) {
-                const bStartMins = b.startHourDecimal * 60;
-                const bEndMins = bStartMins + b.totalDuration;
-                // Overlap check
-                if (startMins < bEndMins && endMins > bStartMins) {
-                    return false;
-                }
+    // Check against ALL slots for this date/receiver to find any overlapping booking
+    for (const slotHr of TIME_SLOTS) {
+        const bookings = getBookingsAtSlot(ds, slotHr, rc);
+        for (const b of bookings) {
+            const existingStartMins = b.startHourDecimal * 60;
+            const existingEndMins = existingStartMins + b.totalDuration;
+            
+            // Overlap: two intervals [A_start, A_end) and [B_start, B_end) overlap
+            // if and only if A_start < B_end AND B_start < A_end
+            if (proposedStartMins < existingEndMins && existingStartMins < proposedEndMins) {
+                return false;
             }
         }
     }
@@ -695,7 +692,6 @@ function getBookingById(id) {
 }
 
 function placeBooking(bk) {
-    // Store booking at its start slot (30-min granularity)
     const startSlot = Math.floor(bk.startHourDecimal * 2) / 2;
     addBookingToSlot(bk.dateStr, startSlot, bk.receiver, bk);
 }
@@ -927,6 +923,11 @@ function formatTimeLabel(hrDecimal) {
     return `${pad(hrs)}:${pad(mins)}`;
 }
 
+/**
+ * Generates time options with proper blocking logic:
+ * - Blocks if any existing booking overlaps with the proposed time range
+ * - Blocks if the norm exceeds remaining work day time
+ */
 function updateTimeOptions() {
     const ds = $('bookingDate').value;
     const rcSelect = $('receiverSelect');
@@ -949,7 +950,6 @@ function updateTimeOptions() {
     sel.innerHTML = '<option value="">Выберите...</option>';
     if (!ds) return;
     
-    // Generate options every 30 minutes
     for (let h = CONFIG.startHour; h < CONFIG.endHour; h += 0.5) {
         const avail = canPlaceBooking(ds, h, rc, baseDur);
         const opt = document.createElement('option');
@@ -1253,7 +1253,6 @@ function renderHorizontalSchedule(dates) {
     
     let html = '';
     
-    // Header row: corner + time slots
     html += `<div class="h-corner" style="grid-column: span 2; height: 40px;">Время →</div>`;
     for (const slotHr of TIME_SLOTS) {
         const isBr = (slotHr >= 10.5 && slotHr < 11) || (slotHr >= 11.5 && slotHr < 12);
@@ -1261,7 +1260,6 @@ function renderHorizontalSchedule(dates) {
         html += `<div class="h-hour-head${isBr ? ' break-time' : ''}" style="height: 40px;">${label}</div>`;
     }
     
-    // Data rows
     dates.forEach((d, dayIdx) => {
         const ds = dateUtils.format(d);
         const rcList = getReceiversForDate(ds);
@@ -1286,7 +1284,6 @@ function renderHorizontalSchedule(dates) {
                 
                 html += `<div class="h-slot${brClass}" style="height: ${rowH}px;" data-date="${ds}" data-hour="${slotHr}" data-receiver="${rc}"${state.isEditMode ? ` ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : ''}>`;
                 
-                // Render bookings that START at this slot
                 const slotBookings = getBookingsAtSlot(ds, slotHr, rc);
                 slotBookings.forEach(b => {
                     const wPx = (b.duration / 30) * slotColW - 2;
@@ -1579,7 +1576,6 @@ function createDemoData() {
         { n: 'Фрукт-Трейд', p: 30, t: 'фрукты', h: 11, r: 2 },
         { n: 'ТК-Логистик', p: 14, t: 'транспортная компания', h: 11, r: 3 },
         { n: 'Собств. доставка "Гамма"', p: 10, t: 'собственная доставка', h: 14, r: 1 },
-        // Demonstrate 30-min slot: Gazel at 10:00 (30 min), then another at 10:30
         { n: 'Быстрая доставка', p: 5, t: 'газель', h: 10.5, r: 2 }
     ];
     
