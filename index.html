@@ -133,13 +133,39 @@
         .stats-bar { display: flex; gap: 12px; padding: 6px 10px; background: var(--bg-primary); border-bottom: 1px solid var(--border); font-size: 11px; color: var(--text-muted); flex-wrap: wrap; }
         .stat-item { display: flex; align-items: center; gap: 4px; }
         .stat-value { font-weight: 700; color: var(--text-primary); }
-        .scroll-wrapper { flex: 1; overflow-x: auto; overflow-y: hidden; position: relative; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+        
+        .scroll-wrapper { 
+            flex: 1; 
+            overflow-x: auto; 
+            overflow-y: hidden; 
+            position: relative; 
+            -webkit-overflow-scrolling: touch; 
+            touch-action: pan-y;
+            scrollbar-width: thin;
+            scrollbar-color: var(--bg-tertiary) var(--bg-primary);
+        }
+        .scroll-wrapper::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .scroll-wrapper::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+            border-radius: 4px;
+        }
+        .scroll-wrapper::-webkit-scrollbar-thumb {
+            background-color: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+        .scroll-wrapper::-webkit-scrollbar-thumb:hover {
+            background-color: var(--border-light);
+        }
+
         .schedule-header { display: grid; min-width: max-content; position: sticky; top: 0; z-index: 10; background: var(--bg-primary); border-bottom: 2px solid var(--border); }
         .schedule-grid { display: grid; min-width: max-content; }
         .time-col-header { 
             padding: 6px 4px; font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; text-align: center; 
             border-right: 1px solid var(--border); background: var(--bg-primary); 
-            position: sticky; left: 0; z-index: 12; min-width: 55px;
+            position: sticky; left: 0; z-index: 12;
         }
         .day-group-header { text-align: center; border-right: 1px solid var(--border); position: relative; }
         .day-group-header.today { background: rgba(59,130,246,0.1); }
@@ -190,10 +216,10 @@
             padding: 0 4px; font-size: 10px; font-weight: 600; color: var(--text-muted); text-align: right;
             border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
             background: var(--bg-primary); display: flex; align-items: flex-start; justify-content: flex-end;
-            padding-top: 4px; position: sticky; left: 0; z-index: 5; min-width: 55px;
+            padding-top: 4px; position: sticky; left: 0; z-index: 5;
         }
         .time-cell.break-time { background: rgba(245,158,11,0.08); color: #f59e0b; font-style: italic; }
-        .slot-cell { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2px; position: relative; transition: background 0.1s; min-width: 85px; }
+        .slot-cell { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2px; position: relative; transition: background 0.1s; }
         .edit-mode .slot-cell:hover:not(.occupied) { background: rgba(59,130,246,0.1); cursor: pointer; }
         .slot-cell.occupied { cursor: default; background: var(--bg-primary); }
         .slot-cell.drag-over { background: rgba(245,158,11,0.1); box-shadow: inset 0 0 0 2px #f59e0b; }
@@ -337,7 +363,7 @@
             .form-group input, .form-group select { font-size: 16px; padding: 12px; min-height: 44px; }
             .submit-btn { padding: 12px; font-size: 14px; min-height: 48px; }
             
-            .time-col-header, .time-cell { min-width: 55px; font-size: 11px; }
+            .time-col-header, .time-cell { font-size: 11px; }
             .slot-cell { min-width: 85px; }
             .supplier-card { font-size: 10px; padding: 4px 6px; }
             .supplier-card .delete-btn { 
@@ -656,7 +682,7 @@ const BREAK_PERIODS = [
     { start: 11*60+30, end: 12*60 }
 ];
 
-let currentView = 'day';
+let currentView = 'week';
 let currentDate = new Date();
 let isEditMode = false;
 let bookings = {};
@@ -839,6 +865,7 @@ function generateId() { return 'b_' + Date.now() + '_' + Math.random().toString(
 
 const DAY_NAMES = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 const DAY_NAMES_FULL = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
+const MONTH_NAMES = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 
 function getEffectiveDuration(type, dateStr) {
     let duration = DEFAULT_NORMS[type];
@@ -1090,7 +1117,7 @@ function goToday() { currentDate = new Date(); renderSchedule(); }
 function updatePeriodLabel() {
     const el = document.getElementById('currentPeriod');
     if (currentView === 'day') el.textContent = formatDateRu(currentDate);
-    else if (currentView === 'week') { const d = getWeekDates(currentDate); el.textContent = `${formatDateShort(d[0])} — ${formatDateShort(d[6])}`; }
+    else if (currentView === 'week') { const d = getWeekDates(currentDate); el.textContent = `${formatDateShort(d[0])} — ${formatDateShort(d[6])} ${MONTH_NAMES[d[0].getMonth()]}`; }
     else el.textContent = `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
 }
 
@@ -1105,24 +1132,25 @@ function renderSchedule() {
 }
 
 function renderDayWeekView(dates) {
-    const numDays = dates.length;
     const sw = document.getElementById('scrollWrapper');
-    const tcw = 55;
-    const colWidth = 85;
+    const tcw = 60;
     
     let totalReceiverCols = 0;
     dates.forEach(d => {
         totalReceiverCols += getReceiversForDate(formatDate(d)).length;
     });
     
+    const availableWidth = sw.clientWidth - tcw;
+    const colWidth = Math.max(85, Math.floor(availableWidth / totalReceiverCols));
+    
     const gt = `${tcw}px repeat(${totalReceiverCols}, ${colWidth}px)`;
     document.getElementById('weekHeader').style.gridTemplateColumns = gt;
     document.getElementById('weekGrid').style.gridTemplateColumns = gt;
     
     const wh = sw.clientHeight;
-    const ch = Math.max(32, Math.floor((wh - 60) / HOURS.length));
+    const ch = Math.max(36, Math.floor((wh - 60) / HOURS.length));
 
-    let h = `<div class="time-col-header" style="min-width:${tcw}px">Время</div>`;
+    let h = `<div class="time-col-header">Время</div>`;
     
     dates.forEach((d, i) => {
         const tc = isToday(d) ? ' today' : '';
@@ -1133,7 +1161,7 @@ function renderDayWeekView(dates) {
         let sdBadges = sdList.map(sd => `<div class="self-delivery-badge-wrapper"><div class="self-delivery-badge">🏷 ${escapeHtml(sd.supplierName)}${isEditMode ? `<button class="sd-delete" onclick="deleteSelfDelivery('${sd.id}')" title="Удалить">✕</button>` : ''}</div></div>`).join('');
         const staffBtn = isEditMode ? `<button class="staff-btn" onclick="openStaffModal('${ds}')" title="Изменить количество приемщиков">👥 ${rcCount}</button>` : '';
         
-        h += `<div class="day-group-header${tc}" style="grid-column:span ${rcCount}; min-width: ${rcCount * colWidth}px">
+        h += `<div class="day-group-header${tc}" style="grid-column:span ${rcCount}">
             <div class="day-label">${DAY_NAMES[i]}</div>
             <div class="date-label">${d.getDate()}</div>
             ${staffBtn}
@@ -1148,13 +1176,13 @@ function renderDayWeekView(dates) {
     let g = '';
     HOURS.forEach(hr => {
         const isBr = hr === 10 || hr === 11;
-        g += `<div class="time-cell${isBr ? ' break-time' : ''}" style="height:${ch}px; min-width:${tcw}px">${padHour(hr)}:00</div>`;
+        g += `<div class="time-cell${isBr ? ' break-time' : ''}" style="height:${ch}px">${padHour(hr)}:00</div>`;
         dates.forEach(d => {
             const ds = formatDate(d);
             const rcList = getReceiversForDate(ds);
             rcList.forEach(rc => {
                 const sb = getBookings(ds, hr, rc);
-                g += `<div class="slot-cell${sb.length>0?' occupied':''}" style="height:${ch}px; min-width:${colWidth}px" data-date="${ds}" data-hour="${hr}" data-receiver="${rc}"${isEditMode ? ` ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : ''}>`;
+                g += `<div class="slot-cell${sb.length>0?' occupied':''}" style="height:${ch}px" data-date="${ds}" data-hour="${hr}" data-receiver="${rc}"${isEditMode ? ` ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : ''}>`;
                 sb.forEach(b => {
                     if (b.startHour !== hr) return;
                     const hPx = (b.duration / 60) * ch - 2;
@@ -1372,65 +1400,6 @@ function createDemoData() {
     saveToStorage();
 }
 
-function openMobileSidebar() {
-    document.getElementById('sidebar').classList.add('mobile-open');
-}
-function closeMobileSidebar() {
-    document.getElementById('sidebar').classList.remove('mobile-open');
-}
-function handleMobileCardClick(event, id) {
-    if (window.innerWidth <= 768 && isEditMode) {
-        event.stopPropagation();
-        event.preventDefault();
-        handleMobileCardAction(id);
-    }
-}
-function handleMobileCardAction(id) {
-    const res = getBookingById(id);
-    if (!res) return;
-    const b = res.booking;
-    const body = document.getElementById('mobileActionBody');
-    const endHrDisplay = Math.floor(b.endHourDecimal);
-    const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
-    body.innerHTML = `
-        <div class="modal-card type-${b.type === 'транспортная компания' ? 'транспортная-компания' : b.type}" style="margin-bottom: 16px;">
-            <div class="mc-info">
-                <div class="mc-name">${escapeHtml(b.name)}</div>
-                <div class="mc-details">${TYPE_INFO[b.type]?.icon} ${b.pallets}п | ${padHour(b.startHour)}:00-${padHour(endHrDisplay)}:${padHour(endMinDisplay)} | Пр.${b.receiver}</div>
-            </div>
-        </div>
-        <button class="submit-btn" style="background: var(--warning); color: #1a1a2e; margin-bottom: 10px;" onclick="promptMoveBooking('${b.id}')">↔ Переместить</button>
-        <button class="submit-btn" style="background: var(--danger);" onclick="deleteBooking('${b.id}')">🗑 Удалить</button>
-    `;
-    document.getElementById('mobileActionModal').classList.add('visible');
-}
-function promptMoveBooking(id) {
-    const res = getBookingById(id);
-    if (!res) return;
-    const b = res.booking;
-    const newHrStr = prompt(`Текущее время: ${padHour(b.startHour)}:00\nВведите новое время начала (от ${START_HOUR} до ${END_HOUR-1}):`, b.startHour);
-    if (newHrStr === null) return;
-    const newHr = parseInt(newHrStr);
-    if (isNaN(newHr) || newHr < START_HOUR || newHr >= END_HOUR) {
-        showToast('Некорректное время', 'error');
-        return;
-    }
-    const calc = calcBookingDuration(b.baseDuration, newHr);
-    if (calc.endHour > END_HOUR) { showToast('Выходит за рабочее время', 'error'); return; }
-    for (let h = newHr; h < calc.endHour; h++) {
-        if (!isSlotFree(b.dateStr, h, b.receiver)) {
-            showToast(`Слот ${padHour(h)}:00 занят`, 'error');
-            return;
-        }
-    }
-    for (let h = b.startHour; h < b.endHour; h++) removeBookingFromSlot(b.dateStr, h, b.receiver, b.id);
-    placeBooking({ ...b, startHour: newHr, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, breakMinutes: calc.breakMinutes, duration: calc.totalDuration });
-    saveToStorage(); saveToCloud();
-    closeModal('mobileActionModal');
-    showToast('Запись перемещена', 'success');
-    renderSchedule(); updateStats();
-}
-
 function toggleSupplierInput() {
     const all = document.getElementById('reportAllSuppliers').checked;
     document.getElementById('reportSupplier').disabled = all;
@@ -1576,6 +1545,65 @@ function downloadReport() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     showToast('Отчет скачан', 'success');
+}
+
+function openMobileSidebar() {
+    document.getElementById('sidebar').classList.add('mobile-open');
+}
+function closeMobileSidebar() {
+    document.getElementById('sidebar').classList.remove('mobile-open');
+}
+function handleMobileCardClick(event, id) {
+    if (window.innerWidth <= 768 && isEditMode) {
+        event.stopPropagation();
+        event.preventDefault();
+        handleMobileCardAction(id);
+    }
+}
+function handleMobileCardAction(id) {
+    const res = getBookingById(id);
+    if (!res) return;
+    const b = res.booking;
+    const body = document.getElementById('mobileActionBody');
+    const endHrDisplay = Math.floor(b.endHourDecimal);
+    const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
+    body.innerHTML = `
+        <div class="modal-card type-${b.type === 'транспортная компания' ? 'транспортная-компания' : b.type}" style="margin-bottom: 16px;">
+            <div class="mc-info">
+                <div class="mc-name">${escapeHtml(b.name)}</div>
+                <div class="mc-details">${TYPE_INFO[b.type]?.icon} ${b.pallets}п | ${padHour(b.startHour)}:00-${padHour(endHrDisplay)}:${padHour(endMinDisplay)} | Пр.${b.receiver}</div>
+            </div>
+        </div>
+        <button class="submit-btn" style="background: var(--warning); color: #1a1a2e; margin-bottom: 10px;" onclick="promptMoveBooking('${b.id}')">↔ Переместить</button>
+        <button class="submit-btn" style="background: var(--danger);" onclick="deleteBooking('${b.id}')">🗑 Удалить</button>
+    `;
+    document.getElementById('mobileActionModal').classList.add('visible');
+}
+function promptMoveBooking(id) {
+    const res = getBookingById(id);
+    if (!res) return;
+    const b = res.booking;
+    const newHrStr = prompt(`Текущее время: ${padHour(b.startHour)}:00\nВведите новое время начала (от ${START_HOUR} до ${END_HOUR-1}):`, b.startHour);
+    if (newHrStr === null) return;
+    const newHr = parseInt(newHrStr);
+    if (isNaN(newHr) || newHr < START_HOUR || newHr >= END_HOUR) {
+        showToast('Некорректное время', 'error');
+        return;
+    }
+    const calc = calcBookingDuration(b.baseDuration, newHr);
+    if (calc.endHour > END_HOUR) { showToast('Выходит за рабочее время', 'error'); return; }
+    for (let h = newHr; h < calc.endHour; h++) {
+        if (!isSlotFree(b.dateStr, h, b.receiver)) {
+            showToast(`Слот ${padHour(h)}:00 занят`, 'error');
+            return;
+        }
+    }
+    for (let h = b.startHour; h < b.endHour; h++) removeBookingFromSlot(b.dateStr, h, b.receiver, b.id);
+    placeBooking({ ...b, startHour: newHr, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, breakMinutes: calc.breakMinutes, duration: calc.totalDuration });
+    saveToStorage(); saveToCloud();
+    closeModal('mobileActionModal');
+    showToast('Запись перемещена', 'success');
+    renderSchedule(); updateStats();
 }
 
 function init() {
