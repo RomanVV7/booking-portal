@@ -137,27 +137,31 @@
         .scroll-wrapper { 
             flex: 1; 
             overflow-x: auto; 
-            overflow-y: hidden; 
+            overflow-y: auto; 
             position: relative; 
             -webkit-overflow-scrolling: touch; 
-            touch-action: pan-y;
+            touch-action: pan-x pan-y;
             scrollbar-width: thin;
             scrollbar-color: var(--bg-tertiary) var(--bg-primary);
         }
         .scroll-wrapper::-webkit-scrollbar {
-            height: 8px;
-            width: 8px;
+            height: 10px;
+            width: 10px;
         }
         .scroll-wrapper::-webkit-scrollbar-track {
             background: var(--bg-primary);
-            border-radius: 4px;
+            border-radius: 5px;
         }
         .scroll-wrapper::-webkit-scrollbar-thumb {
             background-color: var(--bg-tertiary);
-            border-radius: 4px;
+            border-radius: 5px;
+            border: 2px solid var(--bg-primary);
         }
         .scroll-wrapper::-webkit-scrollbar-thumb:hover {
             background-color: var(--border-light);
+        }
+        .scroll-wrapper::-webkit-scrollbar-corner {
+            background: var(--bg-primary);
         }
 
         .schedule-header { display: grid; min-width: max-content; position: sticky; top: 0; z-index: 10; background: var(--bg-primary); border-bottom: 2px solid var(--border); }
@@ -247,12 +251,12 @@
             display: none; align-items: center; justify-content: center; line-height: 1;
         }
         .edit-mode .supplier-card:hover .delete-btn { display: flex; }
-        .week-view { display: flex; flex-direction: column; height: 100%; }
+        .week-view { display: flex; flex-direction: column; min-height: 100%; }
         .month-view { display: none; }
         .hidden { display: none !important; }
         .month-header-row { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--bg-primary); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 10; }
         .month-day-header { padding: 6px; text-align: center; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; border-right: 1px solid var(--border); }
-        .month-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); flex: 1; overflow-y: auto; }
+        .month-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); flex: 1; }
         .month-day-cell { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); min-height: 60px; padding: 4px; overflow: hidden; cursor: pointer; transition: background 0.15s; }
         .month-day-cell:hover { background: var(--bg-hover); }
         .month-day-cell.other-month { background: var(--bg-primary); opacity: 0.5; }
@@ -1147,8 +1151,7 @@ function renderDayWeekView(dates) {
     document.getElementById('weekHeader').style.gridTemplateColumns = gt;
     document.getElementById('weekGrid').style.gridTemplateColumns = gt;
     
-    const wh = sw.clientHeight;
-    const ch = Math.max(36, Math.floor((wh - 60) / HOURS.length));
+    const ch = 42;
 
     let h = `<div class="time-col-header">Время</div>`;
     
