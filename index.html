@@ -35,7 +35,7 @@
         .header {
             background: var(--bg-secondary); border-bottom: 1px solid var(--border);
             padding: 8px 16px; display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 100;
+            position: sticky; top: 0; z-index: 100; height: 50px;
         }
         .header h1 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
         .version-tag { font-size: 9px; color: var(--text-muted); margin-left: 4px; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; }
@@ -72,10 +72,12 @@
         .edit-controls.visible { display: inline-flex; align-items: center; gap: 5px; }
 
         .main-container { display: flex; gap: 10px; padding: 10px; height: calc(100vh - 50px); align-items: stretch; }
+        
         .sidebar {
             width: 300px; min-width: 280px; max-width: 320px; background: var(--bg-secondary);
             border: 1px solid var(--border); border-radius: 8px; padding: 12px;
             overflow-y: auto; flex-shrink: 0;
+            position: sticky; top: 10px; height: calc(100vh - 70px); z-index: 50;
         }
         .sidebar h2 { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
         .form-group { margin-bottom: 10px; }
@@ -137,7 +139,7 @@
         .time-col-header { 
             padding: 6px 4px; font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; text-align: center; 
             border-right: 1px solid var(--border); background: var(--bg-primary); 
-            position: sticky; left: 0; z-index: 11; min-width: 55px;
+            position: sticky; left: 0; z-index: 12; min-width: 55px;
         }
         .day-group-header { text-align: center; border-right: 1px solid var(--border); position: relative; }
         .day-group-header.today { background: rgba(59,130,246,0.1); }
@@ -219,42 +221,14 @@
             display: none; align-items: center; justify-content: center; line-height: 1;
         }
         .edit-mode .supplier-card:hover .delete-btn { display: flex; }
-        .month-view { display: none; }
         .week-view { display: flex; flex-direction: column; height: 100%; }
         .hidden { display: none !important; }
-        .month-header-row { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--bg-primary); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 10; }
-        .month-day-header { padding: 6px; text-align: center; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; border-right: 1px solid var(--border); }
-        .month-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); flex: 1; overflow-y: auto; }
-        .month-day-cell { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); min-height: 60px; padding: 4px; overflow: hidden; cursor: pointer; transition: background 0.15s; }
-        .month-day-cell:hover { background: var(--bg-hover); }
-        .month-day-cell.other-month { background: var(--bg-primary); opacity: 0.5; }
-        .month-day-cell.today { background: rgba(59,130,246,0.1); }
-        .month-day-cell .md-date { font-size: 10px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; padding: 0 2px; }
-        .month-day-cell.today .md-date { background: var(--accent); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 9px; }
-        .month-day-cell.other-month .md-date { color: var(--text-muted); }
-        .month-day-cell .md-card { background: var(--bg-secondary); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 2px; padding: 1px 3px; font-size: 8px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .month-day-cell .md-card.type-фура { border-left-color: #3b82f6; }
-        .month-day-cell .md-card.type-контейнер { border-left-color: #7c3aed; }
-        .month-day-cell .md-card.type-газель { border-left-color: #10b981; }
-        .month-day-cell .md-card.type-фрукты { border-left-color: #ef4444; }
-        .month-day-cell .md-card.type-транспортная-компания { border-left-color: #0891b2; }
-        .month-day-cell .md-more { font-size: 8px; color: var(--accent); padding: 0 2px; }
-        .self-delivery-day-badge-wrapper { display: flex; align-items: center; gap: 2px; margin-top: 2px; }
-        .self-delivery-day-badge {
-            display: inline-flex; align-items: center; gap: 2px; background: rgba(139,92,246,0.15);
-            color: #a78bfa; font-size: 8px; font-weight: 600; border-radius: 2px;
-            padding: 1px 4px; border: 1px solid rgba(139,92,246,0.3);
-        }
-        .self-delivery-day-badge .sd-delete {
-            width: 14px; height: 14px; border: none; background: rgba(239,68,68,0.2);
-            color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 8px;
-            display: flex; align-items: center; justify-content: center; line-height: 1;
-        }
+        
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .modal-overlay.visible { display: flex; }
         .modal { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
         .modal-sm { width: 340px; }
-        .modal-md { width: 500px; }
+        .modal-md { width: 600px; max-width: 95vw; }
         .modal-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .modal-header h3 { font-size: 15px; font-weight: 600; color: var(--text-primary); }
         .modal-close { width: 28px; height: 28px; border: none; background: var(--bg-tertiary); color: var(--text-secondary); border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
@@ -297,12 +271,10 @@
         .toast.error { border-color: var(--danger); background: rgba(239,68,68,0.15); color: #fca5a5; }
         .toast.success { border-color: var(--success); background: rgba(16,185,129,0.15); color: #6ee7b7; }
         .toast.info { border-color: var(--accent); background: rgba(59,130,246,0.15); color: #60a5fa; }
-
-        .sidebar-close-btn, .fab-add { display: none; }
         .staff-warning { font-size: 10px; color: var(--warning); margin-top: 8px; text-align: center; line-height: 1.4; }
 
         @media (max-width: 768px) {
-            .header { flex-direction: column; gap: 8px; padding: 10px; }
+            .header { flex-direction: column; gap: 8px; padding: 10px; height: auto; }
             .header h1 { font-size: 14px; justify-content: center; width: 100%; }
             .nav-controls { flex-wrap: wrap; justify-content: center; gap: 6px; width: 100%; }
             .current-period { width: 100%; text-align: center; margin: 4px 0; font-size: 13px; order: -1; }
@@ -312,14 +284,11 @@
             .schedule-area { min-height: 60vh; order: 1; }
             
             .sidebar {
-                position: fixed; bottom: 0; left: 0; right: 0; top: auto;
-                width: 100%; max-width: none; min-width: auto; max-height: 85vh;
-                border-radius: 16px 16px 0 0; border-bottom: none;
-                transform: translateY(100%); transition: transform 0.3s ease-out;
-                z-index: 500; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-                order: 2;
+                position: fixed; left: 0; top: 0; bottom: 0; width: 280px; 
+                z-index: 200; transform: translateX(-100%); transition: transform 0.3s ease-out;
+                border-radius: 0; border-right: 1px solid var(--border);
             }
-            .sidebar.mobile-open { transform: translateY(0); }
+            .sidebar.mobile-open { transform: translateX(0); }
             .sidebar-close-btn { 
                 display: block; width: 40px; height: 4px; background: var(--border); 
                 border-radius: 2px; margin: 0 auto 12px auto; cursor: pointer; 
@@ -331,7 +300,7 @@
                 width: 56px; height: 56px; border-radius: 50%;
                 background: var(--accent); color: white; border: none;
                 font-size: 28px; align-items: center; justify-content: center;
-                box-shadow: 0 4px 16px var(--accent-glow); z-index: 400;
+                box-shadow: 0 4px 16px var(--accent-glow); z-index: 150;
                 cursor: pointer;
             }
             .fab-add:active { transform: scale(0.95); }
@@ -377,25 +346,25 @@
             <div class="edit-controls" id="editControls">
                 <button class="nav-btn active" id="btnDayView" onclick="switchView('day')">День</button>
                 <button class="nav-btn" id="btnWeekView" onclick="switchView('week')">Неделя</button>
-                <button class="nav-btn" id="btnMonthView" onclick="switchView('month')">Месяц</button>
                 <div class="nav-divider"></div>
                 <button class="nav-btn" onclick="navigate(-1)">‹</button>
                 <button class="nav-btn" style="background:var(--accent);border-color:var(--accent)" onclick="goToday()">Сегодня</button>
                 <button class="nav-btn" onclick="navigate(1)">›</button>
                 <div class="nav-divider"></div>
                 <button class="nav-btn save-btn" onclick="saveAllChanges()">💾 Сохранить</button>
+                <button class="nav-btn" onclick="openReportsModal()">📊 Отчеты</button>
                 <button class="nav-btn settings-btn" onclick="openNormativesPassword()">⚙ Нормативы</button>
                 <button class="nav-btn logout-btn" onclick="logout()">🚪 Выход</button>
             </div>
             <div class="view-controls" id="viewControls">
                 <button class="nav-btn active" id="btnDayViewV" onclick="switchView('day')">День</button>
                 <button class="nav-btn" id="btnWeekViewV" onclick="switchView('week')">Неделя</button>
-                <button class="nav-btn" id="btnMonthViewV" onclick="switchView('month')">Месяц</button>
                 <div class="nav-divider"></div>
                 <button class="nav-btn" onclick="navigate(-1)">‹</button>
                 <button class="nav-btn" style="background:var(--accent);border-color:var(--accent)" onclick="goToday()">Сегодня</button>
                 <button class="nav-btn" onclick="navigate(1)">›</button>
                 <div class="nav-divider"></div>
+                <button class="nav-btn" onclick="openReportsModal()">📊 Отчеты</button>
                 <button class="nav-btn edit-btn" onclick="requestEditMode()">✏️ Редактировать</button>
             </div>
             <div class="current-period" id="currentPeriod"></div>
@@ -479,10 +448,6 @@
                     <div class="schedule-header" id="weekHeader"></div>
                     <div class="schedule-grid" id="weekGrid"></div>
                 </div>
-                <div class="month-view" id="monthView">
-                    <div class="month-header-row" id="monthHeader"></div>
-                    <div class="month-calendar-grid" id="monthGrid"></div>
-                </div>
             </div>
         </div>
     </div>
@@ -559,6 +524,46 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="reportsModal">
+    <div class="modal modal-md">
+        <div class="modal-header"><h3>📊 Отчеты</h3><button class="modal-close" onclick="closeModal('reportsModal')">✕</button></div>
+        <div class="modal-body">
+            <div class="form-row" style="margin-bottom:12px;">
+                <div class="form-group" style="flex:2;">
+                    <label>Наименование поставщика</label>
+                    <input type="text" id="reportSupplier" list="supplierList" placeholder="Все поставщики">
+                    <datalist id="supplierList"></datalist>
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>Дата с</label>
+                    <input type="date" id="reportDateFrom">
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>Дата по</label>
+                    <input type="date" id="reportDateTo">
+                </div>
+            </div>
+            <button class="submit-btn" onclick="generateReport()" style="margin-bottom:12px;">Сформировать отчет</button>
+            <div id="reportResults" style="max-height:300px; overflow-y:auto; margin-bottom:12px; display:none; border: 1px solid var(--border); border-radius: 6px;">
+                <table style="width:100%; border-collapse:collapse; font-size:11px;">
+                    <thead>
+                        <tr style="background:var(--bg-tertiary); text-align:left; position: sticky; top: 0;">
+                            <th style="padding:6px; border:1px solid var(--border);">Дата</th>
+                            <th style="padding:6px; border:1px solid var(--border);">Время</th>
+                            <th style="padding:6px; border:1px solid var(--border);">Поставщик</th>
+                            <th style="padding:6px; border:1px solid var(--border);">Тип ТС</th>
+                            <th style="padding:6px; border:1px solid var(--border);">Паллеты</th>
+                            <th style="padding:6px; border:1px solid var(--border);">Приемщик</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody"></tbody>
+                </table>
+            </div>
+            <button class="submit-btn" id="downloadReportBtn" onclick="downloadReport()" style="background:var(--success); display:none;">💾 Скачать CSV</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="mobileActionModal">
     <div class="modal modal-sm">
         <div class="modal-header"><h3>Действия с записью</h3><button class="modal-close" onclick="closeModal('mobileActionModal')">✕</button></div>
@@ -595,7 +600,7 @@ const BREAK_PERIODS = [
     { start: 11*60+30, end: 12*60 }
 ];
 
-let currentView = 'week';
+let currentView = 'day';
 let currentDate = new Date();
 let isEditMode = false;
 let bookings = {};
@@ -606,6 +611,7 @@ let normativeHistory = [];
 let firebaseDb = null;
 let firebaseReady = false;
 let syncDebounceTimer = null;
+let currentReportData = [];
 
 function getReceiversForDate(dateStr) {
     const count = receiversPerDate[dateStr] || 3;
@@ -777,24 +783,41 @@ function generateId() { return 'b_' + Date.now() + '_' + Math.random().toString(
 
 const DAY_NAMES = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 const DAY_NAMES_FULL = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
-const MONTH_NAMES = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 
 function getEffectiveDuration(type, dateStr) {
     let duration = DEFAULT_NORMS[type];
     for (const entry of normativeHistory) { if (entry.date <= dateStr && entry.changes[type] !== undefined) duration = entry.changes[type]; }
     return duration;
 }
-function calcBreakMinutes(startHr, endHr) {
-    const s = startHr*60, e = endHr*60; let t = 0;
-    for (const bp of BREAK_PERIODS) { const oS = Math.max(s, bp.start), oE = Math.min(e, bp.end); if (oS < oE) t += (oE-oS); }
+
+function calcBreakMinutes(startHr, endHrDecimal) {
+    const s = startHr * 60;
+    const e = Math.ceil(endHrDecimal) * 60;
+    let t = 0;
+    for (const bp of BREAK_PERIODS) { 
+        const oS = Math.max(s, bp.start), oE = Math.min(e, bp.end); 
+        if (oS < oE) t += (oE - oS); 
+    }
     return t;
 }
+
 function calcBookingDuration(baseDuration, startHr) {
-    const baseEndHr = startHr + Math.ceil(baseDuration / 60);
-    const breakMins = calcBreakMinutes(startHr, baseEndHr);
-    const total = baseDuration + breakMins;
-    return { baseDuration, breakMinutes: breakMins, totalDuration: total, endHour: startHr + Math.ceil(total / 60) };
+    const startMins = startHr * 60;
+    const endMinsDecimal = startMins + baseDuration;
+    const endHrDecimal = endMinsDecimal / 60;
+    const breakMins = calcBreakMinutes(startHr, endHrDecimal);
+    const totalDuration = baseDuration + breakMins;
+    const finalEndHrDecimal = (startMins + totalDuration) / 60;
+    
+    return { 
+        baseDuration, 
+        breakMinutes: breakMins, 
+        totalDuration: totalDuration, 
+        endHourDecimal: finalEndHrDecimal,
+        endHour: Math.ceil(finalEndHrDecimal)
+    };
 }
+
 function getBookingKey(ds, hr, rc) { return `${ds}_${hr}_${rc}`; }
 function getBookings(ds, hr, rc) { return bookings[getBookingKey(ds, hr, rc)] || []; }
 function addBookingToSlot(ds, hr, rc, bk) { const k = getBookingKey(ds, hr, rc); if (!bookings[k]) bookings[k] = []; bookings[k].push(bk); }
@@ -872,7 +895,9 @@ function updateTimeOptions() {
         const opt = document.createElement('option');
         opt.value = h;
         const calc = calcBookingDuration(baseDur, h);
-        let label = `${padHour(h)}:00-${padHour(calc.endHour)}:00`;
+        const endHrDisplay = Math.floor(calc.endHourDecimal);
+        const endMinDisplay = Math.round((calc.endHourDecimal - endHrDisplay) * 60);
+        let label = `${padHour(h)}:00-${padHour(endHrDisplay)}:${padHour(endMinDisplay)}`;
         if (calc.breakMinutes > 0) label += ` (+${calc.breakMinutes}м)`;
         if (!avail) label += ' (занято)';
         opt.textContent = label; opt.disabled = !avail;
@@ -918,10 +943,12 @@ function submitBooking() {
     const calc = calcBookingDuration(baseDur, startHr);
     if (calc.endHour > END_HOUR) { showToast('Запись выходит за рабочее время (18:00)', 'error'); return; }
     if (!canPlaceBooking(ds, startHr, rc, baseDur)) { showToast('Слот занят у приемщика '+rc, 'error'); return; }
-    placeBooking({ id: generateId(), name, pallets: pal, type, baseDuration: baseDur, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, startHour: startHr, endHour: calc.endHour, dateStr: ds, receiver: rc });
+    placeBooking({ id: generateId(), name, pallets: pal, type, baseDuration: baseDur, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, startHour: startHr, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, dateStr: ds, receiver: rc });
     saveToStorage(); saveToCloud();
     const dObj = new Date(ds+'T00:00:00');
-    let msg = `✓ ${name}: ${DAY_NAMES_FULL[(dObj.getDay()+6)%7]} ${padHour(startHr)}:00-${padHour(calc.endHour)}:00 | Пр.${rc}`;
+    const endHrDisplay = Math.floor(calc.endHourDecimal);
+    const endMinDisplay = Math.round((calc.endHourDecimal - endHrDisplay) * 60);
+    let msg = `✓ ${name}: ${DAY_NAMES_FULL[(dObj.getDay()+6)%7]} ${padHour(startHr)}:00-${padHour(endHrDisplay)}:${padHour(endMinDisplay)} | Пр.${rc}`;
     if (calc.breakMinutes > 0) msg += ` (+${calc.breakMinutes}м)`;
     showToast(msg, 'success');
     resetForm(); renderSchedule(); updateStats();
@@ -977,10 +1004,10 @@ function handleDrop(e) {
     const calc = calcBookingDuration(draggedData.baseDuration, hr);
     if (calc.endHour > END_HOUR) { showToast('Выходит за рабочее время', 'error'); endDrag(); return; }
     for (let h = hr; h < calc.endHour; h++) { if (!isSlotFree(ds, h, rc)) { showToast(`Слот ${padHour(h)}:00 занят`, 'error'); endDrag(); return; } }
-    placeBooking({ ...draggedData, dateStr: ds, startHour: hr, endHour: calc.endHour, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, receiver: rc });
+    placeBooking({ ...draggedData, dateStr: ds, startHour: hr, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, receiver: rc });
     saveToStorage(); saveToCloud();
     draggedData = null;
-    showToast('Перемещено на '+padHour(hr)+':00', 'success');
+    showToast('Перемещено', 'success');
     renderSchedule(); updateStats();
 }
 
@@ -991,15 +1018,11 @@ function switchView(v) {
     if (activeBtn) activeBtn.classList.add('active');
     const otherBtn = document.getElementById('btn' + v.charAt(0).toUpperCase() + v.slice(1) + (isEditMode ? 'ViewV' : 'View'));
     if (otherBtn) otherBtn.classList.add('active');
-    document.getElementById('weekView').classList.toggle('hidden', v === 'month');
-    document.getElementById('monthView').classList.toggle('hidden', v !== 'month');
-    document.getElementById('receiverLegend').classList.toggle('hidden', v === 'month');
     renderSchedule();
 }
 function navigate(dir) {
     if (currentView === 'day') currentDate.setDate(currentDate.getDate() + dir);
     else if (currentView === 'week') currentDate.setDate(currentDate.getDate() + dir * 7);
-    else currentDate.setMonth(currentDate.getMonth() + dir);
     renderSchedule();
 }
 function goToday() { currentDate = new Date(); renderSchedule(); }
@@ -1007,13 +1030,59 @@ function goToday() { currentDate = new Date(); renderSchedule(); }
 function updatePeriodLabel() {
     const el = document.getElementById('currentPeriod');
     if (currentView === 'day') el.textContent = formatDateRu(currentDate);
-    else if (currentView === 'week') { const d = getWeekDates(currentDate); el.textContent = `${formatDateShort(d[0])} — ${formatDateShort(d[6])} ${MONTH_NAMES[d[0].getMonth()]}`; }
-    else el.textContent = `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+    else if (currentView === 'week') { const d = getWeekDates(currentDate); el.textContent = `${formatDateShort(d[0])} — ${formatDateShort(d[6])}`; }
 }
 
-function renderSchedule() { updatePeriodLabel(); if (currentView === 'month') renderMonthView(); else renderDayWeekView(currentView === 'day' ? [currentDate] : getWeekDates(currentDate)); updateStats(); }
+function renderSchedule() { 
+    updatePeriodLabel(); 
+    if (currentView === 'day') renderDayViewHorizontal(); 
+    else renderWeekView(); 
+    updateStats(); 
+}
 
-function renderDayWeekView(dates) {
+function renderDayViewHorizontal() {
+    const ds = formatDate(currentDate);
+    const rcList = getReceiversForDate(ds);
+    const colWidth = 85;
+    const labelWidth = 100;
+    const gt = `${labelWidth}px repeat(12, ${colWidth}px)`;
+    document.getElementById('weekHeader').style.gridTemplateColumns = gt;
+    document.getElementById('weekGrid').style.gridTemplateColumns = gt;
+
+    let h = `<div class="time-col-header" style="min-width:${labelWidth}px; position:sticky; left:0; z-index:12;">Приемщик / Время</div>`;
+    for (let hr = START_HOUR; hr < END_HOUR; hr++) {
+        h += `<div class="time-col-header" style="min-width:${colWidth}px">${padHour(hr)}:00</div>`;
+    }
+    document.getElementById('weekHeader').innerHTML = h;
+
+    let g = '';
+    rcList.forEach(rc => {
+        g += `<div class="time-cell" style="min-width:${labelWidth}px; position:sticky; left:0; z-index:5; justify-content:center; font-weight:700; background:var(--bg-secondary);">Приемщик ${rc}</div>`;
+        for (let hr = START_HOUR; hr < END_HOUR; hr++) {
+            const sb = getBookings(ds, hr, rc);
+            g += `<div class="slot-cell" style="min-width:${colWidth}px; height: 60px; position:relative;" data-date="${ds}" data-hour="${hr}" data-receiver="${rc}" ${isEditMode ? `ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : ''}>`;
+            sb.forEach(b => {
+                if (b.startHour !== hr) return;
+                const wPx = (b.duration / 60) * colWidth - 2;
+                const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type;
+                const brHtml = b.breakMinutes > 0 ? `<span class="s-break">+${b.breakMinutes}м</span>` : '';
+                const endHrDisplay = Math.floor(b.endHourDecimal);
+                const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
+                const mobileClick = isEditMode ? `onclick="handleMobileCardClick(event, '${b.id}')"` : '';
+                g += `<div class="supplier-card type-${tc}" style="position:absolute; top:2px; left:2px; width:${wPx}px; height:calc(100% - 4px); overflow:hidden; z-index:5;" ${isEditMode ? `draggable="true" ondragstart="startDrag(event, '${b.id}')" ondragend="endDrag()"` : ''} ${mobileClick} title="${b.name} | ${padHour(b.startHour)}:00-${padHour(endHrDisplay)}:${padHour(endMinDisplay)} | ${b.pallets}п">
+                    <div class="s-name">${escapeHtml(b.name)}</div>
+                    <div class="s-details"><span class="s-type">${TYPE_INFO[b.type]?.icon||''} ${TYPE_INFO[b.type]?.label||b.type}</span><span>${b.pallets}п</span>${brHtml}</div>
+                    ${isEditMode ? `<button class="delete-btn" onclick="event.stopPropagation();deleteBooking('${b.id}')">✕</button>` : ''}
+                </div>`;
+            });
+            g += '</div>';
+        }
+    });
+    document.getElementById('weekGrid').innerHTML = g;
+}
+
+function renderWeekView() {
+    const dates = getWeekDates(currentDate);
     const sw = document.getElementById('scrollWrapper');
     const tcw = 55;
     const colWidth = 85;
@@ -1065,11 +1134,13 @@ function renderDayWeekView(dates) {
                 g += `<div class="slot-cell${sb.length>0?' occupied':''}" style="height:${ch}px; min-width:${colWidth}px" data-date="${ds}" data-hour="${hr}" data-receiver="${rc}"${isEditMode ? ` ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : ''}>`;
                 sb.forEach(b => {
                     if (b.startHour !== hr) return;
-                    const hPx = (b.endHour - b.startHour) * ch - 4;
+                    const hPx = (b.duration / 60) * ch - 2;
                     const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type;
                     const brHtml = b.breakMinutes > 0 ? `<span class="s-break">+${b.breakMinutes}м</span>` : '';
+                    const endHrDisplay = Math.floor(b.endHourDecimal);
+                    const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
                     const mobileClick = isEditMode ? `onclick="handleMobileCardClick(event, '${b.id}')"` : '';
-                    g += `<div class="supplier-card type-${tc}" style="position:absolute;top:2px;left:2px;right:2px;height:${hPx}px;overflow:hidden;z-index:5;"${isEditMode ? ` draggable="true" ondragstart="startDrag(event, '${b.id}')" ondragend="endDrag()"` : ''} ${mobileClick} title="${b.name} | ${padHour(b.startHour)}:00-${padHour(b.endHour)}:00 | ${b.pallets}п">
+                    g += `<div class="supplier-card type-${tc}" style="position:absolute;top:2px;left:2px;right:2px;height:${hPx}px;overflow:hidden;z-index:5;"${isEditMode ? ` draggable="true" ondragstart="startDrag(event, '${b.id}')" ondragend="endDrag()"` : ''} ${mobileClick} title="${b.name} | ${padHour(b.startHour)}:00-${padHour(endHrDisplay)}:${padHour(endMinDisplay)} | ${b.pallets}п">
                         <div class="s-name">${escapeHtml(b.name)}</div>
                         <div class="s-details"><span class="s-type">${TYPE_INFO[b.type]?.icon||''} ${TYPE_INFO[b.type]?.label||b.type}</span><span>${b.pallets}п</span>${brHtml}</div>
                         ${isEditMode ? `<button class="delete-btn" onclick="event.stopPropagation();deleteBooking('${b.id}')">✕</button>` : ''}</div>`;
@@ -1079,35 +1150,6 @@ function renderDayWeekView(dates) {
         });
     });
     document.getElementById('weekGrid').innerHTML = g;
-}
-
-function renderMonthView() {
-    const yr = currentDate.getFullYear(), mo = currentDate.getMonth();
-    const fd = new Date(yr, mo, 1), ld = new Date(yr, mo+1, 0);
-    const so = (fd.getDay()+6)%7;
-    document.getElementById('monthHeader').innerHTML = DAY_NAMES.map(d => `<div class="month-day-header">${d}</div>`).join('');
-    let g = ''; let cur = new Date(yr, mo, 1-so); let w = 0;
-    while (w < 6 && cur <= new Date(yr, mo+1, 0)) {
-        const isCur = cur.getMonth()===mo, isT = isToday(cur), ds = formatDate(cur);
-        const sdList = getSelfDeliveriesByDate(ds);
-        let sdBadges = sdList.map(sd => `<div class="self-delivery-day-badge-wrapper"><div class="self-delivery-day-badge">🏷 ${escapeHtml(sd.supplierName)}${isEditMode ? `<button class="sd-delete" onclick="deleteSelfDelivery('${sd.id}')">✕</button>` : ''}</div></div>`).join('');
-        g += `<div class="month-day-cell${isCur?'':' other-month'}${isT?' today':''}" onclick="openDayModal('${ds}')"><div class="md-date">${cur.getDate()}</div>${sdBadges}`;
-        const db = [];
-        const rcList = getReceiversForDate(ds);
-        for (let hr = START_HOUR; hr < END_HOUR; hr++) {
-            rcList.forEach(r => { 
-                getBookings(ds, hr, r).forEach(b => { 
-                    if (b.startHour===hr && !db.find(x=>x.id===b.id)) db.push(b); 
-                }); 
-            });
-        }
-        db.sort((a,b) => a.startHour-b.startHour);
-        db.slice(0,3).forEach(b => { const tc = b.type==='транспортная компания'?'транспортная-компания':b.type; g += `<div class="md-card type-${tc}">${escapeHtml(b.name)}</div>`; });
-        if (db.length > 3) g += `<div class="md-more">+${db.length-3}</div>`;
-        g += '</div>';
-        cur.setDate(cur.getDate()+1); w++;
-    }
-    document.getElementById('monthGrid').innerHTML = g;
 }
 
 function openDayModal(ds) {
@@ -1129,7 +1171,9 @@ function openDayModal(ds) {
             html += `<div class="modal-receiver-section"><div class="modal-receiver-title">Приемщик ${rc} (${rb.length})</div>`;
             rb.forEach(b => {
                 const tc = b.type==='транспортная компания'?'транспортная-компания':b.type;
-                html += `<div class="modal-card type-${tc}"><div class="mc-info"><div class="mc-name">${escapeHtml(b.name)}</div><div class="mc-details">${TYPE_INFO[b.type]?.icon} ${b.pallets}п | ${padHour(b.startHour)}:00-${padHour(b.endHour)}:00${b.breakMinutes>0?' (+'+b.breakMinutes+'м)':''}</div></div>${isEditMode ? `<button class="mc-delete" onclick="deleteBooking('${b.id}')">✕</button>` : ''}</div>`;
+                const endHrDisplay = Math.floor(b.endHourDecimal);
+                const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
+                html += `<div class="modal-card type-${tc}"><div class="mc-info"><div class="mc-name">${escapeHtml(b.name)}</div><div class="mc-details">${TYPE_INFO[b.type]?.icon} ${b.pallets}п | ${padHour(b.startHour)}:00-${padHour(endHrDisplay)}:${padHour(endMinDisplay)}${b.breakMinutes>0?' (+'+b.breakMinutes+'м)':''}</div></div>${isEditMode ? `<button class="mc-delete" onclick="deleteBooking('${b.id}')">✕</button>` : ''}</div>`;
             });
             html += `</div>`;
         }
@@ -1223,7 +1267,7 @@ function saveNormatives() {
                     if (calc.endHour <= END_HOUR) {
                         for (let h = bk.startHour; h < bk.endHour; h++) removeBookingFromSlot(bk.dateStr, h, bk.receiver, bk.id);
                         bk.baseDuration = newDur; bk.breakMinutes = calc.breakMinutes;
-                        bk.duration = calc.totalDuration; bk.endHour = calc.endHour;
+                        bk.duration = calc.totalDuration; bk.endHour = calc.endHour; bk.endHourDecimal = calc.endHourDecimal;
                         for (let h = bk.startHour; h < bk.endHour; h++) addBookingToSlot(bk.dateStr, h, bk.receiver, bk);
                         updatedCount++;
                     }
@@ -1238,7 +1282,7 @@ function saveNormatives() {
 }
 
 function updateStats() {
-    const dates = currentView==='month' ? getDaysInMonth(currentDate) : (currentView==='day' ? [currentDate] : getWeekDates(currentDate));
+    const dates = currentView === 'day' ? [currentDate] : getWeekDates(currentDate);
     let total=0, pallets=0, types={}, sdCount=0; const counted = new Set();
     dates.forEach(d => {
         const ds = formatDate(d);
@@ -1256,7 +1300,7 @@ function updateStats() {
     for (const [t,c] of Object.entries(types)) { if (TYPE_INFO[t]) html += `<div class="stat-item">${TYPE_INFO[t].icon} ${TYPE_INFO[t].label}: ${c}</div>`; }
     document.getElementById('statsBar').innerHTML = html;
 }
-function getDaysInMonth(d) { const a=[]; for(let i=1;i<=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();i++) a.push(new Date(d.getFullYear(),d.getMonth(),i)); return a; }
+
 function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = `toast ${type} show`; setTimeout(() => t.classList.remove('show'), 3500); }
 
 function createDemoData() {
@@ -1270,7 +1314,7 @@ function createDemoData() {
     ];
     demo.forEach(b => {
         const calc = calcBookingDuration(DEFAULT_NORMS[b.t], b.h);
-        placeBooking({ id: generateId(), name: b.n, pallets: b.p, type: b.t, baseDuration: DEFAULT_NORMS[b.t], breakMinutes: calc.breakMinutes, duration: calc.totalDuration, startHour: b.h, endHour: calc.endHour, dateStr: ds, receiver: b.r });
+        placeBooking({ id: generateId(), name: b.n, pallets: b.p, type: b.t, baseDuration: DEFAULT_NORMS[b.t], breakMinutes: calc.breakMinutes, duration: calc.totalDuration, startHour: b.h, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, dateStr: ds, receiver: b.r });
     });
     selfDeliveries.push({ id: generateId(), dateStr: ds, supplierName: 'Собственная доставка — ООО "Альфа-Строй"' });
     saveToStorage();
@@ -1294,11 +1338,13 @@ function handleMobileCardAction(id) {
     if (!res) return;
     const b = res.booking;
     const body = document.getElementById('mobileActionBody');
+    const endHrDisplay = Math.floor(b.endHourDecimal);
+    const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
     body.innerHTML = `
         <div class="modal-card type-${b.type === 'транспортная компания' ? 'транспортная-компания' : b.type}" style="margin-bottom: 16px;">
             <div class="mc-info">
                 <div class="mc-name">${escapeHtml(b.name)}</div>
-                <div class="mc-details">${TYPE_INFO[b.type]?.icon} ${b.pallets}п | ${padHour(b.startHour)}:00-${padHour(b.endHour)}:00 | Пр.${b.receiver}</div>
+                <div class="mc-details">${TYPE_INFO[b.type]?.icon} ${b.pallets}п | ${padHour(b.startHour)}:00-${padHour(endHrDisplay)}:${padHour(endMinDisplay)} | Пр.${b.receiver}</div>
             </div>
         </div>
         <button class="submit-btn" style="background: var(--warning); color: #1a1a2e; margin-bottom: 10px;" onclick="promptMoveBooking('${b.id}')">↔ Переместить</button>
@@ -1326,11 +1372,123 @@ function promptMoveBooking(id) {
         }
     }
     for (let h = b.startHour; h < b.endHour; h++) removeBookingFromSlot(b.dateStr, h, b.receiver, b.id);
-    placeBooking({ ...b, startHour: newHr, endHour: calc.endHour, breakMinutes: calc.breakMinutes, duration: calc.totalDuration });
+    placeBooking({ ...b, startHour: newHr, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, breakMinutes: calc.breakMinutes, duration: calc.totalDuration });
     saveToStorage(); saveToCloud();
     closeModal('mobileActionModal');
     showToast('Запись перемещена', 'success');
     renderSchedule(); updateStats();
+}
+
+function openReportsModal() {
+    const datalist = document.getElementById('supplierList');
+    datalist.innerHTML = '';
+    const suppliers = new Set();
+    for (const key in bookings) {
+        bookings[key].forEach(b => suppliers.add(b.name));
+    }
+    selfDeliveries.forEach(sd => suppliers.add(sd.supplierName));
+    Array.from(suppliers).sort().forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        datalist.appendChild(opt);
+    });
+    
+    const today = formatDate(new Date());
+    document.getElementById('reportDateFrom').value = today;
+    document.getElementById('reportDateTo').value = today;
+    document.getElementById('reportResults').style.display = 'none';
+    document.getElementById('downloadReportBtn').style.display = 'none';
+    document.getElementById('reportsModal').classList.add('visible');
+}
+
+function generateReport() {
+    const supplierFilter = document.getElementById('reportSupplier').value.trim().toLowerCase();
+    const dateFrom = document.getElementById('reportDateFrom').value;
+    const dateTo = document.getElementById('reportDateTo').value;
+
+    if (!dateFrom || !dateTo) {
+        showToast('Укажите период', 'error');
+        return;
+    }
+
+    currentReportData = [];
+
+    for (const key in bookings) {
+        bookings[key].forEach(b => {
+            if (b.dateStr >= dateFrom && b.dateStr <= dateTo) {
+                if (!supplierFilter || b.name.toLowerCase().includes(supplierFilter)) {
+                    const endHrDisplay = Math.floor(b.endHourDecimal);
+                    const endMinDisplay = Math.round((b.endHourDecimal - endHrDisplay) * 60);
+                    currentReportData.push({
+                        date: b.dateStr,
+                        time: `${padHour(b.startHour)}:00 - ${padHour(endHrDisplay)}:${padHour(endMinDisplay)}`,
+                        supplier: b.name,
+                        type: TYPE_INFO[b.type]?.label || b.type,
+                        pallets: b.pallets,
+                        receiver: b.receiver,
+                        isSelfDelivery: false
+                    });
+                }
+            }
+        });
+    }
+
+    selfDeliveries.forEach(sd => {
+        if (sd.dateStr >= dateFrom && sd.dateStr <= dateTo) {
+            if (!supplierFilter || sd.supplierName.toLowerCase().includes(supplierFilter)) {
+                currentReportData.push({
+                    date: sd.dateStr,
+                    time: 'Весь день',
+                    supplier: sd.supplierName,
+                    type: 'Собственная доставка',
+                    pallets: '-',
+                    receiver: '-',
+                    isSelfDelivery: true
+                });
+            }
+        }
+    });
+
+    currentReportData.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+
+    const tbody = document.getElementById('reportTableBody');
+    tbody.innerHTML = '';
+    currentReportData.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="padding:6px; border:1px solid var(--border); white-space:nowrap;">${formatDateRu(new Date(row.date + 'T00:00:00'))}</td>
+            <td style="padding:6px; border:1px solid var(--border); white-space:nowrap;">${row.time}</td>
+            <td style="padding:6px; border:1px solid var(--border);">${escapeHtml(row.supplier)}</td>
+            <td style="padding:6px; border:1px solid var(--border);">${row.type}</td>
+            <td style="padding:6px; border:1px solid var(--border); text-align:center;">${row.pallets}</td>
+            <td style="padding:6px; border:1px solid var(--border); text-align:center;">${row.receiver}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById('reportResults').style.display = 'block';
+    document.getElementById('downloadReportBtn').style.display = currentReportData.length > 0 ? 'block' : 'none';
+    showToast(`Найдено записей: ${currentReportData.length}`, 'success');
+}
+
+function downloadReport() {
+    if (currentReportData.length === 0) return;
+    let csv = '\uFEFF';
+    csv += 'Дата;Время;Поставщик;Тип ТС;Паллеты;Приемщик\n';
+    currentReportData.forEach(row => {
+        csv += `${row.date};${row.time};${row.supplier};${row.type};${row.pallets};${row.receiver}\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Отчет_${document.getElementById('reportDateFrom').value}_${document.getElementById('reportDateTo').value}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Отчет скачан', 'success');
 }
 
 function init() {
