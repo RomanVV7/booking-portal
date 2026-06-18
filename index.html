@@ -28,8 +28,8 @@
             --danger-hover: #dc2626;
             --purple: #8b5cf6;
 
-            --day-col-width: 150px;
-            --slot-col-width: 48px;
+            --day-col-width: 160px;
+            --slot-col-width: 100px;
             --row-height: 44px;
             --time-header-height: 52px;
         }
@@ -207,8 +207,8 @@
             min-width: var(--day-col-width);
         }
         .day-header-cell.today-row { background: rgba(59,130,246,0.12); }
-        .day-header-cell .dh-day { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
-        .day-header-cell .dh-date { font-size: 15px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+        .day-header-cell .dh-day { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        .day-header-cell .dh-date { font-size: 14px; font-weight: 700; color: var(--text-primary); line-height: 1; }
         .day-header-cell.today-row .dh-date {
             background: var(--accent); color: white; width: 24px; height: 24px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; font-size: 12px;
@@ -398,8 +398,8 @@
             .submit-btn { padding: 11px; font-size: 13px; min-height: 44px; }
 
             :root {
-                --day-col-width: 120px;
-                --slot-col-width: 42px;
+                --day-col-width: 130px;
+                --slot-col-width: 80px;
                 --row-height: 40px;
             }
             .supplier-card { font-size: 9px; padding: 2px 4px 2px 6px; }
@@ -1047,8 +1047,8 @@ function renderSchedule() {
 
 function renderHorizontalView(dates) {
     const grid = document.getElementById('hSchedule');
-    const slotColWidth = 48;
-    const dayColWidth = 150;
+    const slotColWidth = 100;
+    const dayColWidth = 160;
     const rowHeight = 44;
     const timeHeaderHeight = 52;
 
@@ -1119,8 +1119,9 @@ function renderHorizontalView(dates) {
             const staffBtn = isEditMode ? `<button class="dh-staff" onclick="openStaffModal('${ds}')" title="Изменить штат">👥 ${rcCount} пр.</button>` : `<div class="dh-staff" style="cursor:default;">👥 ${rcCount} пр.</div>`;
 
             const dayStartBorder = isNewDay ? 'border-left: 3px solid var(--border-light);' : '';
+            const fullDate = `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}`;
             html += `<div class="day-header-cell${isT ? ' today-row' : ''}" style="grid-column: 1; grid-row: ${gridRow} / span ${rcCount}; ${dayStartBorder}">
-                <div class="dh-day">${DAY_NAMES[dayIdx]}</div>
+                <div class="dh-day">${DAY_NAMES[dayIdx]} ${fullDate}</div>
                 <div class="dh-date">${d.getDate()}</div>
                 ${staffBtn}
                 ${sdHtml}
