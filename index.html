@@ -28,7 +28,7 @@
             --danger-hover: #dc2626;
             --purple: #8b5cf6;
 
-            --day-col-width: 160px;
+            --day-col-width: 170px;
             --slot-col-width: 100px;
             --row-height: 44px;
             --time-header-height: 52px;
@@ -202,26 +202,34 @@
             background: var(--bg-secondary);
             border-right: 2px solid var(--border);
             border-bottom: 1px solid var(--border);
-            padding: 4px 8px;
-            display: flex; flex-direction: column; justify-content: center; gap: 2px;
+            padding: 6px 10px;
+            display: flex; flex-direction: column; justify-content: center; gap: 3px;
             min-width: var(--day-col-width);
         }
-        .day-header-cell.today-row { background: rgba(59,130,246,0.12); }
-        .day-header-cell .dh-day { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
-        .day-header-cell .dh-date { font-size: 14px; font-weight: 700; color: var(--text-primary); line-height: 1; }
-        .day-header-cell.today-row .dh-date {
-            background: var(--accent); color: white; width: 24px; height: 24px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 12px;
+        .day-header-cell.today-row { background: rgba(59,130,246,0.15); border-left: 4px solid var(--accent); }
+        .day-header-cell .dh-dayname {
+            font-size: 13px; font-weight: 700; color: var(--text-primary);
+            text-transform: uppercase; letter-spacing: 0.5px; line-height: 1;
         }
-        .day-header-cell.today-row .dh-day { color: #60a5fa; }
+        .day-header-cell .dh-date-full {
+            font-size: 12px; font-weight: 500; color: var(--text-secondary); line-height: 1;
+        }
+        .day-header-cell.today-row .dh-dayname { color: #60a5fa; }
+        .day-header-cell.today-row .dh-date-full { color: #93c5fd; }
         .day-header-cell .dh-staff {
-            display: inline-flex; align-items: center; gap: 3px;
+            display: inline-flex; align-items: center; gap: 4px;
             background: var(--bg-tertiary); border: 1px solid var(--border);
-            color: var(--text-primary); padding: 1px 5px; border-radius: 4px;
-            font-size: 9px; font-weight: 600; cursor: pointer; margin-top: 2px;
-            width: fit-content;
+            color: var(--text-primary); padding: 3px 8px; border-radius: 5px;
+            font-size: 10px; font-weight: 600; cursor: pointer; margin-top: 3px;
+            width: fit-content; transition: all 0.2s;
         }
         .day-header-cell .dh-staff:hover { background: var(--accent); border-color: var(--accent); color: white; }
+        .day-header-cell .dh-staff.editable {
+            background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: #fcd34d;
+        }
+        .day-header-cell .dh-staff.editable:hover {
+            background: var(--warning); border-color: var(--warning); color: #1a1a2e;
+        }
         .day-header-cell .dh-sd {
             display: inline-flex; align-items: center; gap: 2px;
             background: rgba(139,92,246,0.15); color: #a78bfa;
@@ -242,9 +250,9 @@
             background: var(--bg-tertiary);
             border-right: 2px solid var(--border);
             border-bottom: 1px solid var(--border);
-            padding: 2px 8px;
+            padding: 2px 10px;
             display: flex; align-items: center;
-            font-size: 10px; font-weight: 600; color: var(--text-secondary);
+            font-size: 11px; font-weight: 600; color: var(--text-secondary);
             min-width: var(--day-col-width);
             height: var(--row-height);
         }
@@ -362,6 +370,28 @@
         .toast.success { border-color: var(--success); background: rgba(16,185,129,0.15); color: #6ee7b7; }
         .toast.info { border-color: var(--accent); background: rgba(59,130,246,0.15); color: #60a5fa; }
 
+        /* Штат приемщиков — кнопки +/- */
+        .staff-counter {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            margin: 16px 0;
+        }
+        .staff-counter-btn {
+            width: 44px; height: 44px; border-radius: 50%;
+            border: 1px solid var(--border); background: var(--bg-tertiary);
+            color: var(--text-primary); font-size: 22px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; font-family: inherit;
+        }
+        .staff-counter-btn:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); color: white; }
+        .staff-counter-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .staff-counter-value {
+            font-size: 36px; font-weight: 800; color: var(--text-primary);
+            min-width: 60px; text-align: center; line-height: 1;
+        }
+        .staff-counter-label {
+            font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 4px;
+        }
+
         .sidebar-close-btn, .fab-add { display: none; }
         .staff-warning { font-size: 10px; color: var(--warning); margin-top: 8px; text-align: center; line-height: 1.4; }
 
@@ -398,7 +428,7 @@
             .submit-btn { padding: 11px; font-size: 13px; min-height: 44px; }
 
             :root {
-                --day-col-width: 130px;
+                --day-col-width: 140px;
                 --slot-col-width: 80px;
                 --row-height: 40px;
             }
@@ -578,18 +608,25 @@
 
 <div class="modal-overlay" id="staffModal">
     <div class="modal modal-sm">
-        <div class="modal-header"><h3>👥 Штат приемщиков</h3><button class="modal-close" onclick="closeModal('staffModal')">✕</button></div>
+        <div class="modal-header"><h3>👥 Приемщики на день</h3><button class="modal-close" onclick="closeModal('staffModal')">✕</button></div>
         <div class="modal-body">
-            <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">
                 Дата: <strong id="staffModalDate" style="color:var(--text-primary);"></strong>
             </p>
-            <div class="form-group">
-                <label>Количество приемщиков</label>
-                <input type="number" id="staffCountInput" min="1" max="5" value="3" style="font-size:16px; text-align:center;">
+            <p style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;">
+                Количество приемщиков на смене
+            </p>
+            <div class="staff-counter">
+                <button class="staff-counter-btn" id="staffMinus" onclick="changeStaffCount(-1)">−</button>
+                <div>
+                    <div class="staff-counter-value" id="staffCountDisplay">3</div>
+                    <div class="staff-counter-label" id="staffCountLabel">приемщика</div>
+                </div>
+                <button class="staff-counter-btn" id="staffPlus" onclick="changeStaffCount(1)">+</button>
             </div>
-            <button class="submit-btn" onclick="saveStaff()">💾 Сохранить штат</button>
+            <button class="submit-btn" onclick="saveStaff()">💾 Сохранить</button>
             <p class="staff-warning">
-                ⚠️ Внимание: уменьшение количества приемщиков скроет существующие записи для удаленных приемщиков на эту дату.
+                ⚠️ Уменьшение количества приемщиков скроет существующие записи для удаленных приемщиков на эту дату.
             </p>
         </div>
     </div>
@@ -800,6 +837,7 @@ function generateId() { return 'b_' + Date.now() + '_' + Math.random().toString(
 const DAY_NAMES = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 const DAY_NAMES_FULL = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
 const MONTH_NAMES = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const MONTH_NAMES_GEN = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 
 function getEffectiveDuration(type, dateStr) {
     let duration = DEFAULT_NORMS[type] || 60;
@@ -1048,12 +1086,11 @@ function renderSchedule() {
 function renderHorizontalView(dates) {
     const grid = document.getElementById('hSchedule');
     const slotColWidth = 100;
-    const dayColWidth = 160;
+    const dayColWidth = 170;
     const rowHeight = 44;
     const timeHeaderHeight = 52;
 
-    // Собираем строки: для каждого дня — заголовок дня + строки приемщиков
-    const rows = []; // { type: 'day'|'receiver', dateIdx, date, rc?, dayRowSpan? }
+    const rows = [];
     dates.forEach((d, di) => {
         const ds = formatDate(d);
         const rcList = getReceiversForDate(ds);
@@ -1063,18 +1100,13 @@ function renderHorizontalView(dates) {
         });
     });
 
-    const totalCols = 1 + TIME_SLOTS.length; // day-col + time slots
-    const totalRows = 1 + rows.length; // time-header + data rows
-
     grid.style.gridTemplateColumns = `${dayColWidth}px repeat(${TIME_SLOTS.length}, ${slotColWidth}px)`;
     grid.style.gridTemplateRows = `${timeHeaderHeight}px repeat(${rows.length}, ${rowHeight}px)`;
 
     let html = '';
 
-    // Угловая ячейка
     html += `<div class="corner-cell" style="grid-column: 1; grid-row: 1;">Время →</div>`;
 
-    // Заголовки времени (верхняя строка)
     TIME_SLOTS.forEach((slotMin, si) => {
         const hour = Math.floor(slotMin / 60);
         const minute = slotMin % 60;
@@ -1083,7 +1115,6 @@ function renderHorizontalView(dates) {
         let classes = 'time-header-cell';
         if (isHalf) classes += ' half-hour'; else classes += ' full-hour';
         if (isBreak) classes += ' break-slot';
-        // Подсветка сегодняшнего дня — проверяем все даты
         const hourLabel = isHalf ? '' : padHour(hour);
         const minLabel = isHalf ? '30' : '00';
         html += `<div class="${classes}" style="grid-column: ${si + 2}; grid-row: 1;">
@@ -1092,11 +1123,9 @@ function renderHorizontalView(dates) {
         </div>`;
     });
 
-    // Отслеживание начала нового дня для визуального разделения
     let prevDateIdx = -1;
     let dayColorToggle = 0;
 
-    // Строки данных
     rows.forEach((row, ri) => {
         const gridRow = ri + 2;
         const isNewDay = row.dateIdx !== prevDateIdx;
@@ -1107,32 +1136,32 @@ function renderHorizontalView(dates) {
         const dayAltClass = dayColorToggle === 1 ? 'day-alt' : '';
         
         if (row.type === 'day') {
-            // Заголовок дня — span по всем приемщикам этого дня
             const d = row.date;
             const ds = row.dateStr;
             const isT = isToday(d);
-            const dayIdx = dates.length === 7 ? (d.getDay()+6)%7 : row.dateIdx;
+            const dayIdx = (d.getDay()+6)%7;
             const rcList = getReceiversForDate(ds);
             const rcCount = rcList.length;
             const sdList = getSelfDeliveriesByDate(ds);
             let sdHtml = sdList.map(sd => `<div class="dh-sd"><span class="sd-name">🏷 ${escapeHtml(sd.supplierName)}</span>${isEditMode ? `<button class="sd-delete" onclick="deleteSelfDelivery('${sd.id}')" title="Удалить">✕</button>` : ''}</div>`).join('');
-            const staffBtn = isEditMode ? `<button class="dh-staff" onclick="openStaffModal('${ds}')" title="Изменить штат">👥 ${rcCount} пр.</button>` : `<div class="dh-staff" style="cursor:default;">👥 ${rcCount} пр.</div>`;
+            
+            const staffBtn = isEditMode
+                ? `<button class="dh-staff editable" onclick="openStaffModal('${ds}')" title="Изменить количество приемщиков">👥 ${rcCount} ${pluralReceiver(rcCount)} · изменить</button>`
+                : `<div class="dh-staff" style="cursor:default;">👥 ${rcCount} ${pluralReceiver(rcCount)}</div>`;
 
             const dayStartBorder = isNewDay ? 'border-left: 3px solid var(--border-light);' : '';
-            const fullDate = `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}`;
+            const dateFullStr = `${d.getDate()} ${MONTH_NAMES_GEN[d.getMonth()]}`;
             html += `<div class="day-header-cell${isT ? ' today-row' : ''}" style="grid-column: 1; grid-row: ${gridRow} / span ${rcCount}; ${dayStartBorder}">
-                <div class="dh-day">${DAY_NAMES[dayIdx]} ${fullDate}</div>
-                <div class="dh-date">${d.getDate()}</div>
+                <div class="dh-dayname">${DAY_NAMES[dayIdx]}</div>
+                <div class="dh-date-full">${dateFullStr}${isT ? ' · сегодня' : ''}</div>
                 ${staffBtn}
                 ${sdHtml}
             </div>`;
         } else {
-            // Заголовок приемщика
             const dayStartBorder = isNewDay ? 'border-left: 3px solid var(--border-light);' : '';
             html += `<div class="receiver-header-cell" style="grid-column: 1; grid-row: ${gridRow}; ${dayStartBorder}">Приемщик ${row.rc}</div>`;
         }
 
-        // Ячейки слотов для этой строки
         TIME_SLOTS.forEach((slotMin, si) => {
             const gridCol = si + 2;
             const isBreak = isBreakSlot(slotMin);
@@ -1173,30 +1202,52 @@ function renderHorizontalView(dates) {
 
     grid.innerHTML = html;
 
-    // Добавляем/убираем edit-mode класс для стилей
     if (isEditMode) grid.classList.add('edit-mode'); else grid.classList.remove('edit-mode');
+}
+
+function pluralReceiver(n) {
+    const mod10 = n % 10, mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return 'приемщик';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'приемщика';
+    return 'приемщиков';
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
 document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('visible'); }));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.visible').forEach(m => m.classList.remove('visible')); });
 
+let currentStaffDate = '';
+let currentStaffCount = 3;
+
 function openStaffModal(dateStr) {
     currentStaffDate = dateStr;
-    const count = receiversPerDate[dateStr] || 3;
+    currentStaffCount = receiversPerDate[dateStr] || 3;
     document.getElementById('staffModalDate').textContent = formatDateRu(new Date(dateStr + 'T00:00:00'));
-    document.getElementById('staffCountInput').value = count;
+    updateStaffCounterUI();
     document.getElementById('staffModal').classList.add('visible');
 }
-let currentStaffDate = '';
+
+function updateStaffCounterUI() {
+    document.getElementById('staffCountDisplay').textContent = currentStaffCount;
+    document.getElementById('staffCountLabel').textContent = pluralReceiver(currentStaffCount);
+    document.getElementById('staffMinus').disabled = currentStaffCount <= 1;
+    document.getElementById('staffPlus').disabled = currentStaffCount >= 5;
+}
+
+function changeStaffCount(delta) {
+    const newVal = currentStaffCount + delta;
+    if (newVal < 1 || newVal > 5) return;
+    currentStaffCount = newVal;
+    updateStaffCounterUI();
+}
+
 function saveStaff() {
-    const count = parseInt(document.getElementById('staffCountInput').value);
-    if (count >= 1 && count <= 5) {
-        receiversPerDate[currentStaffDate] = count;
+    if (currentStaffCount >= 1 && currentStaffCount <= 5) {
+        receiversPerDate[currentStaffDate] = currentStaffCount;
         closeModal('staffModal');
         saveToStorage(); saveToCloud();
-        renderSchedule(); updateStats();
-        showToast('Штат приемщиков обновлен', 'success');
+        renderSchedule(); updateStats(); updateTimeOptions();
+        showToast(`👥 Штат обновлен: ${currentStaffCount} ${pluralReceiver(currentStaffCount)}`, 'success');
     } else showToast('Введите число от 1 до 5', 'error');
 }
 
