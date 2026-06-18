@@ -957,7 +957,10 @@ function deleteBooking(id) {
     if (sdIdx !== -1) selfDeliveries.splice(sdIdx, 1);
     saveToStorage(); saveToCloud();
     showToast('Запись удалена', 'success');
-    renderSchedule(); updateStats(); closeModal('dayModal'); closeModal('mobileActionModal');
+    renderSchedule(); updateStats();
+    // Освобождаем время в форме — пересчитываем доступные слоты
+    updateTimeOptions();
+    closeModal('dayModal'); closeModal('mobileActionModal');
 }
 
 function deleteSelfDelivery(id) {
@@ -979,6 +982,8 @@ function startDrag(e, id) {
 function endDrag(e) {
     if (draggedData) { if (!getBookingById(draggedData.id)) { placeBooking(draggedData); renderSchedule(); } draggedData = null; }
     document.querySelectorAll('.supplier-card.dragging').forEach(el => el.classList.remove('dragging'));
+    // Освобождаем время в форме после завершения перемещения
+    updateTimeOptions();
 }
 function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; const c = e.target.closest('.slot-cell'); if (c) c.classList.add('drag-over'); }
 function handleDragLeave(e) { const c = e.target.closest('.slot-cell'); if (c) c.classList.remove('drag-over'); }
@@ -995,6 +1000,8 @@ function handleDrop(e) {
     draggedData = null;
     showToast('Перемещено на '+padHour(hr)+':00', 'success');
     renderSchedule(); updateStats();
+    // Освобождаем время в форме после перемещения
+    updateTimeOptions();
 }
 
 function getViewBtnIdSuffix(v) {
@@ -1343,6 +1350,8 @@ function promptMoveBooking(id) {
     closeModal('mobileActionModal');
     showToast('Запись перемещена', 'success');
     renderSchedule(); updateStats();
+    // Освобождаем время в форме после перемещения
+    updateTimeOptions();
 }
 
 function init() {
