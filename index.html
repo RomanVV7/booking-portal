@@ -24,47 +24,24 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
         :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-tertiary: #334155;
-            --bg-card: #1e293b;
-            --bg-hover: #2d3a4f;
-            --border: #334155;
-            --border-light: #475569;
-            --text-primary: #e2e8f0;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --accent-glow: rgba(59, 130, 246, 0.3);
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --danger-hover: #dc2626;
-            --purple: #8b5cf6;
+            --bg-primary: #0f172a; --bg-secondary: #1e293b; --bg-tertiary: #334155;
+            --bg-card: #1e293b; --bg-hover: #2d3a4f; --border: #334155;
+            --border-light: #475569; --text-primary: #e2e8f0; --text-secondary: #94a3b8;
+            --text-muted: #64748b; --accent: #3b82f6; --accent-hover: #2563eb;
+            --accent-glow: rgba(59, 130, 246, 0.3); --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444; --danger-hover: #dc2626; --purple: #8b5cf6;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
 
-        .header {
-            background: var(--bg-secondary); border-bottom: 1px solid var(--border);
-            padding: 8px 16px; display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 100;
-        }
+        .header { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
         .header h1 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
         .version-tag { font-size: 9px; color: var(--text-muted); margin-left: 4px; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; }
-        .mode-badge {
-            font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: 600; margin-left: 8px;
-        }
+        .mode-badge { font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: 600; margin-left: 8px; }
         .mode-badge.view { background: rgba(16,185,129,0.15); color: #6ee7b7; }
         .mode-badge.edit { background: rgba(245,158,11,0.15); color: #fcd34d; }
         .nav-controls { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
-        .nav-btn {
-            background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-secondary);
-            padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500;
-            transition: all 0.2s; font-family: inherit; min-height: 36px;
-        }
+        .nav-btn { background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-secondary); padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.2s; font-family: inherit; min-height: 36px; }
         .nav-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
         .nav-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
         .nav-btn.save-btn { background: var(--success); border-color: var(--success); color: white; }
@@ -82,39 +59,22 @@
         .sync-indicator.online .sync-dot { background: #6ee7b7; animation: pulse 2s infinite; }
         .sync-indicator.offline .sync-dot { background: #fcd34d; }
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-
         .edit-controls { display: none; }
         .edit-controls.visible { display: inline-flex; align-items: center; gap: 5px; }
 
         .main-container { display: flex; gap: 10px; padding: 10px; height: calc(100vh - 50px); align-items: stretch; }
-        .sidebar {
-            width: 300px; min-width: 280px; max-width: 320px; background: var(--bg-secondary);
-            border: 1px solid var(--border); border-radius: 8px; padding: 12px;
-            overflow-y: auto; flex-shrink: 0;
-        }
+        .sidebar { width: 300px; min-width: 280px; max-width: 320px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 12px; overflow-y: auto; flex-shrink: 0; }
         .sidebar h2 { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
         .form-group { margin-bottom: 10px; }
         .form-group label { display: block; font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
-        .form-group input, .form-group select {
-            width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px;
-            font-size: 14px; font-family: inherit; transition: border-color 0.2s;
-            background: var(--bg-primary); color: var(--text-primary);
-        }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-family: inherit; transition: border-color 0.2s; background: var(--bg-primary); color: var(--text-primary); }
         .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
         .form-row { display: flex; gap: 8px; }
         .form-row .form-group { flex: 1; }
-        .duration-display {
-            background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3);
-            border-radius: 6px; padding: 6px 8px; font-size: 11px; color: #6ee7b7;
-            font-weight: 500; margin-top: 4px; display: none;
-        }
+        .duration-display { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 6px; padding: 6px 8px; font-size: 11px; color: #6ee7b7; font-weight: 500; margin-top: 4px; display: none; }
         .duration-display.custom { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: #fcd34d; }
         .duration-display.break-warn { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #fca5a5; }
-        .submit-btn {
-            width: 100%; padding: 10px; background: var(--accent);
-            color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600;
-            cursor: pointer; transition: all 0.2s; font-family: inherit; margin-top: 8px; min-height: 44px;
-        }
+        .submit-btn { width: 100%; padding: 10px; background: var(--accent); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; margin-top: 8px; min-height: 44px; }
         .submit-btn:hover { background: var(--accent-hover); box-shadow: 0 2px 8px var(--accent-glow); }
         .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .divider { height: 1px; background: var(--border); margin: 12px 0; }
@@ -125,10 +85,7 @@
         .form-field-hidden { display: none; }
         .sidebar.hidden { display: none; }
 
-        .schedule-area {
-            flex: 1; background: var(--bg-secondary); border: 1px solid var(--border);
-            border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; min-width: 0;
-        }
+        .schedule-area { flex: 1; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         .legend { display: flex; gap: 8px; padding: 6px 10px; background: var(--bg-primary); border-bottom: 1px solid var(--border); font-size: 10px; flex-wrap: wrap; align-items: center; }
         .legend-item { display: flex; align-items: center; gap: 4px; }
         .legend-color { width: 10px; height: 10px; border-radius: 2px; }
@@ -149,72 +106,25 @@
         .scroll-wrapper { flex: 1; overflow-x: auto; overflow-y: hidden; position: relative; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
         .schedule-header { display: grid; min-width: max-content; position: sticky; top: 0; z-index: 10; background: var(--bg-primary); border-bottom: 2px solid var(--border); }
         .schedule-grid { display: grid; min-width: max-content; }
-        .time-col-header { 
-            padding: 6px 4px; font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; text-align: center; 
-            border-right: 1px solid var(--border); background: var(--bg-primary); 
-            position: sticky; left: 0; z-index: 11; min-width: 55px;
-        }
+        .time-col-header { padding: 6px 4px; font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; text-align: center; border-right: 1px solid var(--border); background: var(--bg-primary); position: sticky; left: 0; z-index: 11; min-width: 55px; }
         .day-group-header { text-align: center; border-right: 1px solid var(--border); position: relative; }
         .day-group-header.today { background: rgba(59,130,246,0.1); }
-        .day-label { 
-            font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; 
-            padding: 4px 0 0; border-bottom: 1px solid var(--border); 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-        }
-        .date-label { 
-            font-size: 14px; font-weight: 700; color: var(--text-primary); padding-bottom: 2px; 
-            white-space: nowrap; 
-        }
-        .day-group-header.today .date-label {
-            background: var(--accent); color: white; width: 24px; height: 24px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 12px;
-        }
+        .day-label { font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; padding: 4px 0 0; border-bottom: 1px solid var(--border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .date-label { font-size: 14px; font-weight: 700; color: var(--text-primary); padding-bottom: 2px; white-space: nowrap; }
+        .day-group-header.today .date-label { background: var(--accent); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 12px; }
         .day-group-header.today .day-label { color: #60a5fa; }
-        
-        .staff-btn {
-            display: inline-flex; align-items: center; gap: 4px;
-            background: var(--bg-tertiary); border: 1px solid var(--border);
-            color: var(--text-primary); padding: 3px 8px; border-radius: 4px;
-            font-size: 11px; font-weight: 600; cursor: pointer; margin-top: 4px;
-            transition: all 0.2s; white-space: nowrap;
-        }
+        .staff-btn { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; margin-top: 4px; transition: all 0.2s; white-space: nowrap; }
         .staff-btn:hover { background: var(--accent); border-color: var(--accent); color: white; }
-
-        .self-delivery-badge-wrapper { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 4px; }
-        .self-delivery-badge {
-            display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px;
-            background: rgba(139,92,246,0.15); color: #a78bfa; font-size: 9px; font-weight: 600;
-            border-radius: 4px; border: 1px solid rgba(139,92,246,0.3);
-        }
-        .self-delivery-badge .sd-delete {
-            width: 16px; height: 16px; border: none; background: rgba(239,68,68,0.2);
-            color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 10px;
-            display: flex; align-items: center; justify-content: center; line-height: 1;
-        }
-        .self-delivery-badge .sd-delete:hover { background: rgba(239,68,68,0.4); }
         .receiver-header-row { display: grid; border-top: 1px solid var(--border); }
-        .receiver-sub-header { 
-            font-size: 9px; font-weight: 500; color: var(--text-muted); text-align: center; 
-            padding: 2px 0; border-right: 1px solid var(--border); 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-        }
+        .receiver-sub-header { font-size: 9px; font-weight: 500; color: var(--text-muted); text-align: center; padding: 2px 0; border-right: 1px solid var(--border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .receiver-sub-header:last-child { border-right: none; }
-        .time-cell {
-            padding: 0 4px; font-size: 10px; font-weight: 600; color: var(--text-muted); text-align: right;
-            border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
-            background: var(--bg-primary); display: flex; align-items: flex-start; justify-content: flex-end;
-            padding-top: 4px; position: sticky; left: 0; z-index: 5; min-width: 55px;
-        }
+        .time-cell { padding: 0 4px; font-size: 10px; font-weight: 600; color: var(--text-muted); text-align: right; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--bg-primary); display: flex; align-items: flex-start; justify-content: flex-end; padding-top: 4px; position: sticky; left: 0; z-index: 5; min-width: 55px; }
         .time-cell.break-time { background: rgba(245,158,11,0.08); color: #f59e0b; font-style: italic; }
         .slot-cell { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2px; position: relative; transition: background 0.1s; min-width: 85px; }
         .edit-mode .slot-cell:hover:not(.occupied) { background: rgba(59,130,246,0.1); cursor: pointer; }
         .slot-cell.occupied { cursor: default; background: var(--bg-primary); }
         .slot-cell.drag-over { background: rgba(245,158,11,0.1); box-shadow: inset 0 0 0 2px #f59e0b; }
-        .supplier-card {
-            background: var(--bg-secondary); border: 1px solid var(--border); border-left: 3px solid var(--accent);
-            border-radius: 3px; padding: 2px 4px; font-size: 9px; margin-bottom: 2px;
-            cursor: default; transition: all 0.1s; position: relative; overflow: hidden;
-        }
+        .supplier-card { background: var(--bg-secondary); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 3px; padding: 2px 4px; font-size: 9px; margin-bottom: 2px; cursor: default; transition: all 0.1s; position: relative; overflow: hidden; }
         .edit-mode .supplier-card { cursor: grab; }
         .edit-mode .supplier-card:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
         .supplier-card:active { cursor: grabbing; }
@@ -229,11 +139,7 @@
         .supplier-card .s-details { display: flex; gap: 3px; font-size: 8px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; }
         .supplier-card .s-type { background: var(--bg-tertiary); padding: 0 3px; border-radius: 2px; font-weight: 500; }
         .supplier-card .s-break { background: rgba(239,68,68,0.15); color: #fca5a5; font-size: 7px; }
-        .supplier-card .delete-btn {
-            position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%;
-            border: none; background: rgba(239,68,68,0.2); color: #ef4444; font-size: 9px; cursor: pointer;
-            display: none; align-items: center; justify-content: center; line-height: 1;
-        }
+        .supplier-card .delete-btn { position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; border: none; background: rgba(239,68,68,0.2); color: #ef4444; font-size: 9px; cursor: pointer; display: none; align-items: center; justify-content: center; line-height: 1; }
         .edit-mode .supplier-card:hover .delete-btn { display: flex; }
         .month-view { display: none; }
         .week-view { display: flex; flex-direction: column; height: 100%; }
@@ -256,17 +162,6 @@
         .month-day-cell .md-card.type-транспортная-компания { border-left-color: #0891b2; }
         .month-day-cell .md-card.type-собственная-доставка { border-left-color: #8b5cf6; }
         .month-day-cell .md-more { font-size: 8px; color: var(--accent); padding: 0 2px; }
-        .self-delivery-day-badge-wrapper { display: flex; align-items: center; gap: 2px; margin-top: 2px; }
-        .self-delivery-day-badge {
-            display: inline-flex; align-items: center; gap: 2px; background: rgba(139,92,246,0.15);
-            color: #a78bfa; font-size: 8px; font-weight: 600; border-radius: 2px;
-            padding: 1px 4px; border: 1px solid rgba(139,92,246,0.3);
-        }
-        .self-delivery-day-badge .sd-delete {
-            width: 14px; height: 14px; border: none; background: rgba(239,68,68,0.2);
-            color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 8px;
-            display: flex; align-items: center; justify-content: center; line-height: 1;
-        }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .modal-overlay.visible { display: flex; }
         .modal { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
@@ -307,8 +202,6 @@
         .modal-card .mc-name { font-weight: 600; color: var(--text-primary); }
         .modal-card .mc-details { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
         .modal-card .mc-delete { width: 32px; height: 32px; border: none; background: rgba(239,68,68,0.15); color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .self-delivery-section { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
-        .self-delivery-section h4 { font-size: 12px; color: #a78bfa; font-weight: 600; margin-bottom: 6px; }
         .toast { position: fixed; bottom: 16px; right: 16px; background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); padding: 10px 14px; border-radius: 8px; font-size: 11px; z-index: 2000; transform: translateY(100px); opacity: 0; transition: all 0.3s; max-width: 300px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.error { border-color: var(--danger); background: rgba(239,68,68,0.15); color: #fca5a5; }
@@ -322,72 +215,37 @@
             .nav-controls { flex-wrap: wrap; justify-content: center; gap: 6px; width: 100%; }
             .current-period { width: 100%; text-align: center; margin: 4px 0; font-size: 13px; order: -1; }
             .nav-btn { padding: 8px 12px; font-size: 12px; min-height: 40px; }
-            
             .main-container { flex-direction: column; height: auto; padding: 8px; gap: 8px; }
             .schedule-area { min-height: 60vh; order: 1; }
-            
-            .sidebar {
-                position: fixed; bottom: 0; left: 0; right: 0; top: auto;
-                width: 100%; max-width: none; min-width: auto; max-height: 85vh;
-                border-radius: 16px 16px 0 0; border-bottom: none;
-                transform: translateY(100%); transition: transform 0.3s ease-out;
-                z-index: 500; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-                order: 2;
-            }
+            .sidebar { position: fixed; bottom: 0; left: 0; right: 0; top: auto; width: 100%; max-width: none; min-width: auto; max-height: 85vh; border-radius: 16px 16px 0 0; border-bottom: none; transform: translateY(100%); transition: transform 0.3s ease-out; z-index: 500; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); order: 2; }
             .sidebar.mobile-open { transform: translateY(0); }
-            .sidebar-close-btn { 
-                display: block; width: 40px; height: 4px; background: var(--border); 
-                border-radius: 2px; margin: 0 auto 12px auto; cursor: pointer; 
-            }
-            .sidebar-close-btn:hover { background: var(--text-muted); }
-            
-            .fab-add {
-                display: flex; position: fixed; bottom: 24px; right: 24px;
-                width: 56px; height: 56px; border-radius: 50%;
-                background: var(--accent); color: white; border: none;
-                font-size: 28px; align-items: center; justify-content: center;
-                box-shadow: 0 4px 16px var(--accent-glow); z-index: 400;
-                cursor: pointer;
-            }
+            .sidebar-close-btn { display: block; width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 12px auto; cursor: pointer; }
+            .fab-add { display: flex; position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: var(--accent); color: white; border: none; font-size: 28px; align-items: center; justify-content: center; box-shadow: 0 4px 16px var(--accent-glow); z-index: 400; cursor: pointer; }
             .fab-add:active { transform: scale(0.95); }
-
             .form-group input, .form-group select { font-size: 16px; padding: 12px; min-height: 44px; }
             .submit-btn { padding: 12px; font-size: 14px; min-height: 48px; }
-            
             .time-col-header, .time-cell { min-width: 55px; font-size: 11px; }
             .slot-cell { min-width: 85px; }
             .supplier-card { font-size: 10px; padding: 4px 6px; }
-            .supplier-card .delete-btn { 
-                display: flex !important; width: 28px; height: 28px; font-size: 12px; 
-                top: 4px; right: 4px; 
-            }
-            .self-delivery-badge .sd-delete { width: 24px; height: 24px; font-size: 12px; }
-            
+            .supplier-card .delete-btn { display: flex !important; width: 28px; height: 28px; font-size: 12px; top: 4px; right: 4px; }
             .modal { width: 95vw; max-width: none; margin: 10px; max-height: 90vh; border-radius: 16px; }
             .modal-header h3 { font-size: 16px; }
             .pwd-input-row input { font-size: 16px; padding: 12px; }
             .pwd-input-row button { min-height: 48px; font-size: 14px; }
             .modal-card { padding: 12px; font-size: 12px; }
             .modal-card .mc-delete { width: 36px; height: 36px; font-size: 16px; }
-            
             .legend { font-size: 9px; padding: 8px; }
             .legend-color { width: 12px; height: 12px; }
             .stats-bar { font-size: 10px; gap: 8px; }
         }
-
-        @media (min-width: 769px) {
-            .sidebar-close-btn, .fab-add { display: none !important; }
-        }
+        @media (min-width: 769px) { .sidebar-close-btn, .fab-add { display: none !important; } }
     </style>
 </head>
 <body>
 
 <div id="mainApp" class="hidden">
     <div class="header">
-        <h1>🏭 <span>Портал записи</span>
-            <span class="version-tag">v1.0</span>
-            <span class="mode-badge" id="modeBadge">Просмотр</span>
-        </h1>
+        <h1>🏭 <span>Портал записи</span><span class="version-tag">v1.0</span><span class="mode-badge" id="modeBadge">Просмотр</span></h1>
         <div class="nav-controls">
             <div class="edit-controls" id="editControls">
                 <button class="nav-btn active" id="btnDayView" onclick="switchView('day')">День</button>
@@ -415,10 +273,7 @@
             </div>
             <div class="current-period" id="currentPeriod"></div>
             <div class="nav-divider"></div>
-            <div class="sync-indicator" id="syncIndicator">
-                <div class="sync-dot"></div>
-                <span id="syncText">Загрузка...</span>
-            </div>
+            <div class="sync-indicator" id="syncIndicator"><div class="sync-dot"></div><span id="syncText">Загрузка...</span></div>
         </div>
     </div>
 
@@ -457,7 +312,7 @@
             <div id="normalFields">
                 <div class="form-row">
                     <div class="form-group"><label>Дата выгрузки</label><input type="date" id="bookingDate" onchange="onDateOrReceiverChange()"></div>
-                    <div class="form-group"><label>Время начала</label><select id="bookingTime" onchange="updateSteps()"><option value="">Выберите...</option></select></div>
+                    <div class="form-group"><label>Время начала</label><select id="bookingTime" onchange="onTimeManuallyChanged()"><option value="">Выберите...</option></select></div>
                 </div>
                 <div class="form-group">
                     <label>Приемщик</label>
@@ -495,7 +350,6 @@
             </div>
         </div>
     </div>
-    
     <button class="fab-add" onclick="openMobileSidebar()" title="Новая запись">+</button>
 </div>
 
@@ -503,7 +357,7 @@
     <div class="modal modal-sm">
         <div class="modal-header"><h3>🔒 Введите пароль</h3><button class="modal-close" onclick="closeModal('editPwdModal')">✕</button></div>
         <div class="modal-body">
-            <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Доступ к редактированию записей (удаление, перемещение, штат)</p>
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Доступ к редактированию записей</p>
             <div class="pwd-input-row">
                 <input type="password" id="editPwd" placeholder="••••••" maxlength="6" onkeydown="if(event.key==='Enter')checkEditPwd()">
                 <button onclick="checkEditPwd()">Войти</button>
@@ -531,10 +385,7 @@
     <div class="modal modal-md">
         <div class="modal-header"><h3>⚙ Нормативы по времени выгрузки</h3><button class="modal-close" onclick="closeModal('normModal')">✕</button></div>
         <div class="modal-body">
-            <div class="norm-apply-note">
-                📌 <strong>Важно:</strong> Изменение нормативов применяется ко всем записям, начиная с даты, следующей за датой изменения.
-                <br>Дата применения: <strong id="normApplyDate"></strong>.
-            </div>
+            <div class="norm-apply-note">📌 <strong>Важно:</strong> Изменение нормативов применяется ко всем записям, начиная с даты, следующей за датой изменения.<br>Дата применения: <strong id="normApplyDate"></strong>.</div>
             <div id="normRows"></div>
             <button class="norm-save-btn" onclick="saveNormatives()">💾 Сохранить изменения</button>
             <div class="norm-history" id="normHistory"></div>
@@ -553,17 +404,13 @@
     <div class="modal modal-sm">
         <div class="modal-header"><h3>👥 Штат приемщиков</h3><button class="modal-close" onclick="closeModal('staffModal')">✕</button></div>
         <div class="modal-body">
-            <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
-                Дата: <strong id="staffModalDate" style="color:var(--text-primary);"></strong>
-            </p>
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Дата: <strong id="staffModalDate" style="color:var(--text-primary);"></strong></p>
             <div class="form-group">
                 <label>Количество приемщиков</label>
                 <input type="number" id="staffCountInput" min="1" max="5" value="3" style="font-size:16px; text-align:center;">
             </div>
             <button class="submit-btn" onclick="saveStaff()">💾 Сохранить штат</button>
-            <p class="staff-warning">
-                ⚠️ Внимание: уменьшение количества приемщиков скроет существующие записи для удаленных приемщиков на эту дату.
-            </p>
+            <p class="staff-warning">⚠️ Уменьшение количества приемщиков скроет записи для удаленных приемщиков.</p>
         </div>
     </div>
 </div>
@@ -599,10 +446,7 @@ const TYPE_INFO = {
     'транспортная компания': { icon: '🚚', label: 'ТК' },
     'собственная доставка': { icon: '🏷', label: 'Собств. доставка' }
 };
-const BREAK_PERIODS = [
-    { start: 10*60+30, end: 11*60 },
-    { start: 11*60+30, end: 12*60 }
-];
+const BREAK_PERIODS = [{ start: 10*60+30, end: 11*60 }, { start: 11*60+30, end: 12*60 }];
 
 let currentView = 'week';
 let currentDate = new Date();
@@ -614,6 +458,7 @@ let normativeHistory = [];
 let firebaseDb = null;
 let firebaseReady = false;
 let syncDebounceTimer = null;
+let currentStaffDate = '';
 
 function getReceiversForDate(dateStr) {
     const count = receiversPerDate[dateStr] || 3;
@@ -632,11 +477,7 @@ function checkEditPwd() {
     if (pwd === '000000') {
         closeModal('editPwdModal');
         isEditMode = true;
-        if (!firebaseReady) {
-            initFirebase();
-        } else {
-            showMainApp();
-        }
+        if (!firebaseReady) initFirebase(); else showMainApp();
     } else {
         document.getElementById('editPwdError').style.display = 'block';
         document.getElementById('editPwd').value = '';
@@ -647,15 +488,11 @@ function checkEditPwd() {
 function initFirebase() {
     try {
         if (FIREBASE_CONFIG.apiKey === 'YOUR_API_KEY') {
-            loadFromStorage();
-            showMainApp();
-            updateSyncIndicator(false);
-            showToast('⚠ Firebase не настроен — данные только локально', 'info');
-            return;
+            loadFromStorage(); showMainApp(); updateSyncIndicator(false);
+            showToast('⚠ Firebase не настроен — данные только локально', 'info'); return;
         }
         firebase.initializeApp(FIREBASE_CONFIG);
-        firebaseDb = firebase.database();
-        firebaseReady = true;
+        firebaseDb = firebase.database(); firebaseReady = true;
         const dataRef = firebaseDb.ref('bookingPortalData');
         dataRef.once('value').then(snapshot => {
             const data = snapshot.val();
@@ -669,28 +506,19 @@ function initFirebase() {
                 if (Object.keys(bookings).length === 0) createDemoData();
                 saveToCloud();
             }
-            showMainApp();
-            updateSyncIndicator(true);
-        }).catch(err => {
-            loadFromStorage();
-            showMainApp();
-            updateSyncIndicator(false);
-        });
+            showMainApp(); updateSyncIndicator(true);
+        }).catch(() => { loadFromStorage(); showMainApp(); updateSyncIndicator(false); });
         dataRef.on('value', snapshot => {
             const data = snapshot.val();
             if (data) {
                 const nb = data.bookings || {}, nn = data.normativeHistory || [], nr = data.receiversPerDate || {};
                 if (JSON.stringify(nb) !== JSON.stringify(bookings) || JSON.stringify(nr) !== JSON.stringify(receiversPerDate)) {
                     bookings = nb; normativeHistory = nn; receiversPerDate = nr;
-                    renderSchedule(); updateStats();
+                    renderSchedule(); updateStats(); updateTimeOptions();
                 }
             }
         });
-    } catch (e) {
-        loadFromStorage();
-        showMainApp();
-        updateSyncIndicator(false);
-    }
+    } catch (e) { loadFromStorage(); showMainApp(); updateSyncIndicator(false); }
 }
 
 function saveToCloud() {
@@ -705,24 +533,13 @@ function saveToCloud() {
     }, 300);
 }
 
-function saveAllChanges() {
-    saveToStorage();
-    saveToCloud();
-    showToast('💾 Все изменения сохранены!', 'success');
-}
-
+function saveAllChanges() { saveToStorage(); saveToCloud(); showToast('💾 Все изменения сохранены!', 'success'); }
 function updateSyncIndicator(online) {
-    const ind = document.getElementById('syncIndicator');
-    const txt = document.getElementById('syncText');
-    if (online) { ind.className = 'sync-indicator online'; txt.textContent = 'Синхронизация'; }
-    else { ind.className = 'sync-indicator offline'; txt.textContent = 'Локально'; }
+    const ind = document.getElementById('syncIndicator'), txt = document.getElementById('syncText');
+    ind.className = `sync-indicator ${online ? 'online' : 'offline'}`;
+    txt.textContent = online ? 'Синхронизация' : 'Локально';
 }
-
-function logout() {
-    isEditMode = false;
-    showMainApp();
-    showToast('🔒 Режим просмотра', 'info');
-}
+function logout() { isEditMode = false; showMainApp(); showToast('🔒 Режим просмотра', 'info'); }
 
 function showMainApp() {
     document.getElementById('mainApp').classList.remove('hidden');
@@ -733,33 +550,27 @@ function showMainApp() {
 
     const modeBadge = document.getElementById('modeBadge');
     if (isEditMode) {
-        modeBadge.textContent = 'Редактирование';
-        modeBadge.className = 'mode-badge edit';
+        modeBadge.textContent = 'Редактирование'; modeBadge.className = 'mode-badge edit';
         document.getElementById('sidebar').classList.remove('hidden');
         document.getElementById('editControls').classList.add('visible');
         document.getElementById('viewControls').style.display = 'none';
         document.getElementById('weekView').classList.add('edit-mode');
     } else {
-        modeBadge.textContent = 'Просмотр';
-        modeBadge.className = 'mode-badge view';
+        modeBadge.textContent = 'Просмотр'; modeBadge.className = 'mode-badge view';
         document.getElementById('sidebar').classList.remove('hidden');
         document.getElementById('editControls').classList.remove('visible');
         document.getElementById('viewControls').style.display = '';
         document.getElementById('weekView').classList.remove('edit-mode');
     }
-
     onTypeChange(); updateSteps(); renderSchedule(); updateStats();
 }
 
 function saveToStorage() {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ bookings, normativeHistory, receiversPerDate, savedAt: new Date().toISOString(), version: VERSION }));
-    } catch (e) {}
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ bookings, normativeHistory, receiversPerDate, savedAt: new Date().toISOString(), version: VERSION })); } catch (e) {}
 }
 function loadFromStorage() {
     try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return false;
+        const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return false;
         const data = JSON.parse(raw);
         if (data.bookings) bookings = data.bookings;
         if (data.normativeHistory) normativeHistory = data.normativeHistory;
@@ -779,12 +590,7 @@ function padMin(m) { return String(Math.round(m)).padStart(2, '0'); }
 function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function nextDay(dateStr) { const d = new Date(dateStr + 'T00:00:00'); d.setDate(d.getDate() + 1); return formatDate(d); }
 function generateId() { return 'b_' + Date.now() + '_' + Math.random().toString(36).substr(2,5); }
-
-function formatTimeLabel(hrDecimal) {
-    const h = Math.floor(hrDecimal);
-    const m = Math.round((hrDecimal - h) * 60);
-    return `${padHour(h)}:${padMin(m)}`;
-}
+function formatTimeLabel(hrDecimal) { const h = Math.floor(hrDecimal), m = Math.round((hrDecimal - h) * 60); return `${padHour(h)}:${padMin(m)}`; }
 
 const DAY_NAMES = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 const DAY_NAMES_FULL = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
@@ -805,11 +611,10 @@ function calcBookingDuration(baseDuration, startHr) {
     const breakMins = calcBreakMinutes(startHr, baseEndHrDecimal);
     const total = baseDuration + breakMins;
     const endHourDecimal = startHr + total / 60;
-    return { baseDuration, breakMinutes: breakMins, totalDuration: total, endHourDecimal: endHourDecimal, endHour: Math.ceil(endHourDecimal) };
+    return { baseDuration, breakMinutes: breakMins, totalDuration: total, endHourDecimal, endHour: Math.ceil(endHourDecimal) };
 }
 
-// ===== КЛЮЧЕВАЯ ФУНКЦИЯ: получение ВСЕХ записей для даты и приемщика =====
-// Сканирует все слоты, чтобы найти все записи (даже если они дублируются в нескольких слотах)
+// ===== КРИТИЧЕСКИ ВАЖНО: Получение всех уникальных записей приёмщика на дату =====
 function getAllBookingsForReceiver(ds, rc) {
     const result = [];
     const seenIds = new Set();
@@ -818,20 +623,14 @@ function getAllBookingsForReceiver(ds, rc) {
         const arr = bookings[key];
         if (arr) {
             for (const b of arr) {
-                if (!seenIds.has(b.id)) {
-                    seenIds.add(b.id);
-                    result.push(b);
-                }
+                if (!seenIds.has(b.id)) { seenIds.add(b.id); result.push(b); }
             }
         }
     }
     return result;
 }
 
-// ===== ИСПРАВЛЕННАЯ ПРОВЕРКА: сравниваем временные интервалы напрямую =====
-// Новая запись занимает интервал [newStartMins, newEndMins)
-// Существующая запись занимает [bStartMins, bEndMins)
-// Пересечение есть, если newStart < bEnd И bStart < newEnd
+// ===== ИСПРАВЛЕННАЯ ПРОВЕРКА: прямое сравнение временных интервалов =====
 function canPlaceBooking(ds, startHr, rc, baseDuration, excludeId) {
     const calc = calcBookingDuration(baseDuration, startHr);
     if (calc.endHourDecimal > END_HOUR) return false;
@@ -839,14 +638,12 @@ function canPlaceBooking(ds, startHr, rc, baseDuration, excludeId) {
     const newStartMins = startHr * 60;
     const newEndMins = calc.endHourDecimal * 60;
     
-    // Получаем ВСЕ записи этого приемщика на эту дату
     const allBookings = getAllBookingsForReceiver(ds, rc);
-    
     for (const b of allBookings) {
         if (excludeId && b.id === excludeId) continue;
         const bStartMins = b.startHour * 60;
         const bEndMins = b.endHourDecimal * 60;
-        // Проверка пересечения интервалов
+        // Пересечение интервалов: [newStart, newEnd) ∩ [bStart, bEnd) ≠ ∅
         if (newStartMins < bEndMins && bStartMins < newEndMins) {
             return false;
         }
@@ -862,19 +659,15 @@ function removeBookingFromSlot(ds, hr, rc, id) {
     if (bookings[k]) { bookings[k] = bookings[k].filter(b => b.id !== id); if (bookings[k].length === 0) delete bookings[k]; }
 }
 function getBookingById(id) { for (const k in bookings) { const b = bookings[k].find(x => x.id === id); if (b) return { booking: b, key: k }; } return null; }
-// Запись размещается во всех часовых слотах, которые она покрывает
-function placeBooking(bk) { 
+function placeBooking(bk) {
     const startSlot = Math.floor(bk.startHour);
-    const endSlot = bk.endHour; // уже Math.ceil(endHourDecimal)
-    for (let h = startSlot; h < endSlot; h++) {
-        addBookingToSlot(bk.dateStr, h, bk.receiver, bk);
-    }
+    const endSlot = bk.endHour;
+    for (let h = startSlot; h < endSlot; h++) addBookingToSlot(bk.dateStr, h, bk.receiver, bk);
 }
 
 function onTypeChange() {
     const type = document.getElementById('unloadType').value;
     const display = document.getElementById('durationDisplay');
-    const nf = document.getElementById('normalFields');
     document.getElementById('normalFields').classList.remove('form-field-hidden');
     if (type && DEFAULT_NORMS.hasOwnProperty(type)) {
         const ds = document.getElementById('bookingDate').value || formatDate(new Date());
@@ -895,6 +688,7 @@ function onTypeChange() {
 }
 
 function onDateOrReceiverChange() { updateTimeOptions(); onTypeChange(); updateSteps(); }
+function onTimeManuallyChanged() { updateSteps(); }
 
 function updateTimeOptions() {
     const ds = document.getElementById('bookingDate').value;
@@ -904,11 +698,7 @@ function updateTimeOptions() {
         const rcList = getReceiversForDate(ds);
         const currentVal = rcSelect.value;
         rcSelect.innerHTML = rcList.map(r => `<option value="${r}">Приемщик ${r}</option>`).join('');
-        if (rcList.includes(parseInt(currentVal))) {
-            rcSelect.value = currentVal;
-        } else {
-            rcSelect.value = rcList[0];
-        }
+        rcSelect.value = rcList.includes(parseInt(currentVal)) ? currentVal : rcList[0];
     } else {
         rcSelect.innerHTML = '<option value="1">Приемщик 1</option><option value="2">Приемщик 2</option><option value="3">Приемщик 3</option>';
     }
@@ -920,6 +710,7 @@ function updateTimeOptions() {
     const baseDur = type ? getEffectiveDuration(type, ds) : 60;
     sel.innerHTML = '<option value="">Выберите...</option>';
     if (!ds) return;
+    
     for (let h = START_HOUR; h < END_HOUR; h++) {
         const avail = canPlaceBooking(ds, h, rc, baseDur);
         const opt = document.createElement('option');
@@ -927,18 +718,29 @@ function updateTimeOptions() {
         const calc = calcBookingDuration(baseDur, h);
         let label = `${padHour(h)}:00-${formatTimeLabel(calc.endHourDecimal)}`;
         if (calc.breakMinutes > 0) label += ` (+${calc.breakMinutes}м)`;
-        if (!avail) label += ' (занято)';
-        opt.textContent = label; opt.disabled = !avail;
+        if (!avail) label += ' ⛔ занято';
+        opt.textContent = label;
+        opt.disabled = !avail;
         sel.appendChild(opt);
     }
-    if (curVal && sel.querySelector('option[value="'+curVal+'"]')) sel.value = curVal;
+    
+    // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: если текущее значение стало недоступным, сбрасываем его
+    if (curVal) {
+        const curOpt = sel.querySelector(`option[value="${curVal}"]`);
+        if (curOpt && !curOpt.disabled) {
+            sel.value = curVal;
+        } else {
+            sel.value = '';
+        }
+    }
 }
 
 function updateSteps() {
     const name = document.getElementById('supplierName').value.trim();
     const pal = document.getElementById('palletCount').value;
     const type = document.getElementById('unloadType').value;
-    const steps = [!!name, !!pal && parseInt(pal)>0, !!type, !!document.getElementById('bookingDate').value, !!document.getElementById('bookingTime').value];
+    const timeVal = document.getElementById('bookingTime').value;
+    const steps = [!!name, !!pal && parseInt(pal)>0, !!type, !!document.getElementById('bookingDate').value, !!timeVal];
     for (let i = 1; i <= 5; i++) {
         const dot = document.getElementById('step'+i);
         dot.classList.remove('active','completed');
@@ -957,12 +759,19 @@ function submitBooking() {
     const rc = parseInt(document.getElementById('receiverSelect').value);
     const baseDur = getEffectiveDuration(type, ds);
     const calc = calcBookingDuration(baseDur, startHr);
+    
     if (calc.endHourDecimal > END_HOUR) { showToast('Запись выходит за рабочее время (18:00)', 'error'); return; }
-    // Повторная строгая проверка перед сохранением
-    if (!canPlaceBooking(ds, startHr, rc, baseDur)) { 
-        showToast('❌ Выбранное время уже занято! Выберите другое время.', 'error'); 
-        return; 
+    
+    // ФИНАЛЬНАЯ ПРОВЕРКА ПЕРЕД СОХРАНЕНИЕМ
+    if (!canPlaceBooking(ds, startHr, rc, baseDur)) {
+        showToast('❌ ВРЕМЯ УЖЕ ЗАНЯТО! Выберите другой слот.', 'error');
+        // Сбрасываем выбор времени, чтобы пользователь не мог снова нажать
+        document.getElementById('bookingTime').value = '';
+        updateTimeOptions();
+        updateSteps();
+        return;
     }
+    
     placeBooking({ id: generateId(), name, pallets: pal, type, baseDuration: baseDur, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, startHour: startHr, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, dateStr: ds, receiver: rc });
     saveToStorage(); saveToCloud();
     const dObj = new Date(ds+'T00:00:00');
@@ -982,12 +791,7 @@ function resetForm() {
 
 function deleteBooking(id) {
     const res = getBookingById(id);
-    if (res) { 
-        const b = res.booking; 
-        for (let h = Math.floor(b.startHour); h < b.endHour; h++) {
-            removeBookingFromSlot(b.dateStr, h, b.receiver, id);
-        }
-    }
+    if (res) { const b = res.booking; for (let h = Math.floor(b.startHour); h < b.endHour; h++) removeBookingFromSlot(b.dateStr, h, b.receiver, id); }
     saveToStorage(); saveToCloud();
     showToast('Запись удалена', 'success');
     renderSchedule(); updateStats(); closeModal('dayModal'); closeModal('mobileActionModal');
@@ -1013,12 +817,7 @@ function handleDrop(e) {
     if (isNaN(hr) || isNaN(rc)) return;
     const calc = calcBookingDuration(draggedData.baseDuration, hr);
     if (calc.endHourDecimal > END_HOUR) { showToast('Выходит за рабочее время', 'error'); endDrag(); return; }
-    // Строгая проверка с исключением самой перемещаемой записи
-    if (!canPlaceBooking(ds, hr, rc, draggedData.baseDuration, draggedData.id)) { 
-        showToast(`❌ Слот ${padHour(hr)}:00 занят`, 'error'); 
-        endDrag(); 
-        return; 
-    }
+    if (!canPlaceBooking(ds, hr, rc, draggedData.baseDuration, draggedData.id)) { showToast(`❌ Слот ${padHour(hr)}:00 занят`, 'error'); endDrag(); return; }
     placeBooking({ ...draggedData, dateStr: ds, startHour: hr, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, receiver: rc });
     saveToStorage(); saveToCloud();
     draggedData = null;
@@ -1057,31 +856,22 @@ function renderSchedule() { updatePeriodLabel(); if (currentView === 'month') re
 
 function renderDayWeekView(dates) {
     const sw = document.getElementById('scrollWrapper');
-    const tcw = 55;
-    const colWidth = 85;
-    
+    const tcw = 55, colWidth = 85;
     let totalReceiverCols = 0;
-    dates.forEach(d => {
-        totalReceiverCols += getReceiversForDate(formatDate(d)).length;
-    });
-    
+    dates.forEach(d => { totalReceiverCols += getReceiversForDate(formatDate(d)).length; });
     const gt = `${tcw}px repeat(${totalReceiverCols}, ${colWidth}px)`;
     document.getElementById('weekHeader').style.gridTemplateColumns = gt;
     document.getElementById('weekGrid').style.gridTemplateColumns = gt;
-    
     const wh = sw.clientHeight;
     const ch = Math.max(32, Math.floor((wh - 60) / HOURS.length));
 
     let h = `<div class="time-col-header" style="min-width:${tcw}px">Время</div>`;
-    
     dates.forEach((d, i) => {
         const tc = isToday(d) ? ' today' : '';
         const ds = formatDate(d);
         const rcList = getReceiversForDate(ds);
         const rcCount = rcList.length;
-        const sdList = []; // self-deliveries removed for simplicity
         const staffBtn = isEditMode ? `<button class="staff-btn" onclick="openStaffModal('${ds}')" title="Изменить количество приемщиков">👥 ${rcCount}</button>` : '';
-        
         h += `<div class="day-group-header${tc}" style="grid-column:span ${rcCount}; min-width: ${rcCount * colWidth}px">
             <div class="day-label">${DAY_NAMES[i]}</div>
             <div class="date-label">${d.getDate()}</div>
@@ -1123,8 +913,7 @@ function renderDayWeekView(dates) {
 
 function renderMonthView() {
     const yr = currentDate.getFullYear(), mo = currentDate.getMonth();
-    const fd = new Date(yr, mo, 1), ld = new Date(yr, mo+1, 0);
-    const so = (fd.getDay()+6)%7;
+    const fd = new Date(yr, mo, 1), so = (fd.getDay()+6)%7;
     document.getElementById('monthHeader').innerHTML = DAY_NAMES.map(d => `<div class="month-day-header">${d}</div>`).join('');
     let g = ''; let cur = new Date(yr, mo, 1-so); let w = 0;
     while (w < 6 && cur <= new Date(yr, mo+1, 0)) {
@@ -1133,11 +922,7 @@ function renderMonthView() {
         const db = [];
         const rcList = getReceiversForDate(ds);
         for (let hr = START_HOUR; hr < END_HOUR; hr++) {
-            rcList.forEach(r => { 
-                getBookings(ds, hr, r).forEach(b => { 
-                    if (Math.floor(b.startHour)===hr && !db.find(x=>x.id===b.id)) db.push(b); 
-                }); 
-            });
+            rcList.forEach(r => { getBookings(ds, hr, r).forEach(b => { if (Math.floor(b.startHour)===hr && !db.find(x=>x.id===b.id)) db.push(b); }); });
         }
         db.sort((a,b) => a.startHour-b.startHour);
         db.slice(0,3).forEach(b => { const tc = b.type==='транспортная компания'?'транспортная-компания':b.type; g += `<div class="md-card type-${tc}">${escapeHtml(b.name)}</div>`; });
@@ -1182,21 +967,13 @@ function openStaffModal(dateStr) {
     document.getElementById('staffCountInput').value = count;
     document.getElementById('staffModal').classList.add('visible');
 }
-
-let currentStaffDate = '';
 function saveStaff() {
     const count = parseInt(document.getElementById('staffCountInput').value);
     if (count >= 1 && count <= 5) {
         receiversPerDate[currentStaffDate] = count;
-        closeModal('staffModal');
-        saveToStorage();
-        saveToCloud();
-        renderSchedule();
-        updateStats();
-        showToast('Штат приемщиков обновлен', 'success');
-    } else {
-        showToast('Введите число от 1 до 5', 'error');
-    }
+        closeModal('staffModal'); saveToStorage(); saveToCloud();
+        renderSchedule(); updateStats(); showToast('Штат приемщиков обновлен', 'success');
+    } else showToast('Введите число от 1 до 5', 'error');
 }
 
 function openNormativesPassword() {
@@ -1210,7 +987,6 @@ function checkPwd() {
     if (pwd === '147963') { closeModal('pwdModal'); openNormatives(); }
     else { document.getElementById('pwdError').style.display = 'block'; document.getElementById('normPwd').value = ''; document.getElementById('normPwd').focus(); }
 }
-
 function openNormatives() {
     const applyDate = nextDay(formatDate(new Date()));
     document.getElementById('normApplyDate').textContent = formatDateRu(new Date(applyDate+'T00:00:00')) + ' (начиная с этой даты)';
@@ -1234,7 +1010,6 @@ function openNormatives() {
     document.getElementById('normHistory').innerHTML = hist;
     document.getElementById('normModal').classList.add('visible');
 }
-
 function saveNormatives() {
     const changes = {}; let hasChange = false;
     for (const type of Object.keys(DEFAULT_NORMS)) {
@@ -1263,8 +1038,7 @@ function saveNormatives() {
             }
         });
     }
-    saveToStorage(); saveToCloud();
-    closeModal('normModal');
+    saveToStorage(); saveToCloud(); closeModal('normModal');
     showToast(`Нормативы сохранены! Обновлено: ${updatedCount}`, 'success');
     renderSchedule(); updateStats(); onTypeChange();
 }
@@ -1276,9 +1050,7 @@ function updateStats() {
         const ds = formatDate(d);
         const rcList = getReceiversForDate(ds);
         for (let h = START_HOUR; h < END_HOUR; h++) {
-            rcList.forEach(r => {
-                getBookings(ds, h, r).forEach(b => { if (!counted.has(b.id)) { counted.add(b.id); total++; pallets += b.pallets; types[b.type] = (types[b.type]||0)+1; } });
-            });
+            rcList.forEach(r => { getBookings(ds, h, r).forEach(b => { if (!counted.has(b.id)) { counted.add(b.id); total++; pallets += b.pallets; types[b.type] = (types[b.type]||0)+1; } }); });
         }
     });
     let html = `<div class="stat-item">📦 Записей: <span class="stat-value">${total}</span></div>`;
@@ -1306,22 +1078,13 @@ function createDemoData() {
     saveToStorage();
 }
 
-function openMobileSidebar() {
-    document.getElementById('sidebar').classList.add('mobile-open');
-}
-function closeMobileSidebar() {
-    document.getElementById('sidebar').classList.remove('mobile-open');
-}
+function openMobileSidebar() { document.getElementById('sidebar').classList.add('mobile-open'); }
+function closeMobileSidebar() { document.getElementById('sidebar').classList.remove('mobile-open'); }
 function handleMobileCardClick(event, id) {
-    if (window.innerWidth <= 768 && isEditMode) {
-        event.stopPropagation();
-        event.preventDefault();
-        handleMobileCardAction(id);
-    }
+    if (window.innerWidth <= 768 && isEditMode) { event.stopPropagation(); event.preventDefault(); handleMobileCardAction(id); }
 }
 function handleMobileCardAction(id) {
-    const res = getBookingById(id);
-    if (!res) return;
+    const res = getBookingById(id); if (!res) return;
     const b = res.booking;
     const body = document.getElementById('mobileActionBody');
     body.innerHTML = `
@@ -1337,28 +1100,19 @@ function handleMobileCardAction(id) {
     document.getElementById('mobileActionModal').classList.add('visible');
 }
 function promptMoveBooking(id) {
-    const res = getBookingById(id);
-    if (!res) return;
+    const res = getBookingById(id); if (!res) return;
     const b = res.booking;
     const newHrStr = prompt(`Текущее время: ${padHour(b.startHour)}:00\nВведите новое время начала (от ${START_HOUR} до ${END_HOUR-1}):`, b.startHour);
     if (newHrStr === null) return;
     const newHr = parseInt(newHrStr);
-    if (isNaN(newHr) || newHr < START_HOUR || newHr >= END_HOUR) {
-        showToast('Некорректное время', 'error');
-        return;
-    }
+    if (isNaN(newHr) || newHr < START_HOUR || newHr >= END_HOUR) { showToast('Некорректное время', 'error'); return; }
     const calc = calcBookingDuration(b.baseDuration, newHr);
     if (calc.endHourDecimal > END_HOUR) { showToast('Выходит за рабочее время', 'error'); return; }
-    if (!canPlaceBooking(b.dateStr, newHr, b.receiver, b.baseDuration, b.id)) {
-        showToast(`❌ Слот ${padHour(newHr)}:00 занят`, 'error');
-        return;
-    }
+    if (!canPlaceBooking(b.dateStr, newHr, b.receiver, b.baseDuration, b.id)) { showToast(`❌ Слот ${padHour(newHr)}:00 занят`, 'error'); return; }
     for (let h = Math.floor(b.startHour); h < b.endHour; h++) removeBookingFromSlot(b.dateStr, h, b.receiver, b.id);
     placeBooking({ ...b, startHour: newHr, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, breakMinutes: calc.breakMinutes, duration: calc.totalDuration });
-    saveToStorage(); saveToCloud();
-    closeModal('mobileActionModal');
-    showToast('Запись перемещена', 'success');
-    renderSchedule(); updateStats();
+    saveToStorage(); saveToCloud(); closeModal('mobileActionModal');
+    showToast('Запись перемещена', 'success'); renderSchedule(); updateStats();
 }
 
 function init() {
@@ -1374,8 +1128,17 @@ init();
 
 
               <script>
-                              for (let h = Math.floor(bk.startHour); h < bk.endHour; h++)
-
+                                 if (curOpt && !curOpt.disabled) sel.value = curVal;
+   else sel.value = '';  // ← ключевое исправление
+   
+   if (!canPlaceBooking(...)) {
+       showToast('❌ ВРЕМЯ УЖЕ ЗАНЯТО!', 'error');
+       document.getElementById('bookingTime').value = '';
+       updateTimeOptions();
+       updateSteps();
+       return;
+   }
+   
 
               </script>
                         </body>
