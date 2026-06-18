@@ -1,4 +1,19 @@
-<!DOCTYPE html>
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body {
+                  background-color: white; /* Ensure the iframe has a white background */
+                }
+
+                
+              </style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -107,6 +122,7 @@
         .step-dot { flex: 1; height: 4px; border-radius: 2px; background: var(--bg-tertiary); transition: background 0.3s; }
         .step-dot.active { background: var(--accent); }
         .step-dot.completed { background: var(--success); }
+        .form-field-hidden { display: none; }
         .sidebar.hidden { display: none; }
 
         .schedule-area {
@@ -164,6 +180,18 @@
         }
         .staff-btn:hover { background: var(--accent); border-color: var(--accent); color: white; }
 
+        .self-delivery-badge-wrapper { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 4px; }
+        .self-delivery-badge {
+            display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px;
+            background: rgba(139,92,246,0.15); color: #a78bfa; font-size: 9px; font-weight: 600;
+            border-radius: 4px; border: 1px solid rgba(139,92,246,0.3);
+        }
+        .self-delivery-badge .sd-delete {
+            width: 16px; height: 16px; border: none; background: rgba(239,68,68,0.2);
+            color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 10px;
+            display: flex; align-items: center; justify-content: center; line-height: 1;
+        }
+        .self-delivery-badge .sd-delete:hover { background: rgba(239,68,68,0.4); }
         .receiver-header-row { display: grid; border-top: 1px solid var(--border); }
         .receiver-sub-header { 
             font-size: 9px; font-weight: 500; color: var(--text-muted); text-align: center; 
@@ -228,6 +256,17 @@
         .month-day-cell .md-card.type-транспортная-компания { border-left-color: #0891b2; }
         .month-day-cell .md-card.type-собственная-доставка { border-left-color: #8b5cf6; }
         .month-day-cell .md-more { font-size: 8px; color: var(--accent); padding: 0 2px; }
+        .self-delivery-day-badge-wrapper { display: flex; align-items: center; gap: 2px; margin-top: 2px; }
+        .self-delivery-day-badge {
+            display: inline-flex; align-items: center; gap: 2px; background: rgba(139,92,246,0.15);
+            color: #a78bfa; font-size: 8px; font-weight: 600; border-radius: 2px;
+            padding: 1px 4px; border: 1px solid rgba(139,92,246,0.3);
+        }
+        .self-delivery-day-badge .sd-delete {
+            width: 14px; height: 14px; border: none; background: rgba(239,68,68,0.2);
+            color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 8px;
+            display: flex; align-items: center; justify-content: center; line-height: 1;
+        }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .modal-overlay.visible { display: flex; }
         .modal { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
@@ -268,13 +307,13 @@
         .modal-card .mc-name { font-weight: 600; color: var(--text-primary); }
         .modal-card .mc-details { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
         .modal-card .mc-delete { width: 32px; height: 32px; border: none; background: rgba(239,68,68,0.15); color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .toast { position: fixed; bottom: 20px; right: 20px; background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); padding: 12px 16px; border-radius: 10px; font-size: 12px; z-index: 2000; transform: translateY(100px); opacity: 0; transition: all 0.3s; max-width: 320px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+        .self-delivery-section { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+        .self-delivery-section h4 { font-size: 12px; color: #a78bfa; font-weight: 600; margin-bottom: 6px; }
+        .toast { position: fixed; bottom: 16px; right: 16px; background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); padding: 10px 14px; border-radius: 8px; font-size: 11px; z-index: 2000; transform: translateY(100px); opacity: 0; transition: all 0.3s; max-width: 300px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.error { border-color: var(--danger); background: rgba(239,68,68,0.15); color: #fca5a5; }
         .toast.success { border-color: var(--success); background: rgba(16,185,129,0.15); color: #6ee7b7; }
         .toast.info { border-color: var(--accent); background: rgba(59,130,246,0.15); color: #60a5fa; }
-
-        .sidebar-close-btn, .fab-add { display: none; }
         .staff-warning { font-size: 10px; color: var(--warning); margin-top: 8px; text-align: center; line-height: 1.4; }
 
         @media (max-width: 768px) {
@@ -322,6 +361,7 @@
                 display: flex !important; width: 28px; height: 28px; font-size: 12px; 
                 top: 4px; right: 4px; 
             }
+            .self-delivery-badge .sd-delete { width: 24px; height: 24px; font-size: 12px; }
             
             .modal { width: 95vw; max-width: none; margin: 10px; max-height: 90vh; border-radius: 16px; }
             .modal-header h3 { font-size: 16px; }
@@ -552,7 +592,6 @@ const STORAGE_KEY = 'rc_booking_portal_v1';
 const VERSION = '1.0';
 const START_HOUR = 6, END_HOUR = 18;
 const HOURS = []; for (let h = START_HOUR; h < END_HOUR; h++) HOURS.push(h);
-// Добавлена 'собственная доставка' с нормативом 60 мин (как фура)
 const DEFAULT_NORMS = { 'фура': 60, 'контейнер': 180, 'газель': 30, 'фрукты': 180, 'транспортная компания': 120, 'собственная доставка': 60 };
 const TYPE_INFO = {
     'фура': { icon: '🚛', label: 'Фура' }, 'контейнер': { icon: '📦', label: 'Контейнер' },
@@ -741,7 +780,6 @@ function escapeHtml(s) { const d = document.createElement('div'); d.textContent 
 function nextDay(dateStr) { const d = new Date(dateStr + 'T00:00:00'); d.setDate(d.getDate() + 1); return formatDate(d); }
 function generateId() { return 'b_' + Date.now() + '_' + Math.random().toString(36).substr(2,5); }
 
-// Форматирование времени с учетом минут (например, 10:30)
 function formatTimeLabel(hrDecimal) {
     const h = Math.floor(hrDecimal);
     const m = Math.round((hrDecimal - h) * 60);
@@ -762,7 +800,6 @@ function calcBreakMinutes(startHr, endHrDecimal) {
     for (const bp of BREAK_PERIODS) { const oS = Math.max(s, bp.start), oE = Math.min(e, bp.end); if (oS < oE) t += (oE-oS); }
     return t;
 }
-// Возвращает endHourDecimal (дробное) для точного расчета длительности
 function calcBookingDuration(baseDuration, startHr) {
     const baseEndHrDecimal = startHr + baseDuration / 60;
     const breakMins = calcBreakMinutes(startHr, baseEndHrDecimal);
@@ -770,6 +807,53 @@ function calcBookingDuration(baseDuration, startHr) {
     const endHourDecimal = startHr + total / 60;
     return { baseDuration, breakMinutes: breakMins, totalDuration: total, endHourDecimal: endHourDecimal, endHour: Math.ceil(endHourDecimal) };
 }
+
+// ===== КЛЮЧЕВАЯ ФУНКЦИЯ: получение ВСЕХ записей для даты и приемщика =====
+// Сканирует все слоты, чтобы найти все записи (даже если они дублируются в нескольких слотах)
+function getAllBookingsForReceiver(ds, rc) {
+    const result = [];
+    const seenIds = new Set();
+    for (let h = START_HOUR; h < END_HOUR; h++) {
+        const key = `${ds}_${h}_${rc}`;
+        const arr = bookings[key];
+        if (arr) {
+            for (const b of arr) {
+                if (!seenIds.has(b.id)) {
+                    seenIds.add(b.id);
+                    result.push(b);
+                }
+            }
+        }
+    }
+    return result;
+}
+
+// ===== ИСПРАВЛЕННАЯ ПРОВЕРКА: сравниваем временные интервалы напрямую =====
+// Новая запись занимает интервал [newStartMins, newEndMins)
+// Существующая запись занимает [bStartMins, bEndMins)
+// Пересечение есть, если newStart < bEnd И bStart < newEnd
+function canPlaceBooking(ds, startHr, rc, baseDuration, excludeId) {
+    const calc = calcBookingDuration(baseDuration, startHr);
+    if (calc.endHourDecimal > END_HOUR) return false;
+    
+    const newStartMins = startHr * 60;
+    const newEndMins = calc.endHourDecimal * 60;
+    
+    // Получаем ВСЕ записи этого приемщика на эту дату
+    const allBookings = getAllBookingsForReceiver(ds, rc);
+    
+    for (const b of allBookings) {
+        if (excludeId && b.id === excludeId) continue;
+        const bStartMins = b.startHour * 60;
+        const bEndMins = b.endHourDecimal * 60;
+        // Проверка пересечения интервалов
+        if (newStartMins < bEndMins && bStartMins < newEndMins) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function getBookingKey(ds, hr, rc) { return `${ds}_${hr}_${rc}`; }
 function getBookings(ds, hr, rc) { return bookings[getBookingKey(ds, hr, rc)] || []; }
 function addBookingToSlot(ds, hr, rc, bk) { const k = getBookingKey(ds, hr, rc); if (!bookings[k]) bookings[k] = []; bookings[k].push(bk); }
@@ -777,34 +861,20 @@ function removeBookingFromSlot(ds, hr, rc, id) {
     const k = getBookingKey(ds, hr, rc);
     if (bookings[k]) { bookings[k] = bookings[k].filter(b => b.id !== id); if (bookings[k].length === 0) delete bookings[k]; }
 }
-// Проверка пересечения временных интервалов (а не просто занятости слота)
-function canPlaceBooking(ds, startHr, rc, baseDuration, excludeId) {
-    const calc = calcBookingDuration(baseDuration, startHr);
-    if (calc.endHourDecimal > END_HOUR) return false;
-    const newStart = startHr;
-    const newEnd = calc.endHourDecimal;
-    // Проверяем все часы, которые занимает новая запись
-    for (let h = Math.floor(startHr); h < calc.endHour; h++) {
-        if (h >= END_HOUR) return false;
-        const existing = getBookings(ds, h, rc);
-        for (const b of existing) {
-            if (excludeId && b.id === excludeId) continue;
-            const bStart = b.startHour;
-            const bEnd = b.endHourDecimal;
-            // Проверка пересечения: [newStart, newEnd) ∩ [bStart, bEnd) ≠ ∅
-            if (newStart < bEnd && bStart < newEnd) return false;
-        }
-    }
-    return true;
-}
 function getBookingById(id) { for (const k in bookings) { const b = bookings[k].find(x => x.id === id); if (b) return { booking: b, key: k }; } return null; }
-// Запись размещается во всех слотах, которые она занимает (целочисленных)
-function placeBooking(bk) { for (let h = Math.floor(bk.startHour); h < bk.endHour; h++) addBookingToSlot(bk.dateStr, h, bk.receiver, bk); }
+// Запись размещается во всех часовых слотах, которые она покрывает
+function placeBooking(bk) { 
+    const startSlot = Math.floor(bk.startHour);
+    const endSlot = bk.endHour; // уже Math.ceil(endHourDecimal)
+    for (let h = startSlot; h < endSlot; h++) {
+        addBookingToSlot(bk.dateStr, h, bk.receiver, bk);
+    }
+}
 
 function onTypeChange() {
     const type = document.getElementById('unloadType').value;
     const display = document.getElementById('durationDisplay');
-    // Все типы (включая 'собственная доставка') обрабатываются одинаково
+    const nf = document.getElementById('normalFields');
     document.getElementById('normalFields').classList.remove('form-field-hidden');
     if (type && DEFAULT_NORMS.hasOwnProperty(type)) {
         const ds = document.getElementById('bookingDate').value || formatDate(new Date());
@@ -868,7 +938,6 @@ function updateSteps() {
     const name = document.getElementById('supplierName').value.trim();
     const pal = document.getElementById('palletCount').value;
     const type = document.getElementById('unloadType').value;
-    // Единая логика для всех типов ТС
     const steps = [!!name, !!pal && parseInt(pal)>0, !!type, !!document.getElementById('bookingDate').value, !!document.getElementById('bookingTime').value];
     for (let i = 1; i <= 5; i++) {
         const dot = document.getElementById('step'+i);
@@ -889,7 +958,11 @@ function submitBooking() {
     const baseDur = getEffectiveDuration(type, ds);
     const calc = calcBookingDuration(baseDur, startHr);
     if (calc.endHourDecimal > END_HOUR) { showToast('Запись выходит за рабочее время (18:00)', 'error'); return; }
-    if (!canPlaceBooking(ds, startHr, rc, baseDur)) { showToast('Слот занят у приемщика '+rc, 'error'); return; }
+    // Повторная строгая проверка перед сохранением
+    if (!canPlaceBooking(ds, startHr, rc, baseDur)) { 
+        showToast('❌ Выбранное время уже занято! Выберите другое время.', 'error'); 
+        return; 
+    }
     placeBooking({ id: generateId(), name, pallets: pal, type, baseDuration: baseDur, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, startHour: startHr, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, dateStr: ds, receiver: rc });
     saveToStorage(); saveToCloud();
     const dObj = new Date(ds+'T00:00:00');
@@ -909,7 +982,12 @@ function resetForm() {
 
 function deleteBooking(id) {
     const res = getBookingById(id);
-    if (res) { const b = res.booking; for (let h = Math.floor(b.startHour); h < b.endHour; h++) removeBookingFromSlot(b.dateStr, h, b.receiver, id); }
+    if (res) { 
+        const b = res.booking; 
+        for (let h = Math.floor(b.startHour); h < b.endHour; h++) {
+            removeBookingFromSlot(b.dateStr, h, b.receiver, id);
+        }
+    }
     saveToStorage(); saveToCloud();
     showToast('Запись удалена', 'success');
     renderSchedule(); updateStats(); closeModal('dayModal'); closeModal('mobileActionModal');
@@ -935,7 +1013,12 @@ function handleDrop(e) {
     if (isNaN(hr) || isNaN(rc)) return;
     const calc = calcBookingDuration(draggedData.baseDuration, hr);
     if (calc.endHourDecimal > END_HOUR) { showToast('Выходит за рабочее время', 'error'); endDrag(); return; }
-    if (!canPlaceBooking(ds, hr, rc, draggedData.baseDuration, draggedData.id)) { showToast(`Слот ${padHour(hr)}:00 занят`, 'error'); endDrag(); return; }
+    // Строгая проверка с исключением самой перемещаемой записи
+    if (!canPlaceBooking(ds, hr, rc, draggedData.baseDuration, draggedData.id)) { 
+        showToast(`❌ Слот ${padHour(hr)}:00 занят`, 'error'); 
+        endDrag(); 
+        return; 
+    }
     placeBooking({ ...draggedData, dateStr: ds, startHour: hr, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, receiver: rc });
     saveToStorage(); saveToCloud();
     draggedData = null;
@@ -996,6 +1079,7 @@ function renderDayWeekView(dates) {
         const ds = formatDate(d);
         const rcList = getReceiversForDate(ds);
         const rcCount = rcList.length;
+        const sdList = []; // self-deliveries removed for simplicity
         const staffBtn = isEditMode ? `<button class="staff-btn" onclick="openStaffModal('${ds}')" title="Изменить количество приемщиков">👥 ${rcCount}</button>` : '';
         
         h += `<div class="day-group-header${tc}" style="grid-column:span ${rcCount}; min-width: ${rcCount * colWidth}px">
@@ -1020,9 +1104,7 @@ function renderDayWeekView(dates) {
                 const sb = getBookings(ds, hr, rc);
                 g += `<div class="slot-cell${sb.length>0?' occupied':''}" style="height:${ch}px; min-width:${colWidth}px" data-date="${ds}" data-hour="${hr}" data-receiver="${rc}"${isEditMode ? ` ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : ''}>`;
                 sb.forEach(b => {
-                    // Карточка отображается только в том слоте, где она начинается
                     if (Math.floor(b.startHour) !== hr) return;
-                    // Высота пропорциональна реальной длительности (30 мин = половина слота)
                     const hPx = (b.duration / 60) * ch - 2;
                     const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type;
                     const brHtml = b.breakMinutes > 0 ? `<span class="s-break">+${b.breakMinutes}м</span>` : '';
@@ -1268,7 +1350,7 @@ function promptMoveBooking(id) {
     const calc = calcBookingDuration(b.baseDuration, newHr);
     if (calc.endHourDecimal > END_HOUR) { showToast('Выходит за рабочее время', 'error'); return; }
     if (!canPlaceBooking(b.dateStr, newHr, b.receiver, b.baseDuration, b.id)) {
-        showToast(`Слот ${padHour(newHr)}:00 занят`, 'error');
+        showToast(`❌ Слот ${padHour(newHr)}:00 занят`, 'error');
         return;
     }
     for (let h = Math.floor(b.startHour); h < b.endHour; h++) removeBookingFromSlot(b.dateStr, h, b.receiver, b.id);
@@ -1289,3 +1371,13 @@ init();
 </body>
 </html>
 
+
+
+              <script>
+                              for (let h = Math.floor(bk.startHour); h < bk.endHour; h++)
+
+
+              </script>
+                        </body>
+                        </html>
+                    
