@@ -107,7 +107,6 @@
         .step-dot { flex: 1; height: 4px; border-radius: 2px; background: var(--bg-tertiary); transition: background 0.3s; }
         .step-dot.active { background: var(--accent); }
         .step-dot.completed { background: var(--success); }
-        .form-field-hidden { display: none; }
         .sidebar.hidden { display: none; }
 
         .schedule-area {
@@ -165,18 +164,6 @@
         }
         .staff-btn:hover { background: var(--accent); border-color: var(--accent); color: white; }
 
-        .self-delivery-badge-wrapper { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 4px; }
-        .self-delivery-badge {
-            display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px;
-            background: rgba(139,92,246,0.15); color: #a78bfa; font-size: 9px; font-weight: 600;
-            border-radius: 4px; border: 1px solid rgba(139,92,246,0.3);
-        }
-        .self-delivery-badge .sd-delete {
-            width: 16px; height: 16px; border: none; background: rgba(239,68,68,0.2);
-            color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 10px;
-            display: flex; align-items: center; justify-content: center; line-height: 1;
-        }
-        .self-delivery-badge .sd-delete:hover { background: rgba(239,68,68,0.4); }
         .receiver-header-row { display: grid; border-top: 1px solid var(--border); }
         .receiver-sub-header { 
             font-size: 9px; font-weight: 500; color: var(--text-muted); text-align: center; 
@@ -209,6 +196,7 @@
         .supplier-card.type-газель { border-left-color: #10b981; }
         .supplier-card.type-фрукты { border-left-color: #ef4444; }
         .supplier-card.type-транспортная-компания { border-left-color: #0891b2; }
+        .supplier-card.type-собственная-доставка { border-left-color: #8b5cf6; }
         .supplier-card .s-name { font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .supplier-card .s-details { display: flex; gap: 3px; font-size: 8px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; }
         .supplier-card .s-type { background: var(--bg-tertiary); padding: 0 3px; border-radius: 2px; font-weight: 500; }
@@ -238,18 +226,8 @@
         .month-day-cell .md-card.type-газель { border-left-color: #10b981; }
         .month-day-cell .md-card.type-фрукты { border-left-color: #ef4444; }
         .month-day-cell .md-card.type-транспортная-компания { border-left-color: #0891b2; }
+        .month-day-cell .md-card.type-собственная-доставка { border-left-color: #8b5cf6; }
         .month-day-cell .md-more { font-size: 8px; color: var(--accent); padding: 0 2px; }
-        .self-delivery-day-badge-wrapper { display: flex; align-items: center; gap: 2px; margin-top: 2px; }
-        .self-delivery-day-badge {
-            display: inline-flex; align-items: center; gap: 2px; background: rgba(139,92,246,0.15);
-            color: #a78bfa; font-size: 8px; font-weight: 600; border-radius: 2px;
-            padding: 1px 4px; border: 1px solid rgba(139,92,246,0.3);
-        }
-        .self-delivery-day-badge .sd-delete {
-            width: 14px; height: 14px; border: none; background: rgba(239,68,68,0.2);
-            color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 8px;
-            display: flex; align-items: center; justify-content: center; line-height: 1;
-        }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .modal-overlay.visible { display: flex; }
         .modal { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
@@ -290,8 +268,6 @@
         .modal-card .mc-name { font-weight: 600; color: var(--text-primary); }
         .modal-card .mc-details { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
         .modal-card .mc-delete { width: 32px; height: 32px; border: none; background: rgba(239,68,68,0.15); color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .self-delivery-section { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
-        .self-delivery-section h4 { font-size: 12px; color: #a78bfa; font-weight: 600; margin-bottom: 6px; }
         .toast { position: fixed; bottom: 20px; right: 20px; background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); padding: 12px 16px; border-radius: 10px; font-size: 12px; z-index: 2000; transform: translateY(100px); opacity: 0; transition: all 0.3s; max-width: 320px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.error { border-color: var(--danger); background: rgba(239,68,68,0.15); color: #fca5a5; }
@@ -346,7 +322,6 @@
                 display: flex !important; width: 28px; height: 28px; font-size: 12px; 
                 top: 4px; right: 4px; 
             }
-            .self-delivery-badge .sd-delete { width: 24px; height: 24px; font-size: 12px; }
             
             .modal { width: 95vw; max-width: none; margin: 10px; max-height: 90vh; border-radius: 16px; }
             .modal-header h3 { font-size: 16px; }
@@ -447,12 +422,6 @@
                 <div class="form-group">
                     <label>Приемщик</label>
                     <select id="receiverSelect" onchange="onDateOrReceiverChange()"></select>
-                </div>
-            </div>
-            <div id="selfDeliveryFields" class="form-field-hidden">
-                <div class="form-group">
-                    <label>Дата собственной доставки</label>
-                    <input type="date" id="selfDeliveryDate" onchange="updateSteps()">
                 </div>
             </div>
             <div class="divider"></div>
@@ -583,7 +552,8 @@ const STORAGE_KEY = 'rc_booking_portal_v1';
 const VERSION = '1.0';
 const START_HOUR = 6, END_HOUR = 18;
 const HOURS = []; for (let h = START_HOUR; h < END_HOUR; h++) HOURS.push(h);
-const DEFAULT_NORMS = { 'фура': 60, 'контейнер': 180, 'газель': 30, 'фрукты': 180, 'транспортная компания': 120 };
+// Добавлена 'собственная доставка' с нормативом 60 мин (как фура)
+const DEFAULT_NORMS = { 'фура': 60, 'контейнер': 180, 'газель': 30, 'фрукты': 180, 'транспортная компания': 120, 'собственная доставка': 60 };
 const TYPE_INFO = {
     'фура': { icon: '🚛', label: 'Фура' }, 'контейнер': { icon: '📦', label: 'Контейнер' },
     'газель': { icon: '🚐', label: 'Газель' }, 'фрукты': { icon: '🍎', label: 'Фрукты' },
@@ -599,7 +569,6 @@ let currentView = 'week';
 let currentDate = new Date();
 let isEditMode = false;
 let bookings = {};
-let selfDeliveries = [];
 let receiversPerDate = {};
 let draggedData = null;
 let normativeHistory = [];
@@ -654,7 +623,6 @@ function initFirebase() {
             if (data) {
                 if (data.bookings) bookings = data.bookings;
                 if (data.normativeHistory) normativeHistory = data.normativeHistory;
-                if (data.selfDeliveries) selfDeliveries = data.selfDeliveries;
                 if (data.receiversPerDate) receiversPerDate = data.receiversPerDate;
                 showToast('🔄 Данные загружены из облака', 'success');
             } else {
@@ -672,9 +640,9 @@ function initFirebase() {
         dataRef.on('value', snapshot => {
             const data = snapshot.val();
             if (data) {
-                const nb = data.bookings || {}, ns = data.selfDeliveries || [], nn = data.normativeHistory || [], nr = data.receiversPerDate || {};
-                if (JSON.stringify(nb) !== JSON.stringify(bookings) || JSON.stringify(ns) !== JSON.stringify(selfDeliveries) || JSON.stringify(nr) !== JSON.stringify(receiversPerDate)) {
-                    bookings = nb; selfDeliveries = ns; normativeHistory = nn; receiversPerDate = nr;
+                const nb = data.bookings || {}, nn = data.normativeHistory || [], nr = data.receiversPerDate || {};
+                if (JSON.stringify(nb) !== JSON.stringify(bookings) || JSON.stringify(nr) !== JSON.stringify(receiversPerDate)) {
+                    bookings = nb; normativeHistory = nn; receiversPerDate = nr;
                     renderSchedule(); updateStats();
                 }
             }
@@ -692,7 +660,7 @@ function saveToCloud() {
     syncDebounceTimer = setTimeout(() => {
         try {
             firebaseDb.ref('bookingPortalData').set({
-                bookings, normativeHistory, selfDeliveries, receiversPerDate, updatedAt: new Date().toISOString()
+                bookings, normativeHistory, receiversPerDate, updatedAt: new Date().toISOString()
             }).catch(e => console.error('Cloud save error:', e));
         } catch (e) {}
     }, 300);
@@ -721,10 +689,8 @@ function showMainApp() {
     document.getElementById('mainApp').classList.remove('hidden');
     const today = new Date(); const ds = formatDate(today);
     document.getElementById('bookingDate').value = ds; document.getElementById('bookingDate').min = ds;
-    document.getElementById('selfDeliveryDate').value = ds; document.getElementById('selfDeliveryDate').min = ds;
     const nxt = new Date(today); nxt.setDate(nxt.getDate() + 21);
     document.getElementById('bookingDate').max = formatDate(nxt);
-    document.getElementById('selfDeliveryDate').max = formatDate(nxt);
 
     const modeBadge = document.getElementById('modeBadge');
     if (isEditMode) {
@@ -748,7 +714,7 @@ function showMainApp() {
 
 function saveToStorage() {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ bookings, normativeHistory, selfDeliveries, receiversPerDate, savedAt: new Date().toISOString(), version: VERSION }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ bookings, normativeHistory, receiversPerDate, savedAt: new Date().toISOString(), version: VERSION }));
     } catch (e) {}
 }
 function loadFromStorage() {
@@ -758,7 +724,6 @@ function loadFromStorage() {
         const data = JSON.parse(raw);
         if (data.bookings) bookings = data.bookings;
         if (data.normativeHistory) normativeHistory = data.normativeHistory;
-        if (data.selfDeliveries) selfDeliveries = data.selfDeliveries;
         if (data.receiversPerDate) receiversPerDate = data.receiversPerDate;
         return true;
     } catch (e) { return false; }
@@ -770,10 +735,18 @@ function formatDate(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).p
 function formatDateRu(d) { const m = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря']; return d.getDate() + ' ' + m[d.getMonth()] + ' ' + d.getFullYear(); }
 function formatDateShort(d) { return String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0'); }
 function isToday(d) { const t = new Date(); return d.getFullYear() === t.getFullYear() && d.getMonth() === t.getMonth() && d.getDate() === t.getDate(); }
-function padHour(h) { return String(h).padStart(2, '0'); }
+function padHour(h) { return String(Math.floor(h)).padStart(2, '0'); }
+function padMin(m) { return String(Math.round(m)).padStart(2, '0'); }
 function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function nextDay(dateStr) { const d = new Date(dateStr + 'T00:00:00'); d.setDate(d.getDate() + 1); return formatDate(d); }
 function generateId() { return 'b_' + Date.now() + '_' + Math.random().toString(36).substr(2,5); }
+
+// Форматирование времени с учетом минут (например, 10:30)
+function formatTimeLabel(hrDecimal) {
+    const h = Math.floor(hrDecimal);
+    const m = Math.round((hrDecimal - h) * 60);
+    return `${padHour(h)}:${padMin(m)}`;
+}
 
 const DAY_NAMES = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 const DAY_NAMES_FULL = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
@@ -784,16 +757,18 @@ function getEffectiveDuration(type, dateStr) {
     for (const entry of normativeHistory) { if (entry.date <= dateStr && entry.changes[type] !== undefined) duration = entry.changes[type]; }
     return duration;
 }
-function calcBreakMinutes(startHr, endHr) {
-    const s = startHr*60, e = endHr*60; let t = 0;
+function calcBreakMinutes(startHr, endHrDecimal) {
+    const s = startHr*60, e = Math.ceil(endHrDecimal)*60; let t = 0;
     for (const bp of BREAK_PERIODS) { const oS = Math.max(s, bp.start), oE = Math.min(e, bp.end); if (oS < oE) t += (oE-oS); }
     return t;
 }
+// Возвращает endHourDecimal (дробное) для точного расчета длительности
 function calcBookingDuration(baseDuration, startHr) {
-    const baseEndHr = startHr + Math.ceil(baseDuration / 60);
-    const breakMins = calcBreakMinutes(startHr, baseEndHr);
+    const baseEndHrDecimal = startHr + baseDuration / 60;
+    const breakMins = calcBreakMinutes(startHr, baseEndHrDecimal);
     const total = baseDuration + breakMins;
-    return { baseDuration, breakMinutes: breakMins, totalDuration: total, endHour: startHr + Math.ceil(total / 60) };
+    const endHourDecimal = startHr + total / 60;
+    return { baseDuration, breakMinutes: breakMins, totalDuration: total, endHourDecimal: endHourDecimal, endHour: Math.ceil(endHourDecimal) };
 }
 function getBookingKey(ds, hr, rc) { return `${ds}_${hr}_${rc}`; }
 function getBookings(ds, hr, rc) { return bookings[getBookingKey(ds, hr, rc)] || []; }
@@ -802,42 +777,50 @@ function removeBookingFromSlot(ds, hr, rc, id) {
     const k = getBookingKey(ds, hr, rc);
     if (bookings[k]) { bookings[k] = bookings[k].filter(b => b.id !== id); if (bookings[k].length === 0) delete bookings[k]; }
 }
-function isSlotFree(ds, hr, rc) { return getBookings(ds, hr, rc).length === 0; }
-function canPlaceBooking(ds, startHr, rc, baseDuration) {
+// Проверка пересечения временных интервалов (а не просто занятости слота)
+function canPlaceBooking(ds, startHr, rc, baseDuration, excludeId) {
     const calc = calcBookingDuration(baseDuration, startHr);
-    for (let h = startHr; h < calc.endHour; h++) { if (h >= END_HOUR) return false; if (!isSlotFree(ds, h, rc)) return false; }
+    if (calc.endHourDecimal > END_HOUR) return false;
+    const newStart = startHr;
+    const newEnd = calc.endHourDecimal;
+    // Проверяем все часы, которые занимает новая запись
+    for (let h = Math.floor(startHr); h < calc.endHour; h++) {
+        if (h >= END_HOUR) return false;
+        const existing = getBookings(ds, h, rc);
+        for (const b of existing) {
+            if (excludeId && b.id === excludeId) continue;
+            const bStart = b.startHour;
+            const bEnd = b.endHourDecimal;
+            // Проверка пересечения: [newStart, newEnd) ∩ [bStart, bEnd) ≠ ∅
+            if (newStart < bEnd && bStart < newEnd) return false;
+        }
+    }
     return true;
 }
 function getBookingById(id) { for (const k in bookings) { const b = bookings[k].find(x => x.id === id); if (b) return { booking: b, key: k }; } return null; }
-function placeBooking(bk) { for (let h = bk.startHour; h < bk.endHour; h++) addBookingToSlot(bk.dateStr, h, bk.receiver, bk); }
-function getSelfDeliveriesByDate(dateStr) { return selfDeliveries.filter(sd => sd.dateStr === dateStr); }
+// Запись размещается во всех слотах, которые она занимает (целочисленных)
+function placeBooking(bk) { for (let h = Math.floor(bk.startHour); h < bk.endHour; h++) addBookingToSlot(bk.dateStr, h, bk.receiver, bk); }
 
 function onTypeChange() {
     const type = document.getElementById('unloadType').value;
     const display = document.getElementById('durationDisplay');
-    const nf = document.getElementById('normalFields'), sf = document.getElementById('selfDeliveryFields');
-    if (type === 'собственная доставка') {
-        nf.classList.add('form-field-hidden'); sf.classList.remove('form-field-hidden');
-        display.textContent = '🏷 Только дата, время не требуется';
-        display.className = 'duration-display'; display.style.display = 'block';
-    } else {
-        nf.classList.remove('form-field-hidden'); sf.classList.add('form-field-hidden');
-        if (type && DEFAULT_NORMS.hasOwnProperty(type)) {
-            const ds = document.getElementById('bookingDate').value || formatDate(new Date());
-            const baseDur = getEffectiveDuration(type, ds);
-            const startHr = parseInt(document.getElementById('bookingTime').value) || START_HOUR;
-            const calc = calcBookingDuration(baseDur, startHr);
-            const baseHrs = Math.floor(calc.baseDuration/60), baseMins = calc.baseDuration%60;
-            let txt = '⏱ ';
-            if (baseHrs > 0) txt += baseHrs + ' ч ';
-            if (baseMins > 0) txt += baseMins + ' мин';
-            if (calc.breakMinutes > 0) { txt += ` + ${calc.breakMinutes} мин (перерыв) = ${calc.totalDuration} мин`; display.className = 'duration-display break-warn'; }
-            else if (baseDur !== DEFAULT_NORMS[type]) { display.className = 'duration-display custom'; txt += ' (изменено)'; }
-            else display.className = 'duration-display';
-            display.textContent = txt; display.style.display = 'block';
-        } else { display.style.display = 'none'; }
-        updateTimeOptions();
-    }
+    // Все типы (включая 'собственная доставка') обрабатываются одинаково
+    document.getElementById('normalFields').classList.remove('form-field-hidden');
+    if (type && DEFAULT_NORMS.hasOwnProperty(type)) {
+        const ds = document.getElementById('bookingDate').value || formatDate(new Date());
+        const baseDur = getEffectiveDuration(type, ds);
+        const startHr = parseFloat(document.getElementById('bookingTime').value) || START_HOUR;
+        const calc = calcBookingDuration(baseDur, startHr);
+        const baseHrs = Math.floor(calc.baseDuration/60), baseMins = calc.baseDuration%60;
+        let txt = '⏱ ';
+        if (baseHrs > 0) txt += baseHrs + ' ч ';
+        if (baseMins > 0) txt += baseMins + ' мин';
+        if (calc.breakMinutes > 0) { txt += ` + ${calc.breakMinutes} мин (перерыв) = ${calc.totalDuration} мин`; display.className = 'duration-display break-warn'; }
+        else if (baseDur !== DEFAULT_NORMS[type]) { display.className = 'duration-display custom'; txt += ' (изменено)'; }
+        else display.className = 'duration-display';
+        display.textContent = txt; display.style.display = 'block';
+    } else { display.style.display = 'none'; }
+    updateTimeOptions();
     updateSteps();
 }
 
@@ -872,7 +855,7 @@ function updateTimeOptions() {
         const opt = document.createElement('option');
         opt.value = h;
         const calc = calcBookingDuration(baseDur, h);
-        let label = `${padHour(h)}:00-${padHour(calc.endHour)}:00`;
+        let label = `${padHour(h)}:00-${formatTimeLabel(calc.endHourDecimal)}`;
         if (calc.breakMinutes > 0) label += ` (+${calc.breakMinutes}м)`;
         if (!avail) label += ' (занято)';
         opt.textContent = label; opt.disabled = !avail;
@@ -885,9 +868,8 @@ function updateSteps() {
     const name = document.getElementById('supplierName').value.trim();
     const pal = document.getElementById('palletCount').value;
     const type = document.getElementById('unloadType').value;
-    let steps;
-    if (type === 'собственная доставка') steps = [!!name, true, true, !!document.getElementById('selfDeliveryDate').value, true];
-    else steps = [!!name, !!pal && parseInt(pal)>0, !!type, !!document.getElementById('bookingDate').value, !!document.getElementById('bookingTime').value];
+    // Единая логика для всех типов ТС
+    const steps = [!!name, !!pal && parseInt(pal)>0, !!type, !!document.getElementById('bookingDate').value, !!document.getElementById('bookingTime').value];
     for (let i = 1; i <= 5; i++) {
         const dot = document.getElementById('step'+i);
         dot.classList.remove('active','completed');
@@ -901,27 +883,17 @@ function submitBooking() {
     const name = document.getElementById('supplierName').value.trim();
     const pal = parseInt(document.getElementById('palletCount').value);
     const type = document.getElementById('unloadType').value;
-    if (type === 'собственная доставка') {
-        const ds = document.getElementById('selfDeliveryDate').value;
-        if (!ds) { showToast('Укажите дату', 'error'); return; }
-        selfDeliveries.push({ id: generateId(), dateStr: ds, supplierName: name });
-        saveToStorage(); saveToCloud();
-        showToast(`✓ Собственная доставка: ${formatDateRu(new Date(ds+'T00:00:00'))} — ${name}`, 'success');
-        resetForm(); renderSchedule(); updateStats();
-        if (window.innerWidth <= 768) closeMobileSidebar();
-        return;
-    }
     const ds = document.getElementById('bookingDate').value;
     const startHr = parseInt(document.getElementById('bookingTime').value);
     const rc = parseInt(document.getElementById('receiverSelect').value);
     const baseDur = getEffectiveDuration(type, ds);
     const calc = calcBookingDuration(baseDur, startHr);
-    if (calc.endHour > END_HOUR) { showToast('Запись выходит за рабочее время (18:00)', 'error'); return; }
+    if (calc.endHourDecimal > END_HOUR) { showToast('Запись выходит за рабочее время (18:00)', 'error'); return; }
     if (!canPlaceBooking(ds, startHr, rc, baseDur)) { showToast('Слот занят у приемщика '+rc, 'error'); return; }
-    placeBooking({ id: generateId(), name, pallets: pal, type, baseDuration: baseDur, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, startHour: startHr, endHour: calc.endHour, dateStr: ds, receiver: rc });
+    placeBooking({ id: generateId(), name, pallets: pal, type, baseDuration: baseDur, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, startHour: startHr, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, dateStr: ds, receiver: rc });
     saveToStorage(); saveToCloud();
     const dObj = new Date(ds+'T00:00:00');
-    let msg = `✓ ${name}: ${DAY_NAMES_FULL[(dObj.getDay()+6)%7]} ${padHour(startHr)}:00-${padHour(calc.endHour)}:00 | Пр.${rc}`;
+    let msg = `✓ ${name}: ${DAY_NAMES_FULL[(dObj.getDay()+6)%7]} ${padHour(startHr)}:00-${formatTimeLabel(calc.endHourDecimal)} | Пр.${rc}`;
     if (calc.breakMinutes > 0) msg += ` (+${calc.breakMinutes}м)`;
     showToast(msg, 'success');
     resetForm(); renderSchedule(); updateStats();
@@ -929,38 +901,25 @@ function submitBooking() {
 }
 
 function resetForm() {
-    ['supplierName','palletCount','unloadType','bookingDate','bookingTime','selfDeliveryDate'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    ['supplierName','palletCount','unloadType','bookingDate','bookingTime'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     document.getElementById('durationDisplay').style.display = 'none';
     document.getElementById('bookingTime').innerHTML = '<option value="">Выберите...</option>';
-    document.getElementById('normalFields').classList.remove('form-field-hidden');
-    document.getElementById('selfDeliveryFields').classList.add('form-field-hidden');
     updateSteps();
 }
 
 function deleteBooking(id) {
     const res = getBookingById(id);
-    if (res) { const b = res.booking; for (let h = b.startHour; h < b.endHour; h++) removeBookingFromSlot(b.dateStr, h, b.receiver, id); }
-    const sdIdx = selfDeliveries.findIndex(sd => sd.id === id);
-    if (sdIdx !== -1) selfDeliveries.splice(sdIdx, 1);
+    if (res) { const b = res.booking; for (let h = Math.floor(b.startHour); h < b.endHour; h++) removeBookingFromSlot(b.dateStr, h, b.receiver, id); }
     saveToStorage(); saveToCloud();
     showToast('Запись удалена', 'success');
     renderSchedule(); updateStats(); closeModal('dayModal'); closeModal('mobileActionModal');
-}
-
-function deleteSelfDelivery(id) {
-    event.stopPropagation();
-    const sd = selfDeliveries.find(s => s.id === id);
-    selfDeliveries = selfDeliveries.filter(s => s.id !== id);
-    saveToStorage(); saveToCloud();
-    showToast('🏷 "' + (sd?sd.supplierName:'') + '" удалена', 'success');
-    renderSchedule(); updateStats();
 }
 
 function startDrag(e, id) {
     const res = getBookingById(id); if (!res) return;
     draggedData = res.booking;
     e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id);
-    for (let h = draggedData.startHour; h < draggedData.endHour; h++) removeBookingFromSlot(draggedData.dateStr, h, draggedData.receiver, id);
+    for (let h = Math.floor(draggedData.startHour); h < draggedData.endHour; h++) removeBookingFromSlot(draggedData.dateStr, h, draggedData.receiver, id);
     setTimeout(() => { const el = e.target.closest('.supplier-card'); if (el) el.classList.add('dragging'); }, 0);
 }
 function endDrag(e) {
@@ -975,12 +934,12 @@ function handleDrop(e) {
     const ds = c.dataset.date, hr = parseInt(c.dataset.hour), rc = parseInt(c.dataset.receiver);
     if (isNaN(hr) || isNaN(rc)) return;
     const calc = calcBookingDuration(draggedData.baseDuration, hr);
-    if (calc.endHour > END_HOUR) { showToast('Выходит за рабочее время', 'error'); endDrag(); return; }
-    for (let h = hr; h < calc.endHour; h++) { if (!isSlotFree(ds, h, rc)) { showToast(`Слот ${padHour(h)}:00 занят`, 'error'); endDrag(); return; } }
-    placeBooking({ ...draggedData, dateStr: ds, startHour: hr, endHour: calc.endHour, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, receiver: rc });
+    if (calc.endHourDecimal > END_HOUR) { showToast('Выходит за рабочее время', 'error'); endDrag(); return; }
+    if (!canPlaceBooking(ds, hr, rc, draggedData.baseDuration, draggedData.id)) { showToast(`Слот ${padHour(hr)}:00 занят`, 'error'); endDrag(); return; }
+    placeBooking({ ...draggedData, dateStr: ds, startHour: hr, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, receiver: rc });
     saveToStorage(); saveToCloud();
     draggedData = null;
-    showToast('Перемещено на '+padHour(hr)+':00', 'success');
+    showToast('Перемещено на '+formatTimeLabel(hr), 'success');
     renderSchedule(); updateStats();
 }
 
@@ -1037,15 +996,12 @@ function renderDayWeekView(dates) {
         const ds = formatDate(d);
         const rcList = getReceiversForDate(ds);
         const rcCount = rcList.length;
-        const sdList = getSelfDeliveriesByDate(ds);
-        let sdBadges = sdList.map(sd => `<div class="self-delivery-badge-wrapper"><div class="self-delivery-badge">🏷 ${escapeHtml(sd.supplierName)}${isEditMode ? `<button class="sd-delete" onclick="deleteSelfDelivery('${sd.id}')" title="Удалить">✕</button>` : ''}</div></div>`).join('');
         const staffBtn = isEditMode ? `<button class="staff-btn" onclick="openStaffModal('${ds}')" title="Изменить количество приемщиков">👥 ${rcCount}</button>` : '';
         
         h += `<div class="day-group-header${tc}" style="grid-column:span ${rcCount}; min-width: ${rcCount * colWidth}px">
             <div class="day-label">${DAY_NAMES[i]}</div>
             <div class="date-label">${d.getDate()}</div>
             ${staffBtn}
-            ${sdBadges}
             <div class="receiver-header-row" style="grid-template-columns: repeat(${rcCount}, 1fr);">
                 ${rcList.map(r => `<div class="receiver-sub-header">Пр.${r}</div>`).join('')}
             </div>
@@ -1064,12 +1020,14 @@ function renderDayWeekView(dates) {
                 const sb = getBookings(ds, hr, rc);
                 g += `<div class="slot-cell${sb.length>0?' occupied':''}" style="height:${ch}px; min-width:${colWidth}px" data-date="${ds}" data-hour="${hr}" data-receiver="${rc}"${isEditMode ? ` ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : ''}>`;
                 sb.forEach(b => {
-                    if (b.startHour !== hr) return;
-                    const hPx = (b.endHour - b.startHour) * ch - 4;
+                    // Карточка отображается только в том слоте, где она начинается
+                    if (Math.floor(b.startHour) !== hr) return;
+                    // Высота пропорциональна реальной длительности (30 мин = половина слота)
+                    const hPx = (b.duration / 60) * ch - 2;
                     const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type;
                     const brHtml = b.breakMinutes > 0 ? `<span class="s-break">+${b.breakMinutes}м</span>` : '';
                     const mobileClick = isEditMode ? `onclick="handleMobileCardClick(event, '${b.id}')"` : '';
-                    g += `<div class="supplier-card type-${tc}" style="position:absolute;top:2px;left:2px;right:2px;height:${hPx}px;overflow:hidden;z-index:5;"${isEditMode ? ` draggable="true" ondragstart="startDrag(event, '${b.id}')" ondragend="endDrag()"` : ''} ${mobileClick} title="${b.name} | ${padHour(b.startHour)}:00-${padHour(b.endHour)}:00 | ${b.pallets}п">
+                    g += `<div class="supplier-card type-${tc}" style="position:absolute;top:2px;left:2px;right:2px;height:${hPx}px;overflow:hidden;z-index:5;"${isEditMode ? ` draggable="true" ondragstart="startDrag(event, '${b.id}')" ondragend="endDrag()"` : ''} ${mobileClick} title="${b.name} | ${formatTimeLabel(b.startHour)}-${formatTimeLabel(b.endHourDecimal)} | ${b.pallets}п">
                         <div class="s-name">${escapeHtml(b.name)}</div>
                         <div class="s-details"><span class="s-type">${TYPE_INFO[b.type]?.icon||''} ${TYPE_INFO[b.type]?.label||b.type}</span><span>${b.pallets}п</span>${brHtml}</div>
                         ${isEditMode ? `<button class="delete-btn" onclick="event.stopPropagation();deleteBooking('${b.id}')">✕</button>` : ''}</div>`;
@@ -1089,15 +1047,13 @@ function renderMonthView() {
     let g = ''; let cur = new Date(yr, mo, 1-so); let w = 0;
     while (w < 6 && cur <= new Date(yr, mo+1, 0)) {
         const isCur = cur.getMonth()===mo, isT = isToday(cur), ds = formatDate(cur);
-        const sdList = getSelfDeliveriesByDate(ds);
-        let sdBadges = sdList.map(sd => `<div class="self-delivery-day-badge-wrapper"><div class="self-delivery-day-badge">🏷 ${escapeHtml(sd.supplierName)}${isEditMode ? `<button class="sd-delete" onclick="deleteSelfDelivery('${sd.id}')">✕</button>` : ''}</div></div>`).join('');
-        g += `<div class="month-day-cell${isCur?'':' other-month'}${isT?' today':''}" onclick="openDayModal('${ds}')"><div class="md-date">${cur.getDate()}</div>${sdBadges}`;
+        g += `<div class="month-day-cell${isCur?'':' other-month'}${isT?' today':''}" onclick="openDayModal('${ds}')"><div class="md-date">${cur.getDate()}</div>`;
         const db = [];
         const rcList = getReceiversForDate(ds);
         for (let hr = START_HOUR; hr < END_HOUR; hr++) {
             rcList.forEach(r => { 
                 getBookings(ds, hr, r).forEach(b => { 
-                    if (b.startHour===hr && !db.find(x=>x.id===b.id)) db.push(b); 
+                    if (Math.floor(b.startHour)===hr && !db.find(x=>x.id===b.id)) db.push(b); 
                 }); 
             });
         }
@@ -1114,22 +1070,16 @@ function openDayModal(ds) {
     const d = new Date(ds+'T00:00:00');
     document.getElementById('dayModalTitle').textContent = `${DAY_NAMES_FULL[(d.getDay()+6)%7]}, ${formatDateRu(d)}`;
     let html = '';
-    const sdList = getSelfDeliveriesByDate(ds);
-    if (sdList.length > 0) {
-        html += `<div class="self-delivery-section"><h4>🏷 Собственная доставка</h4>`;
-        sdList.forEach(sd => { html += `<div class="modal-card type-собственная-доставка"><div class="mc-info"><div class="mc-name">${escapeHtml(sd.supplierName)}</div><div class="mc-details">Собственная доставка</div></div>${isEditMode ? `<button class="mc-delete" onclick="deleteBooking('${sd.id}')">✕</button>` : ''}</div>`; });
-        html += `</div>`;
-    }
     const rcList = getReceiversForDate(ds);
     rcList.forEach(rc => {
         const rb = [];
-        for (let hr = START_HOUR; hr < END_HOUR; hr++) getBookings(ds, hr, rc).forEach(b => { if (b.startHour===hr && !rb.find(x=>x.id===b.id)) rb.push(b); });
+        for (let hr = START_HOUR; hr < END_HOUR; hr++) getBookings(ds, hr, rc).forEach(b => { if (Math.floor(b.startHour)===hr && !rb.find(x=>x.id===b.id)) rb.push(b); });
         rb.sort((a,b) => a.startHour-b.startHour);
         if (rb.length > 0) {
             html += `<div class="modal-receiver-section"><div class="modal-receiver-title">Приемщик ${rc} (${rb.length})</div>`;
             rb.forEach(b => {
                 const tc = b.type==='транспортная компания'?'транспортная-компания':b.type;
-                html += `<div class="modal-card type-${tc}"><div class="mc-info"><div class="mc-name">${escapeHtml(b.name)}</div><div class="mc-details">${TYPE_INFO[b.type]?.icon} ${b.pallets}п | ${padHour(b.startHour)}:00-${padHour(b.endHour)}:00${b.breakMinutes>0?' (+'+b.breakMinutes+'м)':''}</div></div>${isEditMode ? `<button class="mc-delete" onclick="deleteBooking('${b.id}')">✕</button>` : ''}</div>`;
+                html += `<div class="modal-card type-${tc}"><div class="mc-info"><div class="mc-name">${escapeHtml(b.name)}</div><div class="mc-details">${TYPE_INFO[b.type]?.icon} ${b.pallets}п | ${formatTimeLabel(b.startHour)}-${formatTimeLabel(b.endHourDecimal)}${b.breakMinutes>0?' (+'+b.breakMinutes+'м)':''}</div></div>${isEditMode ? `<button class="mc-delete" onclick="deleteBooking('${b.id}')">✕</button>` : ''}</div>`;
             });
             html += `</div>`;
         }
@@ -1220,11 +1170,11 @@ function saveNormatives() {
                 const newDur = changes[bk.type];
                 if (newDur !== undefined && newDur !== bk.baseDuration) {
                     const calc = calcBookingDuration(newDur, bk.startHour);
-                    if (calc.endHour <= END_HOUR) {
-                        for (let h = bk.startHour; h < bk.endHour; h++) removeBookingFromSlot(bk.dateStr, h, bk.receiver, bk.id);
+                    if (calc.endHourDecimal <= END_HOUR) {
+                        for (let h = Math.floor(bk.startHour); h < bk.endHour; h++) removeBookingFromSlot(bk.dateStr, h, bk.receiver, bk.id);
                         bk.baseDuration = newDur; bk.breakMinutes = calc.breakMinutes;
-                        bk.duration = calc.totalDuration; bk.endHour = calc.endHour;
-                        for (let h = bk.startHour; h < bk.endHour; h++) addBookingToSlot(bk.dateStr, h, bk.receiver, bk);
+                        bk.duration = calc.totalDuration; bk.endHour = calc.endHour; bk.endHourDecimal = calc.endHourDecimal;
+                        for (let h = Math.floor(bk.startHour); h < bk.endHour; h++) addBookingToSlot(bk.dateStr, h, bk.receiver, bk);
                         updatedCount++;
                     }
                 }
@@ -1239,11 +1189,10 @@ function saveNormatives() {
 
 function updateStats() {
     const dates = currentView==='month' ? getDaysInMonth(currentDate) : (currentView==='day' ? [currentDate] : getWeekDates(currentDate));
-    let total=0, pallets=0, types={}, sdCount=0; const counted = new Set();
+    let total=0, pallets=0, types={}; const counted = new Set();
     dates.forEach(d => {
         const ds = formatDate(d);
         const rcList = getReceiversForDate(ds);
-        selfDeliveries.filter(sd => sd.dateStr===ds).forEach(sd => { if (!counted.has(sd.id)) { counted.add(sd.id); sdCount++; } });
         for (let h = START_HOUR; h < END_HOUR; h++) {
             rcList.forEach(r => {
                 getBookings(ds, h, r).forEach(b => { if (!counted.has(b.id)) { counted.add(b.id); total++; pallets += b.pallets; types[b.type] = (types[b.type]||0)+1; } });
@@ -1251,7 +1200,6 @@ function updateStats() {
         }
     });
     let html = `<div class="stat-item">📦 Записей: <span class="stat-value">${total}</span></div>`;
-    if (sdCount > 0) html += `<div class="stat-item">🏷 Собств. доставка: <span class="stat-value">${sdCount}</span></div>`;
     html += `<div class="stat-item">🏗 Паллет: <span class="stat-value">${pallets}</span></div>`;
     for (const [t,c] of Object.entries(types)) { if (TYPE_INFO[t]) html += `<div class="stat-item">${TYPE_INFO[t].icon} ${TYPE_INFO[t].label}: ${c}</div>`; }
     document.getElementById('statsBar').innerHTML = html;
@@ -1266,13 +1214,13 @@ function createDemoData() {
         { n: 'ИП Сидоров', p: 8, t: 'газель', h: 10, r: 2 },
         { n: 'ООО "Бета"', p: 16, t: 'контейнер', h: 9, r: 1 },
         { n: 'Фрукт-Трейд', p: 30, t: 'фрукты', h: 11, r: 2 },
-        { n: 'ТК-Логистик', p: 14, t: 'транспортная компания', h: 11, r: 3 }
+        { n: 'ТК-Логистик', p: 14, t: 'транспортная компания', h: 11, r: 3 },
+        { n: 'Собств. доставка "Гамма"', p: 10, t: 'собственная доставка', h: 14, r: 1 }
     ];
     demo.forEach(b => {
         const calc = calcBookingDuration(DEFAULT_NORMS[b.t], b.h);
-        placeBooking({ id: generateId(), name: b.n, pallets: b.p, type: b.t, baseDuration: DEFAULT_NORMS[b.t], breakMinutes: calc.breakMinutes, duration: calc.totalDuration, startHour: b.h, endHour: calc.endHour, dateStr: ds, receiver: b.r });
+        placeBooking({ id: generateId(), name: b.n, pallets: b.p, type: b.t, baseDuration: DEFAULT_NORMS[b.t], breakMinutes: calc.breakMinutes, duration: calc.totalDuration, startHour: b.h, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, dateStr: ds, receiver: b.r });
     });
-    selfDeliveries.push({ id: generateId(), dateStr: ds, supplierName: 'Собственная доставка — ООО "Альфа-Строй"' });
     saveToStorage();
 }
 
@@ -1298,7 +1246,7 @@ function handleMobileCardAction(id) {
         <div class="modal-card type-${b.type === 'транспортная компания' ? 'транспортная-компания' : b.type}" style="margin-bottom: 16px;">
             <div class="mc-info">
                 <div class="mc-name">${escapeHtml(b.name)}</div>
-                <div class="mc-details">${TYPE_INFO[b.type]?.icon} ${b.pallets}п | ${padHour(b.startHour)}:00-${padHour(b.endHour)}:00 | Пр.${b.receiver}</div>
+                <div class="mc-details">${TYPE_INFO[b.type]?.icon} ${b.pallets}п | ${formatTimeLabel(b.startHour)}-${formatTimeLabel(b.endHourDecimal)} | Пр.${b.receiver}</div>
             </div>
         </div>
         <button class="submit-btn" style="background: var(--warning); color: #1a1a2e; margin-bottom: 10px;" onclick="promptMoveBooking('${b.id}')">↔ Переместить</button>
@@ -1318,15 +1266,13 @@ function promptMoveBooking(id) {
         return;
     }
     const calc = calcBookingDuration(b.baseDuration, newHr);
-    if (calc.endHour > END_HOUR) { showToast('Выходит за рабочее время', 'error'); return; }
-    for (let h = newHr; h < calc.endHour; h++) {
-        if (!isSlotFree(b.dateStr, h, b.receiver)) {
-            showToast(`Слот ${padHour(h)}:00 занят`, 'error');
-            return;
-        }
+    if (calc.endHourDecimal > END_HOUR) { showToast('Выходит за рабочее время', 'error'); return; }
+    if (!canPlaceBooking(b.dateStr, newHr, b.receiver, b.baseDuration, b.id)) {
+        showToast(`Слот ${padHour(newHr)}:00 занят`, 'error');
+        return;
     }
-    for (let h = b.startHour; h < b.endHour; h++) removeBookingFromSlot(b.dateStr, h, b.receiver, b.id);
-    placeBooking({ ...b, startHour: newHr, endHour: calc.endHour, breakMinutes: calc.breakMinutes, duration: calc.totalDuration });
+    for (let h = Math.floor(b.startHour); h < b.endHour; h++) removeBookingFromSlot(b.dateStr, h, b.receiver, b.id);
+    placeBooking({ ...b, startHour: newHr, endHour: calc.endHour, endHourDecimal: calc.endHourDecimal, breakMinutes: calc.breakMinutes, duration: calc.totalDuration });
     saveToStorage(); saveToCloud();
     closeModal('mobileActionModal');
     showToast('Запись перемещена', 'success');
