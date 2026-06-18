@@ -61,6 +61,8 @@
         .nav-btn.edit-btn:hover { background: #d97706; }
         .nav-btn.logout-btn { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); color: #fca5a5; }
         .nav-btn.logout-btn:hover { background: rgba(239,68,68,0.25); }
+        .nav-btn.reports-btn { background: rgba(139,92,246,0.18); border-color: rgba(139,92,246,0.35); color: #c4b5fd; }
+        .nav-btn.reports-btn:hover { background: rgba(139,92,246,0.3); color: #ede9fe; }
         .nav-divider { width: 1px; height: 16px; background: var(--border); margin: 0 2px; }
         .current-period { font-size: 11px; font-weight: 600; min-width: 140px; text-align: center; color: var(--text-primary); white-space: nowrap; }
         .sync-indicator { font-size: 10px; display: flex; align-items: center; gap: 4px; padding: 3px 7px; border-radius: 4px; }
@@ -141,7 +143,6 @@
         .stat-item { display: flex; align-items: center; gap: 3px; }
         .stat-value { font-weight: 700; color: var(--text-primary); }
 
-        /* ===== ГОРИЗОНТАЛЬНАЯ ТАБЛИЦА ===== */
         .scroll-wrapper {
             flex: 1; overflow: auto; position: relative; -webkit-overflow-scrolling: touch;
             scrollbar-width: thin; scrollbar-color: var(--border-light) var(--bg-primary);
@@ -152,13 +153,8 @@
         .scroll-wrapper::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 6px; }
         .scroll-wrapper::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-        .h-schedule {
-            display: grid;
-            min-width: max-content;
-            background: var(--bg-primary);
-        }
+        .h-schedule { display: grid; min-width: max-content; background: var(--bg-primary); }
 
-        /* Угловая ячейка (верхний левый угол) */
         .corner-cell {
             position: sticky; top: 0; left: 0; z-index: 30;
             background: var(--bg-secondary);
@@ -171,7 +167,6 @@
             height: var(--time-header-height);
         }
 
-        /* Заголовки времени (верхняя строка) */
         .time-header-cell {
             position: sticky; top: 0; z-index: 20;
             background: var(--bg-secondary);
@@ -193,9 +188,7 @@
         }
         .time-header-cell.break-slot { background: rgba(245,158,11,0.08); }
         .time-header-cell.break-slot .th-hour, .time-header-cell.break-slot .th-min { color: #f59e0b; }
-        .time-header-cell.today-col { box-shadow: inset 0 2px 0 0 var(--accent); }
 
-        /* Заголовки дней (левая колонка) */
         .day-header-cell {
             position: sticky; left: 0; z-index: 15;
             background: var(--bg-secondary);
@@ -235,7 +228,6 @@
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
 
-        /* Заголовки приемщиков (левая колонка, под заголовком дня) */
         .receiver-header-cell {
             position: sticky; left: 0; z-index: 15;
             background: var(--bg-tertiary);
@@ -248,7 +240,6 @@
             height: var(--row-height);
         }
 
-        /* Ячейки слотов */
         .slot-cell {
             border-right: 1px solid var(--border);
             border-bottom: 1px solid var(--border);
@@ -260,11 +251,9 @@
         }
         .slot-cell.full-hour-start { border-left: 2px solid var(--border-light); }
         .slot-cell.break-slot { background: rgba(245,158,11,0.05); }
-        .slot-cell.today-col { background: rgba(59,130,246,0.03); }
         .edit-mode .slot-cell:hover { background: rgba(59,130,246,0.08); cursor: pointer; }
         .slot-cell.drag-over { background: rgba(245,158,11,0.15) !important; box-shadow: inset 0 0 0 2px #f59e0b; }
 
-        /* Карточки поставщиков (горизонтальные) */
         .supplier-card {
             position: absolute;
             top: 3px;
@@ -316,6 +305,7 @@
         .modal { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
         .modal-sm { width: 340px; }
         .modal-md { width: 500px; }
+        .modal-lg { width: 900px; max-width: 95vw; }
         .modal-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .modal-header h3 { font-size: 15px; font-weight: 600; color: var(--text-primary); }
         .modal-close { width: 28px; height: 28px; border: none; background: var(--bg-tertiary); color: var(--text-secondary); border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
@@ -362,6 +352,152 @@
         .sidebar-close-btn, .fab-add { display: none; }
         .staff-warning { font-size: 10px; color: var(--warning); margin-top: 8px; text-align: center; line-height: 1.4; }
 
+        /* ===== ОТЧЕТЫ ===== */
+        .report-filter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .report-filter-block { display: flex; flex-direction: column; gap: 6px; }
+        .report-filter-block.full-width { grid-column: 1 / -1; }
+        .report-filter-block label {
+            font-size: 10px; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.3px;
+        }
+        .report-filter-block input[type="date"],
+        .report-filter-block input[type="text"] {
+            width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 13px; font-family: inherit; background: var(--bg-primary); color: var(--text-primary);
+        }
+        .report-filter-block input:focus { outline: none; border-color: var(--accent); }
+        .report-date-row { display: flex; gap: 8px; align-items: center; }
+        .report-date-row span { font-size: 11px; color: var(--text-muted); }
+        .report-date-row input { flex: 1; }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4px;
+            padding: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            max-height: 180px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-light) var(--bg-primary);
+        }
+        .checkbox-grid::-webkit-scrollbar { width: 6px; }
+        .checkbox-grid::-webkit-scrollbar-track { background: var(--bg-primary); }
+        .checkbox-grid::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+        .checkbox-item {
+            display: flex; align-items: center; gap: 6px;
+            padding: 4px 6px; border-radius: 4px;
+            font-size: 11px; color: var(--text-primary);
+            cursor: pointer; user-select: none;
+            transition: background 0.1s;
+        }
+        .checkbox-item:hover { background: var(--bg-hover); }
+        .checkbox-item input[type="checkbox"] {
+            width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer;
+        }
+        .checkbox-item.is-all { font-weight: 700; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 2px; grid-column: 1 / -1; }
+        .checkbox-grid.types-grid { grid-template-columns: 1fr; }
+
+        .supplier-autocomplete-wrap { position: relative; }
+        .supplier-suggestions {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: 6px; margin-top: 2px;
+            max-height: 200px; overflow-y: auto;
+            z-index: 50; display: none;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-light) var(--bg-primary);
+        }
+        .supplier-suggestions.visible { display: block; }
+        .supplier-suggestions::-webkit-scrollbar { width: 6px; }
+        .supplier-suggestions::-webkit-scrollbar-track { background: var(--bg-primary); }
+        .supplier-suggestions::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+        .suggestion-item {
+            padding: 7px 10px; font-size: 12px; color: var(--text-primary);
+            cursor: pointer; border-bottom: 1px solid var(--border);
+            transition: background 0.1s;
+        }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:hover, .suggestion-item.highlighted { background: var(--bg-hover); }
+        .suggestion-item .s-match { color: var(--accent); font-weight: 600; }
+        .suggestion-empty { padding: 10px; font-size: 11px; color: var(--text-muted); text-align: center; }
+
+        .report-actions { display: flex; gap: 8px; margin-top: 14px; }
+        .report-actions button { flex: 1; }
+
+        .report-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .summary-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            display: flex; flex-direction: column; gap: 2px;
+        }
+        .summary-card .sc-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.3px; }
+        .summary-card .sc-value { font-size: 20px; font-weight: 700; color: var(--text-primary); line-height: 1.1; }
+        .summary-card .sc-sub { font-size: 10px; color: var(--text-secondary); }
+        .summary-card.accent { border-color: var(--accent); background: rgba(59,130,246,0.08); }
+        .summary-card.accent .sc-value { color: #60a5fa; }
+        .summary-card.success { border-color: var(--success); background: rgba(16,185,129,0.08); }
+        .summary-card.success .sc-value { color: #6ee7b7; }
+        .summary-card.purple { border-color: var(--purple); background: rgba(139,92,246,0.08); }
+        .summary-card.purple .sc-value { color: #c4b5fd; }
+
+        .report-table-wrap {
+            max-height: 400px; overflow: auto;
+            border: 1px solid var(--border); border-radius: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-light) var(--bg-primary);
+        }
+        .report-table-wrap::-webkit-scrollbar { height: 10px; width: 10px; }
+        .report-table-wrap::-webkit-scrollbar-track { background: var(--bg-primary); }
+        .report-table-wrap::-webkit-scrollbar-corner { background: var(--bg-primary); }
+        .report-table-wrap::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 5px; }
+        .report-table {
+            width: 100%; border-collapse: collapse;
+            font-size: 11px;
+        }
+        .report-table thead { position: sticky; top: 0; z-index: 5; }
+        .report-table th {
+            background: var(--bg-tertiary); color: var(--text-secondary);
+            padding: 8px 10px; text-align: left; font-weight: 600;
+            font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px;
+            border-bottom: 2px solid var(--border); white-space: nowrap;
+        }
+        .report-table td {
+            padding: 7px 10px; border-bottom: 1px solid var(--border);
+            color: var(--text-primary); white-space: nowrap;
+        }
+        .report-table tbody tr:hover { background: var(--bg-hover); }
+        .report-table .rt-type {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 6px; border-radius: 3px;
+            font-size: 10px; font-weight: 500;
+        }
+        .report-table .rt-type.t-фура { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .report-table .rt-type.t-контейнер { background: rgba(124,58,237,0.15); color: #a78bfa; }
+        .report-table .rt-type.t-газель { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+        .report-table .rt-type.t-фрукты { background: rgba(239,68,68,0.15); color: #fca5a5; }
+        .report-table .rt-type.t-транспортная-компания { background: rgba(8,145,178,0.15); color: #67e8f9; }
+        .report-table .rt-type.t-собственная-доставка { background: rgba(139,92,246,0.15); color: #c4b5fd; }
+        .report-empty {
+            padding: 30px; text-align: center;
+            color: var(--text-muted); font-size: 12px;
+        }
+
         @media (max-width: 768px) {
             .header { flex-direction: column; gap: 6px; padding: 8px; }
             .header h1 { font-size: 13px; justify-content: center; width: 100%; }
@@ -404,6 +540,8 @@
             .supplier-card .delete-btn { display: flex !important; width: 22px; height: 22px; font-size: 11px; }
 
             .modal { width: 95vw; max-width: none; margin: 10px; max-height: 90vh; border-radius: 16px; }
+            .report-filter-grid { grid-template-columns: 1fr; }
+            .report-summary { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (min-width: 769px) {
@@ -429,6 +567,7 @@
                 <button class="nav-btn" style="background:var(--accent);border-color:var(--accent)" onclick="goToday()">Сегодня</button>
                 <button class="nav-btn" onclick="navigate(1)">›</button>
                 <div class="nav-divider"></div>
+                <button class="nav-btn reports-btn" onclick="openReportsModal()">📊 Отчеты</button>
                 <button class="nav-btn save-btn" onclick="saveAllChanges()">💾 Сохранить</button>
                 <button class="nav-btn settings-btn" onclick="openNormativesPassword()">⚙ Нормативы</button>
                 <button class="nav-btn logout-btn" onclick="logout()">🚪 Выход</button>
@@ -442,6 +581,7 @@
                 <button class="nav-btn" style="background:var(--accent);border-color:var(--accent)" onclick="goToday()">Сегодня</button>
                 <button class="nav-btn" onclick="navigate(1)">›</button>
                 <div class="nav-divider"></div>
+                <button class="nav-btn reports-btn" onclick="openReportsModal()">📊 Отчеты</button>
                 <button class="nav-btn edit-btn" onclick="requestEditMode()">✏️ Редактировать</button>
             </div>
             <div class="current-period" id="currentPeriod"></div>
@@ -566,13 +706,6 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="dayModal">
-    <div class="modal modal-md">
-        <div class="modal-header"><h3 id="dayModalTitle">Расписание на день</h3><button class="modal-close" onclick="closeModal('dayModal')">✕</button></div>
-        <div class="modal-body" id="dayModalBody"></div>
-    </div>
-</div>
-
 <div class="modal-overlay" id="staffModal">
     <div class="modal modal-sm">
         <div class="modal-header"><h3>👥 Штат приемщиков</h3><button class="modal-close" onclick="closeModal('staffModal')">✕</button></div>
@@ -596,6 +729,69 @@
     <div class="modal modal-sm">
         <div class="modal-header"><h3>Действия с записью</h3><button class="modal-close" onclick="closeModal('mobileActionModal')">✕</button></div>
         <div class="modal-body" id="mobileActionBody"></div>
+    </div>
+</div>
+
+<!-- ===== МОДАЛЬНОЕ ОКНО ОТЧЕТОВ ===== -->
+<div class="modal-overlay" id="reportsModal">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <h3>📊 Отчеты</h3>
+            <button class="modal-close" onclick="closeModal('reportsModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <!-- Фильтры -->
+            <div id="reportFiltersBlock">
+                <div class="report-filter-grid">
+                    <div class="report-filter-block full-width">
+                        <label>📅 Период</label>
+                        <div class="report-date-row">
+                            <input type="date" id="reportDateFrom">
+                            <span>—</span>
+                            <input type="date" id="reportDateTo">
+                        </div>
+                    </div>
+
+                    <div class="report-filter-block">
+                        <label>🏢 Поставщик</label>
+                        <div class="supplier-autocomplete-wrap">
+                            <input type="text" id="reportSupplierInput" placeholder="Все поставщики или введите имя..." autocomplete="off">
+                            <div class="supplier-suggestions" id="reportSupplierSuggestions"></div>
+                        </div>
+                    </div>
+
+                    <div class="report-filter-block">
+                        <label>📆 День недели</label>
+                        <div class="checkbox-grid" id="reportDaysGrid"></div>
+                    </div>
+
+                    <div class="report-filter-block full-width">
+                        <label>🚛 Тип ТС</label>
+                        <div class="checkbox-grid types-grid" id="reportTypesGrid"></div>
+                    </div>
+                </div>
+
+                <div class="report-actions">
+                    <button class="submit-btn" style="background: var(--purple); margin-top: 0;" onclick="generateReport()">📊 Сформировать отчет</button>
+                    <button class="submit-btn" style="background: var(--bg-tertiary); margin-top: 0;" onclick="resetReportFilters()">↺ Сбросить</button>
+                </div>
+            </div>
+
+            <!-- Результаты -->
+            <div id="reportResultsBlock" class="hidden">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+                    <h3 style="font-size: 14px; font-weight: 600;">Результаты отчета</h3>
+                    <button class="nav-btn" onclick="backToFilters()">← К фильтрам</button>
+                </div>
+                <div class="report-summary" id="reportSummary"></div>
+                <div class="report-table-wrap">
+                    <table class="report-table" id="reportTable">
+                        <thead><tr id="reportTableHead"></tr></thead>
+                        <tbody id="reportTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -634,6 +830,9 @@ const BREAK_PERIODS = [
     { start: 10*60+30, end: 11*60 },
     { start: 11*60+30, end: 12*60 }
 ];
+const DAY_NAMES = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const DAY_NAMES_FULL = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
+const MONTH_NAMES = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 
 let currentView = 'week';
 let currentDate = new Date();
@@ -646,6 +845,14 @@ let normativeHistory = [];
 let firebaseDb = null;
 let firebaseReady = false;
 let syncDebounceTimer = null;
+
+// Состояние отчётов
+let reportState = {
+    selectedSupplier: null, // null = все
+    selectedTypes: new Set(Object.keys(DEFAULT_NORMS)),
+    selectedDays: new Set([0,1,2,3,4,5,6]), // 0=Пн ... 6=Вс
+    highlightedSuggestion: -1
+};
 
 function getReceiversForDate(dateStr) {
     const count = receiversPerDate[dateStr] || 3;
@@ -793,10 +1000,6 @@ function formatTime(minutes) { return `${padHour(Math.floor(minutes/60))}:${padM
 function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function nextDay(dateStr) { const d = new Date(dateStr + 'T00:00:00'); d.setDate(d.getDate() + 1); return formatDate(d); }
 function generateId() { return 'b_' + Date.now() + '_' + Math.random().toString(36).substr(2,5); }
-
-const DAY_NAMES = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
-const DAY_NAMES_FULL = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
-const MONTH_NAMES = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 
 function getEffectiveDuration(type, dateStr) {
     let duration = DEFAULT_NORMS[type] || 60;
@@ -1049,8 +1252,7 @@ function renderHorizontalView(dates) {
     const rowHeight = 44;
     const timeHeaderHeight = 52;
 
-    // Собираем строки: для каждого дня — заголовок дня + строки приемщиков
-    const rows = []; // { type: 'day'|'receiver', dateIdx, date, rc?, dayRowSpan? }
+    const rows = [];
     dates.forEach((d, di) => {
         const ds = formatDate(d);
         const rcList = getReceiversForDate(ds);
@@ -1060,18 +1262,12 @@ function renderHorizontalView(dates) {
         });
     });
 
-    const totalCols = 1 + TIME_SLOTS.length; // day-col + time slots
-    const totalRows = 1 + rows.length; // time-header + data rows
-
     grid.style.gridTemplateColumns = `${dayColWidth}px repeat(${TIME_SLOTS.length}, ${slotColWidth}px)`;
     grid.style.gridTemplateRows = `${timeHeaderHeight}px repeat(${rows.length}, ${rowHeight}px)`;
 
     let html = '';
-
-    // Угловая ячейка
     html += `<div class="corner-cell" style="grid-column: 1; grid-row: 1;">Время →</div>`;
 
-    // Заголовки времени (верхняя строка)
     TIME_SLOTS.forEach((slotMin, si) => {
         const hour = Math.floor(slotMin / 60);
         const minute = slotMin % 60;
@@ -1080,7 +1276,6 @@ function renderHorizontalView(dates) {
         let classes = 'time-header-cell';
         if (isHalf) classes += ' half-hour'; else classes += ' full-hour';
         if (isBreak) classes += ' break-slot';
-        // Подсветка сегодняшнего дня — проверяем все даты
         const hourLabel = isHalf ? '' : padHour(hour);
         const minLabel = isHalf ? '30' : '00';
         html += `<div class="${classes}" style="grid-column: ${si + 2}; grid-row: 1;">
@@ -1089,11 +1284,9 @@ function renderHorizontalView(dates) {
         </div>`;
     });
 
-    // Строки данных
     rows.forEach((row, ri) => {
         const gridRow = ri + 2;
         if (row.type === 'day') {
-            // Заголовок дня — span по всем приемщикам этого дня
             const d = row.date;
             const ds = row.dateStr;
             const isT = isToday(d);
@@ -1111,11 +1304,9 @@ function renderHorizontalView(dates) {
                 ${sdHtml}
             </div>`;
         } else {
-            // Заголовок приемщика
             html += `<div class="receiver-header-cell" style="grid-column: 1; grid-row: ${gridRow};">Приемщик ${row.rc}</div>`;
         }
 
-        // Ячейки слотов для этой строки
         TIME_SLOTS.forEach((slotMin, si) => {
             const gridCol = si + 2;
             const isBreak = isBreakSlot(slotMin);
@@ -1153,8 +1344,6 @@ function renderHorizontalView(dates) {
     });
 
     grid.innerHTML = html;
-
-    // Добавляем/убираем edit-mode класс для стилей
     if (isEditMode) grid.classList.add('edit-mode'); else grid.classList.remove('edit-mode');
 }
 
@@ -1336,6 +1525,363 @@ function promptMoveBooking(id) {
     closeModal('mobileActionModal');
     showToast('Запись перемещена', 'success');
     renderSchedule(); updateStats(); updateTimeOptions();
+}
+
+// =========================================================
+// ====================== ОТЧЕТЫ ===========================
+// =========================================================
+
+// Собирает все уникальные имена поставщиков из всех записей когда-либо
+function getAllSupplierNames() {
+    const names = new Set();
+    for (const key in bookings) {
+        bookings[key].forEach(b => {
+            if (b.name && b.name.trim()) names.add(b.name.trim());
+        });
+    }
+    return Array.from(names).sort((a, b) => a.localeCompare(b, 'ru'));
+}
+
+// Инициализация фильтров отчётов
+function initReportFilters() {
+    // Период по умолчанию — текущий месяц
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    document.getElementById('reportDateFrom').value = formatDate(firstDay);
+    document.getElementById('reportDateTo').value = formatDate(today);
+
+    // Дни недели
+    const daysGrid = document.getElementById('reportDaysGrid');
+    let daysHtml = `<label class="checkbox-item is-all">
+        <input type="checkbox" id="reportDaysAll" checked onchange="toggleAllDays(this.checked)">
+        <span>✓ Все дни недели</span>
+    </label>`;
+    DAY_NAMES_FULL.forEach((name, idx) => {
+        daysHtml += `<label class="checkbox-item">
+            <input type="checkbox" class="report-day-cb" value="${idx}" checked onchange="onDayCheckboxChange()">
+            <span>${name}</span>
+        </label>`;
+    });
+    daysGrid.innerHTML = daysHtml;
+
+    // Типы ТС
+    const typesGrid = document.getElementById('reportTypesGrid');
+    let typesHtml = `<label class="checkbox-item is-all">
+        <input type="checkbox" id="reportTypesAll" checked onchange="toggleAllTypes(this.checked)">
+        <span>✓ Все типы ТС</span>
+    </label>`;
+    for (const [type, info] of Object.entries(TYPE_INFO)) {
+        typesHtml += `<label class="checkbox-item">
+            <input type="checkbox" class="report-type-cb" value="${type}" checked onchange="onTypeCheckboxChange()">
+            <span>${info.icon} ${info.label}</span>
+        </label>`;
+    }
+    typesGrid.innerHTML = typesHtml;
+
+    // Поставщик — сброс
+    document.getElementById('reportSupplierInput').value = '';
+    reportState.selectedSupplier = null;
+    reportState.selectedTypes = new Set(Object.keys(DEFAULT_NORMS));
+    reportState.selectedDays = new Set([0,1,2,3,4,5,6]);
+    hideSupplierSuggestions();
+}
+
+function toggleAllDays(checked) {
+    document.querySelectorAll('.report-day-cb').forEach(cb => cb.checked = checked);
+    reportState.selectedDays = checked ? new Set([0,1,2,3,4,5,6]) : new Set();
+}
+function onDayCheckboxChange() {
+    const cbs = document.querySelectorAll('.report-day-cb');
+    const selected = new Set();
+    cbs.forEach(cb => { if (cb.checked) selected.add(parseInt(cb.value)); });
+    reportState.selectedDays = selected;
+    document.getElementById('reportDaysAll').checked = selected.size === 7;
+}
+function toggleAllTypes(checked) {
+    document.querySelectorAll('.report-type-cb').forEach(cb => cb.checked = checked);
+    reportState.selectedTypes = checked ? new Set(Object.keys(DEFAULT_NORMS)) : new Set();
+}
+function onTypeCheckboxChange() {
+    const cbs = document.querySelectorAll('.report-type-cb');
+    const selected = new Set();
+    cbs.forEach(cb => { if (cb.checked) selected.add(cb.value); });
+    reportState.selectedTypes = selected;
+    document.getElementById('reportTypesAll').checked = selected.size === Object.keys(DEFAULT_NORMS).length;
+}
+
+// Автодополнение поставщика
+const supplierInput = document.getElementById('reportSupplierInput');
+const supplierSuggestions = document.getElementById('reportSupplierSuggestions');
+
+supplierInput.addEventListener('input', onSupplierInputChange);
+supplierInput.addEventListener('focus', onSupplierInputChange);
+supplierInput.addEventListener('blur', () => {
+    // Небольшая задержка, чтобы клик по варианту успел сработать
+    setTimeout(hideSupplierSuggestions, 150);
+});
+supplierInput.addEventListener('keydown', onSupplierKeydown);
+
+function onSupplierInputChange() {
+    const val = supplierInput.value.trim();
+    reportState.highlightedSuggestion = -1;
+
+    if (!val) {
+        reportState.selectedSupplier = null;
+        hideSupplierSuggestions();
+        return;
+    }
+
+    const allNames = getAllSupplierNames();
+    const lowerVal = val.toLowerCase();
+    const matches = allNames.filter(n => n.toLowerCase().includes(lowerVal));
+
+    // Если введённое значение точно совпадает с одним из имён — выбираем его
+    const exactMatch = allNames.find(n => n.toLowerCase() === lowerVal);
+    if (exactMatch) {
+        reportState.selectedSupplier = exactMatch;
+    } else {
+        reportState.selectedSupplier = null;
+    }
+
+    renderSupplierSuggestions(matches, val);
+}
+
+function renderSupplierSuggestions(matches, query) {
+    if (matches.length === 0) {
+        supplierSuggestions.innerHTML = `<div class="suggestion-empty">Ничего не найдено. Будет использовано как произвольный текст.</div>`;
+        supplierSuggestions.classList.add('visible');
+        return;
+    }
+
+    const lowerQ = query.toLowerCase();
+    let html = '';
+    matches.slice(0, 30).forEach((name, idx) => {
+        const lowerName = name.toLowerCase();
+        const pos = lowerName.indexOf(lowerQ);
+        let displayName;
+        if (pos >= 0) {
+            const before = escapeHtml(name.substring(0, pos));
+            const match = escapeHtml(name.substring(pos, pos + query.length));
+            const after = escapeHtml(name.substring(pos + query.length));
+            displayName = `${before}<span class="s-match">${match}</span>${after}`;
+        } else {
+            displayName = escapeHtml(name);
+        }
+        html += `<div class="suggestion-item" data-idx="${idx}" data-name="${escapeHtml(name)}" onmousedown="selectSuggestion('${escapeHtml(name).replace(/'/g, "\\'")}')">${displayName}</div>`;
+    });
+    supplierSuggestions.innerHTML = html;
+    supplierSuggestions.classList.add('visible');
+}
+
+function selectSuggestion(name) {
+    supplierInput.value = name;
+    reportState.selectedSupplier = name;
+    hideSupplierSuggestions();
+}
+
+function hideSupplierSuggestions() {
+    supplierSuggestions.classList.remove('visible');
+    reportState.highlightedSuggestion = -1;
+}
+
+function onSupplierKeydown(e) {
+    const items = supplierSuggestions.querySelectorAll('.suggestion-item');
+    if (!items.length || !supplierSuggestions.classList.contains('visible')) {
+        if (e.key === 'Escape') hideSupplierSuggestions();
+        return;
+    }
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        reportState.highlightedSuggestion = Math.min(reportState.highlightedSuggestion + 1, items.length - 1);
+        updateHighlightedSuggestion(items);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        reportState.highlightedSuggestion = Math.max(reportState.highlightedSuggestion - 1, 0);
+        updateHighlightedSuggestion(items);
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (reportState.highlightedSuggestion >= 0 && items[reportState.highlightedSuggestion]) {
+            const name = items[reportState.highlightedSuggestion].dataset.name;
+            selectSuggestion(name);
+        } else if (items.length === 1) {
+            selectSuggestion(items[0].dataset.name);
+        }
+    } else if (e.key === 'Escape') {
+        hideSupplierSuggestions();
+    }
+}
+
+function updateHighlightedSuggestion(items) {
+    items.forEach((it, i) => {
+        it.classList.toggle('highlighted', i === reportState.highlightedSuggestion);
+    });
+    if (reportState.highlightedSuggestion >= 0 && items[reportState.highlightedSuggestion]) {
+        items[reportState.highlightedSuggestion].scrollIntoView({ block: 'nearest' });
+    }
+}
+
+function openReportsModal() {
+    initReportFilters();
+    document.getElementById('reportFiltersBlock').classList.remove('hidden');
+    document.getElementById('reportResultsBlock').classList.add('hidden');
+    document.getElementById('reportsModal').classList.add('visible');
+}
+
+function resetReportFilters() {
+    initReportFilters();
+}
+
+function backToFilters() {
+    document.getElementById('reportFiltersBlock').classList.remove('hidden');
+    document.getElementById('reportResultsBlock').classList.add('hidden');
+}
+
+// Собирает все уникальные записи (без дубликатов по id) из bookings
+function getAllUniqueBookings() {
+    const seen = new Set();
+    const result = [];
+    for (const key in bookings) {
+        bookings[key].forEach(b => {
+            if (!seen.has(b.id)) {
+                seen.add(b.id);
+                result.push(b);
+            }
+        });
+    }
+    return result;
+}
+
+function generateReport() {
+    const dateFrom = document.getElementById('reportDateFrom').value;
+    const dateTo = document.getElementById('reportDateTo').value;
+
+    if (!dateFrom || !dateTo) {
+        showToast('Укажите период', 'error');
+        return;
+    }
+    if (dateFrom > dateTo) {
+        showToast('Дата "от" не может быть позже даты "до"', 'error');
+        return;
+    }
+
+    // Если пользователь ввёл текст, но не выбрал из списка — используем введённый как фильтр (точное совпадение)
+    const supplierText = supplierInput.value.trim();
+    let supplierFilter = reportState.selectedSupplier;
+    if (!supplierFilter && supplierText) {
+        // Если есть точное совпадение — используем его
+        const allNames = getAllSupplierNames();
+        const exact = allNames.find(n => n.toLowerCase() === supplierText.toLowerCase());
+        if (exact) supplierFilter = exact;
+        else supplierFilter = supplierText; // произвольный текст — будет искать точное совпадение
+    }
+
+    const allBookings = getAllUniqueBookings();
+
+    // Фильтрация
+    const filtered = allBookings.filter(b => {
+        // Период
+        if (b.dateStr < dateFrom || b.dateStr > dateTo) return false;
+        // Поставщик
+        if (supplierFilter && b.name !== supplierFilter) return false;
+        // Тип ТС
+        if (reportState.selectedTypes.size > 0 && !reportState.selectedTypes.has(b.type)) return false;
+        if (reportState.selectedTypes.size === 0) return false;
+        // День недели
+        const d = new Date(b.dateStr + 'T00:00:00');
+        const dayIdx = (d.getDay() + 6) % 7; // 0=Пн
+        if (!reportState.selectedDays.has(dayIdx)) return false;
+        return true;
+    });
+
+    // Сортировка по дате и времени
+    filtered.sort((a, b) => {
+        if (a.dateStr !== b.dateStr) return a.dateStr.localeCompare(b.dateStr);
+        if (a.startMin !== b.startMin) return a.startMin - b.startMin;
+        return a.receiver - b.receiver;
+    });
+
+    renderReportResults(filtered, { dateFrom, dateTo, supplierFilter });
+}
+
+function renderReportResults(rows, filters) {
+    document.getElementById('reportFiltersBlock').classList.add('hidden');
+    document.getElementById('reportResultsBlock').classList.remove('hidden');
+
+    // Сводка
+    const totalRecords = rows.length;
+    const totalPallets = rows.reduce((s, b) => s + (b.pallets || 0), 0);
+    const totalMinutes = rows.reduce((s, b) => s + (b.duration || 0), 0);
+    const uniqueDays = new Set(rows.map(b => b.dateStr)).size;
+
+    const totalHours = Math.floor(totalMinutes / 60);
+    const totalMins = totalMinutes % 60;
+
+    document.getElementById('reportSummary').innerHTML = `
+        <div class="summary-card accent">
+            <div class="sc-label">Записей</div>
+            <div class="sc-value">${totalRecords}</div>
+            <div class="sc-sub">за ${uniqueDays} дн.</div>
+        </div>
+        <div class="summary-card success">
+            <div class="sc-label">Паллет</div>
+            <div class="sc-value">${totalPallets}</div>
+            <div class="sc-sub">всего</div>
+        </div>
+        <div class="summary-card purple">
+            <div class="sc-label">Время выгрузки</div>
+            <div class="sc-value">${totalHours}ч ${totalMins}м</div>
+            <div class="sc-sub">${totalMinutes} мин</div>
+        </div>
+        <div class="summary-card">
+            <div class="sc-label">Период</div>
+            <div class="sc-value" style="font-size:13px;">${formatDateShort(new Date(filters.dateFrom+'T00:00:00'))} — ${formatDateShort(new Date(filters.dateTo+'T00:00:00'))}</div>
+            <div class="sc-sub">${filters.supplierFilter ? 'Поставщик: ' + escapeHtml(filters.supplierFilter) : 'Все поставщики'}</div>
+        </div>
+    `;
+
+    // Таблица
+    document.getElementById('reportTableHead').innerHTML = `
+        <th>№</th>
+        <th>Дата</th>
+        <th>День</th>
+        <th>Время</th>
+        <th>Приемщик</th>
+        <th>Поставщик</th>
+        <th>Тип ТС</th>
+        <th>Паллет</th>
+        <th>Длительность</th>
+    `;
+
+    if (rows.length === 0) {
+        document.getElementById('reportTableBody').innerHTML = `<tr><td colspan="9" class="report-empty">По заданным параметрам записей не найдено</td></tr>`;
+        return;
+    }
+
+    let bodyHtml = '';
+    rows.forEach((b, idx) => {
+        const d = new Date(b.dateStr + 'T00:00:00');
+        const dayIdx = (d.getDay() + 6) % 7;
+        const dayName = DAY_NAMES_FULL[dayIdx];
+        const dateRu = `${String(d.getDate()).padStart(2,'0')} ${MONTH_NAMES[d.getMonth()].substring(0,3)}`;
+        const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : (b.type === 'собственная доставка' ? 'собственная-доставка' : b.type);
+        const typeInfo = TYPE_INFO[b.type] || { icon: '', label: b.type };
+        const durHrs = Math.floor((b.duration || 0) / 60);
+        const durMins = (b.duration || 0) % 60;
+        const durStr = durHrs > 0 ? `${durHrs}ч ${durMins}м` : `${durMins}м`;
+
+        bodyHtml += `<tr>
+            <td>${idx + 1}</td>
+            <td>${dateRu}</td>
+            <td>${dayName}</td>
+            <td>${formatTime(b.startMin)}–${formatTime(b.endMin)}</td>
+            <td>Пр. ${b.receiver}</td>
+            <td>${escapeHtml(b.name)}</td>
+            <td><span class="rt-type t-${tc}">${typeInfo.icon} ${typeInfo.label}</span></td>
+            <td>${b.pallets || 0}</td>
+            <td>${durStr}</td>
+        </tr>`;
+    });
+    document.getElementById('reportTableBody').innerHTML = bodyHtml;
 }
 
 function init() {
