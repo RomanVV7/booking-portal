@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Портал записи поставщиков v1.3</title>
+    <title>Портал записи поставщиков v1.4</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.18/index.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -101,13 +101,13 @@
         .h-slot { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2px; position: relative; transition: background 0.1s; background: var(--bg-secondary); }
         .h-slot.break-slot { background: rgba(245,158,11,0.04); }
         .edit-mode .h-slot:hover { background: rgba(59,130,246,0.08); cursor: pointer; }
-        .h-slot.drag-over { background: rgba(245,158,11,0.1); box-shadow: inset 0 0 0 2px #f59e0b; }
+        .h-slot.drag-over { background: rgba(245,158,11,0.15); box-shadow: inset 0 0 0 2px #f59e0b; }
 
         .supplier-card { background: var(--bg-secondary); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 3px; padding: 3px 5px; font-size: 9px; cursor: default; transition: all 0.1s; position: absolute; overflow: hidden; z-index: 5; top: 2px; height: calc(100% - 4px); }
         .edit-mode .supplier-card { cursor: grab; }
         .edit-mode .supplier-card:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
         .supplier-card:active { cursor: grabbing; }
-        .supplier-card.dragging { opacity: 0.5; }
+        .supplier-card.dragging { opacity: 0.4; pointer-events: none; }
         .supplier-card.type-фура { border-left-color: #3b82f6; }
         .supplier-card.type-контейнер { border-left-color: #7c3aed; }
         .supplier-card.type-газель { border-left-color: #10b981; }
@@ -118,8 +118,16 @@
         .supplier-card .s-details { display: flex; gap: 3px; font-size: 8px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; }
         .supplier-card .s-type { background: var(--bg-tertiary); padding: 0 3px; border-radius: 2px; font-weight: 500; }
         .supplier-card .s-break { background: rgba(239,68,68,0.15); color: #fca5a5; font-size: 7px; padding: 0 2px; border-radius: 2px; }
-        .supplier-card .delete-btn { position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border: none; background: rgba(239,68,68,0.2); color: #ef4444; border-radius: 50%; cursor: pointer; font-size: 10px; display: none; align-items: center; justify-content: center; line-height: 1; }
-        .edit-mode .supplier-card:hover .delete-btn { display: flex; }
+        
+        /* Delete button always visible in edit mode */
+        .supplier-card .delete-btn { 
+            position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; 
+            border: none; background: rgba(239,68,68,0.8); color: white; border-radius: 50%; 
+            cursor: pointer; font-size: 11px; display: none; align-items: center; 
+            justify-content: center; line-height: 1; z-index: 10;
+        }
+        .edit-mode .supplier-card .delete-btn { display: flex; }
+        .supplier-card .delete-btn:hover { background: var(--danger); transform: scale(1.1); }
 
         .month-view { display: none; flex-direction: column; height: 100%; }
         .month-view.active { display: flex; }
@@ -210,7 +218,7 @@
             .form-group input, .form-group select { font-size: 16px; padding: 12px; min-height: 44px; }
             .submit-btn { padding: 12px; font-size: 14px; min-height: 48px; }
             .supplier-card { font-size: 10px; padding: 4px 6px; }
-            .supplier-card .delete-btn { display: flex !important; width: 24px; height: 24px; font-size: 12px; top: 2px; right: 2px; }
+            .supplier-card .delete-btn { width: 24px; height: 24px; font-size: 14px; top: 2px; right: 2px; }
             .modal { width: 95vw; max-width: none; margin: 10px; max-height: 90vh; border-radius: 16px; }
             .modal-header h3 { font-size: 16px; }
             .pwd-input-row input { font-size: 16px; padding: 12px; }
@@ -230,7 +238,7 @@
 
 <div id="mainApp" class="hidden" style="display: flex; flex-direction: column; height: 100vh;">
     <div class="header">
-        <h1>🏭 <span>Портал записи</span><span class="version-tag">v1.3</span><span class="mode-badge" id="modeBadge">Просмотр</span></h1>
+        <h1>🏭 <span>Портал записи</span><span class="version-tag">v1.4</span><span class="mode-badge" id="modeBadge">Просмотр</span></h1>
         <div class="nav-controls">
             <div class="edit-controls" id="editControls">
                 <button class="nav-btn" id="btnDay1View" onclick="setDaysView(1)">1 день</button>
@@ -483,8 +491,8 @@ const CONFIG = {
         messagingSenderId: "999416511549",
         appId: "1:999416511549:web:da386e6254da66043dfe54"
     },
-    storageKey: 'rc_booking_portal_v1_3',
-    version: '1.3',
+    storageKey: 'rc_booking_portal_v1_4',
+    version: '1.4',
     startHour: 6,
     endHour: 18,
     slotMinutes: 30,
@@ -503,27 +511,14 @@ const CONFIG = {
     monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
 };
 
-// Generate time slots every 30 minutes
 const TIME_SLOTS = [];
-for (let h = CONFIG.startHour; h < CONFIG.endHour; h += 0.5) {
-    TIME_SLOTS.push(h);
-}
+for (let h = CONFIG.startHour; h < CONFIG.endHour; h += 0.5) TIME_SLOTS.push(h);
 
 let state = {
-    currentView: 'day',
-    daysToShow: 1,
-    currentDate: new Date(),
-    isEditMode: false,
-    bookings: {},
-    selfDeliveries: [],
-    receiversPerDate: {},
-    draggedData: null,
-    normativeHistory: [],
-    firebaseDb: null,
-    firebaseReady: false,
-    syncDebounceTimer: null,
-    currentReportData: [],
-    currentStaffDate: ''
+    currentView: 'day', daysToShow: 1, currentDate: new Date(), isEditMode: false,
+    bookings: {}, selfDeliveries: [], receiversPerDate: {}, draggedData: null,
+    normativeHistory: [], firebaseDb: null, firebaseReady: false, syncDebounceTimer: null,
+    currentReportData: [], currentStaffDate: ''
 };
 
 const $ = id => document.getElementById(id);
@@ -533,1293 +528,407 @@ const escapeHtml = s => { const d = document.createElement('div'); d.textContent
 const dateUtils = {
     format: d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,
     formatRu: d => {
-        const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-        return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        const m = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+        return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
     },
     formatShort: d => `${pad(d.getDate())}.${pad(d.getMonth()+1)}`,
-    isToday: d => {
-        const t = new Date();
-        return d.getFullYear() === t.getFullYear() && d.getMonth() === t.getMonth() && d.getDate() === t.getDate();
-    },
-    getMonday: d => {
-        const date = new Date(d);
-        const day = date.getDay();
-        const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-        date.setDate(diff);
-        date.setHours(0,0,0,0);
-        return date;
-    },
-    getWeekDates: d => {
-        const m = dateUtils.getMonday(d);
-        return Array.from({length: 7}, (_, i) => {
-            const dd = new Date(m);
-            dd.setDate(dd.getDate() + i);
-            return dd;
-        });
-    },
-    getNDatesFrom: (d, n) => {
-        return Array.from({length: n}, (_, i) => {
-            const dd = new Date(d);
-            dd.setDate(dd.getDate() + i);
-            return dd;
-        });
-    },
-    nextDay: dateStr => {
-        const d = new Date(dateStr + 'T00:00:00');
-        d.setDate(d.getDate() + 1);
-        return dateUtils.format(d);
-    },
-    getDaysInMonth: d => {
-        const days = [];
-        for(let i = 1; i <= new Date(d.getFullYear(), d.getMonth()+1, 0).getDate(); i++) {
-            days.push(new Date(d.getFullYear(), d.getMonth(), i));
-        }
-        return days;
-    }
+    isToday: d => { const t = new Date(); return d.getFullYear()===t.getFullYear() && d.getMonth()===t.getMonth() && d.getDate()===t.getDate(); },
+    getMonday: d => { const dt = new Date(d); const day = dt.getDay(); const diff = dt.getDate() - day + (day===0?-6:1); dt.setDate(diff); dt.setHours(0,0,0,0); return dt; },
+    getWeekDates: d => { const m = dateUtils.getMonday(d); return Array.from({length:7},(_,i)=>{const dd=new Date(m);dd.setDate(dd.getDate()+i);return dd;}); },
+    getNDatesFrom: (d,n) => Array.from({length:n},(_,i)=>{const dd=new Date(d);dd.setDate(dd.getDate()+i);return dd;}),
+    nextDay: ds => { const d = new Date(ds+'T00:00:00'); d.setDate(d.getDate()+1); return dateUtils.format(d); },
+    getDaysInMonth: d => { const a=[]; for(let i=1;i<=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();i++) a.push(new Date(d.getFullYear(),d.getMonth(),i)); return a; }
 };
 
 const generateId = () => `b_${Date.now()}_${Math.random().toString(36).substr(2,5)}`;
-
-function getReceiversForDate(dateStr) {
-    const count = state.receiversPerDate[dateStr] || 3;
-    return Array.from({length: count}, (_, i) => i + 1);
-}
+const getReceiversForDate = ds => Array.from({length: state.receiversPerDate[ds]||3}, (_,i) => i+1);
 
 function getEffectiveDuration(type, dateStr) {
-    let duration = CONFIG.defaultNorms[type];
-    for (const entry of state.normativeHistory) {
-        if (entry.date <= dateStr && entry.changes[type] !== undefined) {
-            duration = entry.changes[type];
-        }
-    }
-    return duration;
+    let dur = CONFIG.defaultNorms[type];
+    for (const e of state.normativeHistory) if (e.date <= dateStr && e.changes[type] !== undefined) dur = e.changes[type];
+    return dur;
 }
 
 function calcBreakMinutes(startMins, endMins) {
-    let total = 0;
-    for (const bp of CONFIG.breakPeriods) {
-        const oS = Math.max(startMins, bp.start);
-        const oE = Math.min(endMins, bp.end);
-        if (oS < oE) total += (oE - oS);
-    }
-    return total;
+    let t = 0;
+    for (const bp of CONFIG.breakPeriods) { const oS=Math.max(startMins,bp.start), oE=Math.min(endMins,bp.end); if(oS<oE) t+=(oE-oS); }
+    return t;
 }
 
 function calcBookingDuration(baseDuration, startHourDecimal) {
     const startMins = startHourDecimal * 60;
     const rawEndMins = startMins + baseDuration;
-    
-    let currentEndMins = rawEndMins;
-    let breakMins = calcBreakMinutes(startMins, currentEndMins);
-    let prevBreak = -1;
-    
-    while (breakMins !== prevBreak) {
-        prevBreak = breakMins;
-        currentEndMins = rawEndMins + breakMins;
-        breakMins = calcBreakMinutes(startMins, currentEndMins);
-    }
-    
+    let currentEndMins = rawEndMins, breakMins = calcBreakMinutes(startMins, currentEndMins), prev = -1;
+    while (breakMins !== prev) { prev = breakMins; currentEndMins = rawEndMins + breakMins; breakMins = calcBreakMinutes(startMins, currentEndMins); }
     const totalDuration = baseDuration + breakMins;
-    const finalEndHourDecimal = (startMins + totalDuration) / 60;
-    
-    return {
-        baseDuration,
-        breakMinutes: breakMins,
-        totalDuration,
-        endHourDecimal: finalEndHourDecimal,
-        endHour: Math.ceil(finalEndHourDecimal)
-    };
+    return { baseDuration, breakMinutes: breakMins, totalDuration, endHourDecimal: (startMins+totalDuration)/60, endHour: Math.ceil((startMins+totalDuration)/60) };
 }
 
-const bookingKey = (ds, hrDecimal, rc) => `${ds}_${hrDecimal}_${rc}`;
+const bookingKey = (ds,hr,rc) => `${ds}_${hr}_${rc}`;
+const getBookingsAtSlot = (ds,hr,rc) => state.bookings[bookingKey(ds,hr,rc)] || [];
+function addBookingToSlot(ds,hr,rc,bk) { const k=bookingKey(ds,hr,rc); if(!state.bookings[k]) state.bookings[k]=[]; state.bookings[k].push(bk); }
+function removeBookingFromSlot(ds,hr,rc,id) { const k=bookingKey(ds,hr,rc); if(state.bookings[k]){state.bookings[k]=state.bookings[k].filter(b=>b.id!==id);if(!state.bookings[k].length) delete state.bookings[k];} }
 
-function getBookingsAtSlot(ds, hrDecimal, rc) {
-    return state.bookings[bookingKey(ds, hrDecimal, rc)] || [];
-}
-
-function addBookingToSlot(ds, hrDecimal, rc, bk) {
-    const k = bookingKey(ds, hrDecimal, rc);
-    if (!state.bookings[k]) state.bookings[k] = [];
-    state.bookings[k].push(bk);
-}
-
-function removeBookingFromSlot(ds, hrDecimal, rc, id) {
-    const k = bookingKey(ds, hrDecimal, rc);
-    if (state.bookings[k]) {
-        state.bookings[k] = state.bookings[k].filter(b => b.id !== id);
-        if (state.bookings[k].length === 0) delete state.bookings[k];
-    }
-}
-
-/**
- * CORE FIX: Checks if a specific time range is free for a given receiver.
- * Iterates through ALL existing bookings for that receiver on that date
- * and checks for temporal overlap with the proposed range.
- */
-function isTimeRangeFree(ds, startHourDecimal, durationMinutes, rc) {
-    const proposedStartMins = startHourDecimal * 60;
-    const proposedEndMins = proposedStartMins + durationMinutes;
-    
-    // Check against ALL slots for this date/receiver to find any overlapping booking
+// Core overlap check: iterates ALL slots for this date/receiver to find temporal conflicts
+function isTimeRangeFree(ds, startHourDecimal, durationMinutes, rc, excludeId = null) {
+    const pStart = startHourDecimal * 60, pEnd = pStart + durationMinutes;
     for (const slotHr of TIME_SLOTS) {
-        const bookings = getBookingsAtSlot(ds, slotHr, rc);
-        for (const b of bookings) {
-            const existingStartMins = b.startHourDecimal * 60;
-            const existingEndMins = existingStartMins + b.totalDuration;
-            
-            // Overlap: two intervals [A_start, A_end) and [B_start, B_end) overlap
-            // if and only if A_start < B_end AND B_start < A_end
-            if (proposedStartMins < existingEndMins && existingStartMins < proposedEndMins) {
-                return false;
-            }
+        for (const b of getBookingsAtSlot(ds, slotHr, rc)) {
+            if (excludeId && b.id === excludeId) continue;
+            const bStart = b.startHourDecimal * 60, bEnd = bStart + b.totalDuration;
+            if (pStart < bEnd && bStart < pEnd) return false;
         }
     }
     return true;
 }
 
-function canPlaceBooking(ds, startHourDecimal, rc, baseDuration) {
+function canPlaceBooking(ds, startHourDecimal, rc, baseDuration, excludeId = null) {
     const calc = calcBookingDuration(baseDuration, startHourDecimal);
     if (calc.endHourDecimal > CONFIG.endHour) return false;
-    return isTimeRangeFree(ds, startHourDecimal, calc.totalDuration, rc);
+    return isTimeRangeFree(ds, startHourDecimal, calc.totalDuration, rc, excludeId);
 }
 
-function getBookingById(id) {
-    for (const k in state.bookings) {
-        const b = state.bookings[k].find(x => x.id === id);
-        if (b) return { booking: b, key: k };
-    }
-    return null;
-}
+function getBookingById(id) { for(const k in state.bookings){const b=state.bookings[k].find(x=>x.id===id);if(b) return {booking:b,key:k};} return null; }
+function placeBooking(bk) { addBookingToSlot(bk.dateStr, Math.floor(bk.startHourDecimal*2)/2, bk.receiver, bk); }
 
-function placeBooking(bk) {
-    const startSlot = Math.floor(bk.startHourDecimal * 2) / 2;
-    addBookingToSlot(bk.dateStr, startSlot, bk.receiver, bk);
-}
-
-function requestEditMode() {
-    $('editPwd').value = '';
-    $('editPwdError').style.display = 'none';
-    $('editPwdModal').classList.add('visible');
-    setTimeout(() => $('editPwd').focus(), 100);
-}
-
-function checkEditPwd() {
-    if ($('editPwd').value === '000000') {
-        closeModal('editPwdModal');
-        state.isEditMode = true;
-        if (!state.firebaseReady) initFirebase();
-        else showMainApp();
-    } else {
-        $('editPwdError').style.display = 'block';
-        $('editPwd').value = '';
-        $('editPwd').focus();
-    }
-}
+function requestEditMode() { $('editPwd').value=''; $('editPwdError').style.display='none'; $('editPwdModal').classList.add('visible'); setTimeout(()=>$('editPwd').focus(),100); }
+function checkEditPwd() { if($('editPwd').value==='000000'){closeModal('editPwdModal');state.isEditMode=true;if(!state.firebaseReady)initFirebase();else showMainApp();}else{$('editPwdError').style.display='block';$('editPwd').value='';$('editPwd').focus();} }
 
 function initFirebase() {
     try {
-        if (CONFIG.firebase.apiKey === 'YOUR_API_KEY') {
-            loadFromStorage();
-            showMainApp();
-            updateSyncIndicator(false);
-            showToast('⚠ Firebase не настроен — данные только локально', 'info');
-            return;
-        }
-        
-        firebase.initializeApp(CONFIG.firebase);
-        state.firebaseDb = firebase.database();
-        state.firebaseReady = true;
-        
-        const dataRef = state.firebaseDb.ref('bookingPortalData');
-        
-        dataRef.once('value').then(snapshot => {
-            const data = snapshot.val();
-            if (data) {
-                state.bookings = data.bookings || {};
-                state.normativeHistory = data.normativeHistory || [];
-                state.selfDeliveries = data.selfDeliveries || [];
-                state.receiversPerDate = data.receiversPerDate || {};
-                showToast('🔄 Данные загружены из облака', 'success');
-            } else {
-                loadFromStorage();
-                if (Object.keys(state.bookings).length === 0) createDemoData();
-                saveToCloud();
-            }
-            showMainApp();
-            updateSyncIndicator(true);
-        }).catch(() => {
-            loadFromStorage();
-            showMainApp();
-            updateSyncIndicator(false);
-        });
-        
-        dataRef.on('value', snapshot => {
-            const data = snapshot.val();
-            if (data) {
-                const { bookings: nb = {}, selfDeliveries: ns = [], normativeHistory: nn = [], receiversPerDate: nr = {} } = data;
-                if (JSON.stringify(nb) !== JSON.stringify(state.bookings) || 
-                    JSON.stringify(ns) !== JSON.stringify(state.selfDeliveries) || 
-                    JSON.stringify(nr) !== JSON.stringify(state.receiversPerDate)) {
-                    state.bookings = nb;
-                    state.selfDeliveries = ns;
-                    state.normativeHistory = nn;
-                    state.receiversPerDate = nr;
-                    renderSchedule();
-                    updateStats();
-                }
+        if (CONFIG.firebase.apiKey === 'YOUR_API_KEY') { loadFromStorage(); showMainApp(); updateSyncIndicator(false); showToast('⚠ Firebase не настроен — данные только локально','info'); return; }
+        firebase.initializeApp(CONFIG.firebase); state.firebaseDb = firebase.database(); state.firebaseReady = true;
+        const ref = state.firebaseDb.ref('bookingPortalData');
+        ref.once('value').then(s => {
+            const d = s.val();
+            if(d){state.bookings=d.bookings||{};state.normativeHistory=d.normativeHistory||[];state.selfDeliveries=d.selfDeliveries||[];state.receiversPerDate=d.receiversPerDate||{};showToast('🔄 Данные загружены из облака','success');}
+            else{loadFromStorage();if(!Object.keys(state.bookings).length)createDemoData();saveToCloud();}
+            showMainApp(); updateSyncIndicator(true);
+        }).catch(() => { loadFromStorage(); showMainApp(); updateSyncIndicator(false); });
+        ref.on('value', s => {
+            const d = s.val(); if(!d) return;
+            const nb=d.bookings||{},ns=d.selfDeliveries||[],nn=d.normativeHistory||[],nr=d.receiversPerDate||{};
+            if(JSON.stringify(nb)!==JSON.stringify(state.bookings)||JSON.stringify(ns)!==JSON.stringify(state.selfDeliveries)||JSON.stringify(nr)!==JSON.stringify(state.receiversPerDate)){
+                state.bookings=nb;state.selfDeliveries=ns;state.normativeHistory=nn;state.receiversPerDate=nr;renderSchedule();updateStats();
             }
         });
-    } catch (e) {
-        loadFromStorage();
-        showMainApp();
-        updateSyncIndicator(false);
-    }
+    } catch(e) { loadFromStorage(); showMainApp(); updateSyncIndicator(false); }
 }
 
 function saveToCloud() {
-    if (!state.firebaseReady || !state.firebaseDb) return;
+    if(!state.firebaseReady||!state.firebaseDb) return;
     clearTimeout(state.syncDebounceTimer);
     state.syncDebounceTimer = setTimeout(() => {
-        try {
-            state.firebaseDb.ref('bookingPortalData').set({
-                bookings: state.bookings,
-                normativeHistory: state.normativeHistory,
-                selfDeliveries: state.selfDeliveries,
-                receiversPerDate: state.receiversPerDate,
-                updatedAt: new Date().toISOString()
-            }).catch(e => console.error('Cloud save error:', e));
-        } catch (e) {}
+        try { state.firebaseDb.ref('bookingPortalData').set({bookings:state.bookings,normativeHistory:state.normativeHistory,selfDeliveries:state.selfDeliveries,receiversPerDate:state.receiversPerDate,updatedAt:new Date().toISOString()}).catch(e=>console.error('Cloud save error:',e)); } catch(e){}
     }, 300);
 }
 
-function saveAllChanges() {
-    saveToStorage();
-    saveToCloud();
-    showToast('💾 Все изменения сохранены!', 'success');
-}
-
-function updateSyncIndicator(online) {
-    const ind = $('syncIndicator');
-    const txt = $('syncText');
-    ind.className = `sync-indicator ${online ? 'online' : 'offline'}`;
-    txt.textContent = online ? 'Синхронизация' : 'Локально';
-}
-
-function logout() {
-    state.isEditMode = false;
-    showMainApp();
-    showToast('🔒 Режим просмотра', 'info');
-}
+function saveAllChanges() { saveToStorage(); saveToCloud(); showToast('💾 Все изменения сохранены!','success'); }
+function updateSyncIndicator(online) { const i=$('syncIndicator'),t=$('syncText'); i.className=`sync-indicator ${online?'online':'offline'}`; t.textContent=online?'Синхронизация':'Локально'; }
+function logout() { state.isEditMode=false; showMainApp(); showToast('🔒 Режим просмотра','info'); }
 
 function showMainApp() {
-    $('mainApp').classList.remove('hidden');
-    $('mainApp').style.display = 'flex';
-    const today = new Date();
-    const ds = dateUtils.format(today);
-    
-    $('bookingDate').value = ds;
-    $('bookingDate').min = ds;
-    
-    const nxt = new Date(today);
-    nxt.setDate(nxt.getDate() + 21);
-    const maxDate = dateUtils.format(nxt);
-    $('bookingDate').max = maxDate;
-
-    const modeBadge = $('modeBadge');
-    if (state.isEditMode) {
-        modeBadge.textContent = 'Редактирование';
-        modeBadge.className = 'mode-badge edit';
-        $('sidebar').classList.remove('hidden');
-        $('editControls').classList.add('visible');
-        $('viewControls').classList.remove('visible');
-        $('weekView').classList.add('edit-mode');
-    } else {
-        modeBadge.textContent = 'Просмотр';
-        modeBadge.className = 'mode-badge view';
-        $('sidebar').classList.remove('hidden');
-        $('editControls').classList.remove('visible');
-        $('viewControls').classList.add('visible');
-        $('weekView').classList.remove('edit-mode');
-    }
-
-    onTypeChange();
-    updateSteps();
-    renderSchedule();
-    updateStats();
+    $('mainApp').classList.remove('hidden'); $('mainApp').style.display='flex';
+    const today=new Date(), ds=dateUtils.format(today);
+    $('bookingDate').value=ds; $('bookingDate').min=ds;
+    const nxt=new Date(today); nxt.setDate(nxt.getDate()+21); const maxD=dateUtils.format(nxt);
+    $('bookingDate').max=maxD;
+    const mb=$('modeBadge');
+    if(state.isEditMode){mb.textContent='Редактирование';mb.className='mode-badge edit';$('sidebar').classList.remove('hidden');$('editControls').classList.add('visible');$('viewControls').classList.remove('visible');$('weekView').classList.add('edit-mode');}
+    else{mb.textContent='Просмотр';mb.className='mode-badge view';$('sidebar').classList.remove('hidden');$('editControls').classList.remove('visible');$('viewControls').classList.add('visible');$('weekView').classList.remove('edit-mode');}
+    onTypeChange(); updateSteps(); renderSchedule(); updateStats();
 }
 
-function saveToStorage() {
-    try {
-        localStorage.setItem(CONFIG.storageKey, JSON.stringify({
-            bookings: state.bookings,
-            normativeHistory: state.normativeHistory,
-            selfDeliveries: state.selfDeliveries,
-            receiversPerDate: state.receiversPerDate,
-            savedAt: new Date().toISOString(),
-            version: CONFIG.version
-        }));
-    } catch (e) {}
-}
-
-function loadFromStorage() {
-    try {
-        const raw = localStorage.getItem(CONFIG.storageKey);
-        if (!raw) return false;
-        const data = JSON.parse(raw);
-        state.bookings = data.bookings || {};
-        state.normativeHistory = data.normativeHistory || [];
-        state.selfDeliveries = data.selfDeliveries || [];
-        state.receiversPerDate = data.receiversPerDate || {};
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
+function saveToStorage() { try{localStorage.setItem(CONFIG.storageKey,JSON.stringify({bookings:state.bookings,normativeHistory:state.normativeHistory,selfDeliveries:state.selfDeliveries,receiversPerDate:state.receiversPerDate,savedAt:new Date().toISOString(),version:CONFIG.version}));}catch(e){} }
+function loadFromStorage() { try{const r=localStorage.getItem(CONFIG.storageKey);if(!r)return false;const d=JSON.parse(r);state.bookings=d.bookings||{};state.normativeHistory=d.normativeHistory||[];state.selfDeliveries=d.selfDeliveries||[];state.receiversPerDate=d.receiversPerDate||{};return true;}catch(e){return false;} }
 
 function onTypeChange() {
-    const type = $('unloadType').value;
-    const display = $('durationDisplay');
-    
-    if (type && CONFIG.defaultNorms.hasOwnProperty(type)) {
-        const ds = $('bookingDate').value || dateUtils.format(new Date());
-        const baseDur = getEffectiveDuration(type, ds);
-        const startHr = parseFloat($('bookingTime').value) || CONFIG.startHour;
-        const calc = calcBookingDuration(baseDur, startHr);
-        const baseHrs = Math.floor(calc.baseDuration/60);
-        const baseMins = calc.baseDuration%60;
-        
-        let txt = '⏱ ';
-        if (baseHrs > 0) txt += `${baseHrs} ч `;
-        if (baseMins > 0) txt += `${baseMins} мин`;
-        
-        if (calc.breakMinutes > 0) {
-            txt += ` + ${calc.breakMinutes} мин (перерыв) = ${calc.totalDuration} мин`;
-            display.className = 'duration-display break-warn';
-        } else if (baseDur !== CONFIG.defaultNorms[type]) {
-            display.className = 'duration-display custom';
-            txt += ' (изменено)';
-        } else {
-            display.className = 'duration-display';
-        }
-        
-        display.textContent = txt;
-        display.style.display = 'block';
-        updateTimeOptions();
-    } else {
-        display.style.display = 'none';
-    }
+    const type=$('unloadType').value, disp=$('durationDisplay');
+    if(type && CONFIG.defaultNorms.hasOwnProperty(type)){
+        const ds=$('bookingDate').value||dateUtils.format(new Date()), baseDur=getEffectiveDuration(type,ds), startHr=parseFloat($('bookingTime').value)||CONFIG.startHour;
+        const calc=calcBookingDuration(baseDur,startHr), bH=Math.floor(calc.baseDuration/60), bM=calc.baseDuration%60;
+        let txt='⏱ '; if(bH>0)txt+=`${bH} ч `; if(bM>0)txt+=`${bM} мин`;
+        if(calc.breakMinutes>0){txt+=` + ${calc.breakMinutes} мин (перерыв) = ${calc.totalDuration} мин`;disp.className='duration-display break-warn';}
+        else if(baseDur!==CONFIG.defaultNorms[type]){disp.className='duration-display custom';txt+=' (изменено)';}
+        else disp.className='duration-display';
+        disp.textContent=txt; disp.style.display='block'; updateTimeOptions();
+    } else disp.style.display='none';
     updateSteps();
 }
 
-function onDateOrReceiverChange() {
-    updateTimeOptions();
-    onTypeChange();
-    updateSteps();
-}
+function onDateOrReceiverChange() { updateTimeOptions(); onTypeChange(); updateSteps(); }
 
-function formatTimeLabel(hrDecimal) {
-    const hrs = Math.floor(hrDecimal);
-    const mins = Math.round((hrDecimal - hrs) * 60);
-    return `${pad(hrs)}:${pad(mins)}`;
-}
+function formatTimeLabel(hr) { const h=Math.floor(hr), m=Math.round((hr-h)*60); return `${pad(h)}:${pad(m)}`; }
 
-/**
- * Generates time options with proper blocking logic:
- * - Blocks if any existing booking overlaps with the proposed time range
- * - Blocks if the norm exceeds remaining work day time
- */
 function updateTimeOptions() {
-    const ds = $('bookingDate').value;
-    const rcSelect = $('receiverSelect');
-    
-    if (ds) {
-        const rcList = getReceiversForDate(ds);
-        const currentVal = rcSelect.value;
-        rcSelect.innerHTML = rcList.map(r => `<option value="${r}">Приемщик ${r}</option>`).join('');
-        rcSelect.value = rcList.includes(parseInt(currentVal)) ? currentVal : rcList[0];
-    } else {
-        rcSelect.innerHTML = '<option value="1">Приемщик 1</option><option value="2">Приемщик 2</option><option value="3">Приемщик 3</option>';
+    const ds=$('bookingDate').value, rcSel=$('receiverSelect');
+    if(ds){const rl=getReceiversForDate(ds),cv=rcSel.value;rcSel.innerHTML=rl.map(r=>`<option value="${r}">Приемщик ${r}</option>`).join('');rcSel.value=rl.includes(parseInt(cv))?cv:rl[0];}
+    else rcSel.innerHTML='<option value="1">Приемщик 1</option><option value="2">Приемщик 2</option><option value="3">Приемщик 3</option>';
+    const rc=parseInt(rcSel.value), sel=$('bookingTime'), curVal=sel.value, type=$('unloadType').value, baseDur=type?getEffectiveDuration(type,ds):60;
+    sel.innerHTML='<option value="">Выберите...</option>'; if(!ds) return;
+    for(let h=CONFIG.startHour;h<CONFIG.endHour;h+=0.5){
+        const avail=canPlaceBooking(ds,h,rc,baseDur), opt=document.createElement('option'); opt.value=h;
+        const calc=calcBookingDuration(baseDur,h), endLbl=formatTimeLabel(calc.endHourDecimal);
+        let lbl=`${formatTimeLabel(h)}-${endLbl}`; if(calc.breakMinutes>0)lbl+=` (+${calc.breakMinutes}м)`; if(!avail)lbl+=' (занято)';
+        opt.textContent=lbl; opt.disabled=!avail; sel.appendChild(opt);
     }
-
-    const rc = parseInt(rcSelect.value);
-    const sel = $('bookingTime');
-    const curVal = sel.value;
-    const type = $('unloadType').value;
-    const baseDur = type ? getEffectiveDuration(type, ds) : 60;
-    
-    sel.innerHTML = '<option value="">Выберите...</option>';
-    if (!ds) return;
-    
-    for (let h = CONFIG.startHour; h < CONFIG.endHour; h += 0.5) {
-        const avail = canPlaceBooking(ds, h, rc, baseDur);
-        const opt = document.createElement('option');
-        opt.value = h;
-        const calc = calcBookingDuration(baseDur, h);
-        const endLabel = formatTimeLabel(calc.endHourDecimal);
-        let label = `${formatTimeLabel(h)}-${endLabel}`;
-        if (calc.breakMinutes > 0) label += ` (+${calc.breakMinutes}м)`;
-        if (!avail) label += ' (занято)';
-        opt.textContent = label;
-        opt.disabled = !avail;
-        sel.appendChild(opt);
-    }
-    
-    if (curVal && sel.querySelector(`option[value="${curVal}"]`)) {
-        sel.value = curVal;
-    }
+    if(curVal && sel.querySelector(`option[value="${curVal}"]`)) sel.value=curVal;
 }
 
 function updateSteps() {
-    const name = $('supplierName').value.trim();
-    const pal = $('palletCount').value;
-    const type = $('unloadType').value;
-    const steps = [!!name, !!pal && parseInt(pal) > 0, !!type, !!$('bookingDate').value, !!$('bookingTime').value];
-    
-    for (let i = 1; i <= 5; i++) {
-        const dot = $(`step${i}`);
-        dot.classList.remove('active', 'completed');
-        if (steps[i-1]) dot.classList.add('completed');
-        else if (i === 1 || steps.slice(0, i-1).every(s => s)) dot.classList.add('active');
-    }
-    
-    $('submitBtn').disabled = !steps.every(s => s);
+    const nm=$('supplierName').value.trim(),pl=$('palletCount').value,tp=$('unloadType').value;
+    const steps=[!!nm,!!pl&&parseInt(pl)>0,!!tp,!!$('bookingDate').value,!!$('bookingTime').value];
+    for(let i=1;i<=5;i++){const dot=$(`step${i}`);dot.classList.remove('active','completed');if(steps[i-1])dot.classList.add('completed');else if(i===1||steps.slice(0,i-1).every(s=>s))dot.classList.add('active');}
+    $('submitBtn').disabled=!steps.every(s=>s);
 }
 
 function submitBooking() {
-    const name = $('supplierName').value.trim();
-    const pal = parseInt($('palletCount').value);
-    const type = $('unloadType').value;
-    const ds = $('bookingDate').value;
-    const startHr = parseFloat($('bookingTime').value);
-    const rc = parseInt($('receiverSelect').value);
-    const baseDur = getEffectiveDuration(type, ds);
-    const calc = calcBookingDuration(baseDur, startHr);
-    
-    if (calc.endHourDecimal > CONFIG.endHour) {
-        showToast('Запись выходит за рабочее время (18:00)', 'error');
-        return;
-    }
-    
-    if (!canPlaceBooking(ds, startHr, rc, baseDur)) {
-        showToast(`Слот занят у приемщика ${rc}`, 'error');
-        return;
-    }
-    
-    placeBooking({
-        id: generateId(),
-        name,
-        pallets: pal,
-        type,
-        baseDuration: baseDur,
-        breakMinutes: calc.breakMinutes,
-        duration: calc.totalDuration,
-        startHourDecimal: startHr,
-        endHourDecimal: calc.endHourDecimal,
-        dateStr: ds,
-        receiver: rc
-    });
-    
-    saveToStorage();
-    saveToCloud();
-    
-    const dObj = new Date(ds + 'T00:00:00');
-    const endLabel = formatTimeLabel(calc.endHourDecimal);
-    let msg = `✓ ${name}: ${CONFIG.dayNamesFull[(dObj.getDay()+6)%7]} ${formatTimeLabel(startHr)}-${endLabel} | Пр.${rc}`;
-    if (calc.breakMinutes > 0) msg += ` (+${calc.breakMinutes}м)`;
-    
-    showToast(msg, 'success');
-    resetForm();
-    renderSchedule();
-    updateStats();
-    if (window.innerWidth <= 768) closeMobileSidebar();
+    const nm=$('supplierName').value.trim(),pl=parseInt($('palletCount').value),tp=$('unloadType').value,ds=$('bookingDate').value,startHr=parseFloat($('bookingTime').value),rc=parseInt($('receiverSelect').value);
+    const baseDur=getEffectiveDuration(tp,ds), calc=calcBookingDuration(baseDur,startHr);
+    if(calc.endHourDecimal>CONFIG.endHour){showToast('Запись выходит за рабочее время (18:00)','error');return;}
+    if(!canPlaceBooking(ds,startHr,rc,baseDur)){showToast(`Слот занят у приемщика ${rc}`,'error');return;}
+    placeBooking({id:generateId(),name:nm,pallets:pl,type:tp,baseDuration:baseDur,breakMinutes:calc.breakMinutes,duration:calc.totalDuration,startHourDecimal:startHr,endHourDecimal:calc.endHourDecimal,dateStr:ds,receiver:rc});
+    saveToStorage(); saveToCloud();
+    const dObj=new Date(ds+'T00:00:00'), endLbl=formatTimeLabel(calc.endHourDecimal);
+    let msg=`✓ ${nm}: ${CONFIG.dayNamesFull[(dObj.getDay()+6)%7]} ${formatTimeLabel(startHr)}-${endLbl} | Пр.${rc}`;
+    if(calc.breakMinutes>0)msg+=` (+${calc.breakMinutes}м)`;
+    showToast(msg,'success'); resetForm(); renderSchedule(); updateStats(); if(window.innerWidth<=768)closeMobileSidebar();
 }
 
-function resetForm() {
-    ['supplierName', 'palletCount', 'unloadType', 'bookingDate', 'bookingTime'].forEach(id => {
-        const el = $(id);
-        if (el) el.value = '';
-    });
-    
-    $('durationDisplay').style.display = 'none';
-    $('bookingTime').innerHTML = '<option value="">Выберите...</option>';
-    updateSteps();
-}
+function resetForm() { ['supplierName','palletCount','unloadType','bookingDate','bookingTime'].forEach(id=>{const el=$(id);if(el)el.value='';}); $('durationDisplay').style.display='none'; $('bookingTime').innerHTML='<option value="">Выберите...</option>'; updateSteps(); }
 
 function deleteBooking(id) {
-    const res = getBookingById(id);
-    if (res) {
-        const b = res.booking;
-        const startSlot = Math.floor(b.startHourDecimal * 2) / 2;
-        removeBookingFromSlot(b.dateStr, startSlot, b.receiver, id);
-    }
-    
-    saveToStorage();
-    saveToCloud();
-    showToast('Запись удалена', 'success');
-    renderSchedule();
-    updateStats();
-    closeModal('dayModal');
-    closeModal('mobileActionModal');
+    const res=getBookingById(id); if(res){const b=res.booking;removeBookingFromSlot(b.dateStr,Math.floor(b.startHourDecimal*2)/2,b.receiver,id);}
+    saveToStorage(); saveToCloud(); showToast('Запись удалена','success'); renderSchedule(); updateStats(); closeModal('dayModal'); closeModal('mobileActionModal');
 }
 
+// Drag & Drop with proper move semantics
 function startDrag(e, id) {
-    const res = getBookingById(id);
-    if (!res) return;
-    
+    const res = getBookingById(id); if (!res) return;
     state.draggedData = res.booking;
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', id);
-    
-    const startSlot = Math.floor(state.draggedData.startHourDecimal * 2) / 2;
-    removeBookingFromSlot(state.draggedData.dateStr, startSlot, state.draggedData.receiver, id);
-    
-    setTimeout(() => {
-        const el = e.target.closest('.supplier-card');
-        if (el) el.classList.add('dragging');
-    }, 0);
+    // Remove from old slot immediately for visual feedback
+    const oldSlot = Math.floor(state.draggedData.startHourDecimal * 2) / 2;
+    removeBookingFromSlot(state.draggedData.dateStr, oldSlot, state.draggedData.receiver, id);
+    // Re-render to show the card removed from original position
+    renderSchedule();
+    setTimeout(() => { const el = e.target.closest('.supplier-card'); if (el) el.classList.add('dragging'); }, 0);
 }
 
 function endDrag(e) {
-    if (state.draggedData) {
-        if (!getBookingById(state.draggedData.id)) {
-            placeBooking(state.draggedData);
-            renderSchedule();
-        }
-        state.draggedData = null;
+    // If drop didn't happen (cancelled or invalid target), restore booking to original position
+    if (state.draggedData && !getBookingById(state.draggedData.id)) {
+        placeBooking(state.draggedData);
+        renderSchedule();
     }
+    state.draggedData = null;
     document.querySelectorAll('.supplier-card.dragging').forEach(el => el.classList.remove('dragging'));
 }
 
-function handleDragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    const c = e.target.closest('.h-slot');
-    if (c) c.classList.add('drag-over');
-}
-
-function handleDragLeave(e) {
-    const c = e.target.closest('.h-slot');
-    if (c) c.classList.remove('drag-over');
-}
+function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; const c = e.target.closest('.h-slot'); if (c) c.classList.add('drag-over'); }
+function handleDragLeave(e) { const c = e.target.closest('.h-slot'); if (c) c.classList.remove('drag-over'); }
 
 function handleDrop(e) {
     e.preventDefault();
     const c = e.target.closest('.h-slot');
     if (!c || !state.draggedData) return;
-    
     c.classList.remove('drag-over');
-    const ds = c.dataset.date;
-    const hr = parseFloat(c.dataset.hour);
-    const rc = parseInt(c.dataset.receiver);
-    
+    const ds = c.dataset.date, hr = parseFloat(c.dataset.hour), rc = parseInt(c.dataset.receiver);
     if (isNaN(hr) || isNaN(rc)) return;
-    
     const calc = calcBookingDuration(state.draggedData.baseDuration, hr);
-    if (calc.endHourDecimal > CONFIG.endHour) {
-        showToast('Выходит за рабочее время', 'error');
-        endDrag();
-        return;
-    }
-    
-    if (!isTimeRangeFree(ds, hr, calc.totalDuration, rc)) {
-        showToast(`Слот ${formatTimeLabel(hr)} занят`, 'error');
-        endDrag();
-        return;
-    }
-    
-    placeBooking({
-        ...state.draggedData,
-        dateStr: ds,
-        startHourDecimal: hr,
-        endHourDecimal: calc.endHourDecimal,
-        breakMinutes: calc.breakMinutes,
-        duration: calc.totalDuration,
-        receiver: rc
-    });
-    
-    saveToStorage();
-    saveToCloud();
+    if (calc.endHourDecimal > CONFIG.endHour) { showToast('Выходит за рабочее время', 'error'); endDrag(); return; }
+    // Check overlap excluding the dragged booking itself (already removed from old slot)
+    if (!isTimeRangeFree(ds, hr, calc.totalDuration, rc, state.draggedData.id)) { showToast(`Слот ${formatTimeLabel(hr)} занят`, 'error'); endDrag(); return; }
+    // Place at new position (old position already removed in startDrag)
+    placeBooking({ ...state.draggedData, dateStr: ds, startHourDecimal: hr, endHourDecimal: calc.endHourDecimal, breakMinutes: calc.breakMinutes, duration: calc.totalDuration, receiver: rc });
+    saveToStorage(); saveToCloud();
     state.draggedData = null;
     showToast('Перемещено', 'success');
-    renderSchedule();
-    updateStats();
+    renderSchedule(); updateStats();
 }
 
-function switchView(v) {
-    state.currentView = v;
-    updateViewButtons();
-    $('weekView').classList.toggle('active', v !== 'month');
-    $('monthView').classList.toggle('active', v === 'month');
-    renderSchedule();
-}
-
-function setDaysView(n) {
-    state.currentView = 'day';
-    state.daysToShow = n;
-    updateViewButtons();
-    $('weekView').classList.add('active');
-    $('monthView').classList.remove('active');
-    renderSchedule();
-}
-
+function switchView(v) { state.currentView=v; updateViewButtons(); $('weekView').classList.toggle('active',v!=='month'); $('monthView').classList.toggle('active',v==='month'); renderSchedule(); }
+function setDaysView(n) { state.currentView='day'; state.daysToShow=n; updateViewButtons(); $('weekView').classList.add('active'); $('monthView').classList.remove('active'); renderSchedule(); }
 function updateViewButtons() {
-    const suffix = state.isEditMode ? '' : 'V';
-    ['btnDay1View','btnDay5View','btnWeekView','btnMonthView','btnDay1ViewV','btnDay5ViewV','btnWeekViewV','btnMonthViewV'].forEach(id => {
-        const el = $(id);
-        if (el) el.classList.remove('active');
-    });
-    
-    if (state.currentView === 'day') {
-        const activeId = `btnDay${state.daysToShow}View${suffix}`;
-        const el = $(activeId);
-        if (el) el.classList.add('active');
-    } else if (state.currentView === 'week') {
-        const el = $(`btnWeekView${suffix}`);
-        if (el) el.classList.add('active');
-    } else if (state.currentView === 'month') {
-        const el = $(`btnMonthView${suffix}`);
-        if (el) el.classList.add('active');
-    }
+    const sfx=state.isEditMode?'':'V';
+    ['btnDay1View','btnDay5View','btnWeekView','btnMonthView','btnDay1ViewV','btnDay5ViewV','btnWeekViewV','btnMonthViewV'].forEach(id=>{const el=$(id);if(el)el.classList.remove('active');});
+    if(state.currentView==='day'){const el=$(`btnDay${state.daysToShow}View${sfx}`);if(el)el.classList.add('active');}
+    else if(state.currentView==='week'){const el=$(`btnWeekView${sfx}`);if(el)el.classList.add('active');}
+    else{const el=$(`btnMonthView${sfx}`);if(el)el.classList.add('active');}
 }
-
-function navigate(dir) {
-    if (state.currentView === 'day') state.currentDate.setDate(state.currentDate.getDate() + dir * state.daysToShow);
-    else if (state.currentView === 'week') state.currentDate.setDate(state.currentDate.getDate() + dir * 7);
-    else state.currentDate.setMonth(state.currentDate.getMonth() + dir);
-    renderSchedule();
-}
-
-function goToday() {
-    state.currentDate = new Date();
-    renderSchedule();
-}
-
+function navigate(dir) { if(state.currentView==='day')state.currentDate.setDate(state.currentDate.getDate()+dir*state.daysToShow);else if(state.currentView==='week')state.currentDate.setDate(state.currentDate.getDate()+dir*7);else state.currentDate.setMonth(state.currentDate.getMonth()+dir); renderSchedule(); }
+function goToday() { state.currentDate=new Date(); renderSchedule(); }
 function updatePeriodLabel() {
-    const el = $('currentPeriod');
-    if (state.currentView === 'day') {
-        if (state.daysToShow === 1) {
-            el.textContent = dateUtils.formatRu(state.currentDate);
-        } else {
-            const dates = dateUtils.getNDatesFrom(state.currentDate, state.daysToShow);
-            el.textContent = `${dateUtils.formatShort(dates[0])} — ${dateUtils.formatShort(dates[dates.length-1])} ${CONFIG.monthNames[dates[0].getMonth()]}`;
-        }
-    } else if (state.currentView === 'week') {
-        const d = dateUtils.getWeekDates(state.currentDate);
-        el.textContent = `${dateUtils.formatShort(d[0])} — ${dateUtils.formatShort(d[6])} ${CONFIG.monthNames[d[0].getMonth()]}`;
-    } else {
-        el.textContent = `${CONFIG.monthNames[state.currentDate.getMonth()]} ${state.currentDate.getFullYear()}`;
-    }
+    const el=$('currentPeriod');
+    if(state.currentView==='day'){if(state.daysToShow===1)el.textContent=dateUtils.formatRu(state.currentDate);else{const d=dateUtils.getNDatesFrom(state.currentDate,state.daysToShow);el.textContent=`${dateUtils.formatShort(d[0])} — ${dateUtils.formatShort(d[d.length-1])} ${CONFIG.monthNames[d[0].getMonth()]}`;}}
+    else if(state.currentView==='week'){const d=dateUtils.getWeekDates(state.currentDate);el.textContent=`${dateUtils.formatShort(d[0])} — ${dateUtils.formatShort(d[6])} ${CONFIG.monthNames[d[0].getMonth()]}`;}
+    else el.textContent=`${CONFIG.monthNames[state.currentDate.getMonth()]} ${state.currentDate.getFullYear()}`;
 }
-
-function getVisibleDates() {
-    if (state.currentView === 'day') {
-        return dateUtils.getNDatesFrom(state.currentDate, state.daysToShow);
-    } else if (state.currentView === 'week') {
-        return dateUtils.getWeekDates(state.currentDate);
-    }
-    return [];
-}
-
-function renderSchedule() {
-    updatePeriodLabel();
-    updateViewButtons();
-    if (state.currentView === 'month') {
-        renderMonthView();
-    } else {
-        renderHorizontalSchedule(getVisibleDates());
-    }
-    updateStats();
-}
+function getVisibleDates() { return state.currentView==='day'?dateUtils.getNDatesFrom(state.currentDate,state.daysToShow):state.currentView==='week'?dateUtils.getWeekDates(state.currentDate):[]; }
+function renderSchedule() { updatePeriodLabel(); updateViewButtons(); if(state.currentView==='month')renderMonthView();else renderHorizontalSchedule(getVisibleDates()); updateStats(); }
 
 function renderHorizontalSchedule(dates) {
-    const sw = $('scrollWrapper');
-    const sched = $('hSchedule');
-    
-    const dayLabelW = window.innerWidth <= 768 ? 70 : 90;
-    const rcLabelW = window.innerWidth <= 768 ? 45 : 50;
-    const slotCount = TIME_SLOTS.length;
-    
-    const availW = sw.clientWidth - dayLabelW - rcLabelW;
-    const slotColW = Math.max(50, Math.floor(availW / slotCount));
-    
-    let totalRows = 0;
-    dates.forEach(d => { totalRows += getReceiversForDate(dateUtils.format(d)).length; });
-    
-    const availH = sw.clientHeight - 40;
-    const rowH = Math.max(44, Math.floor(availH / totalRows));
-    
-    const gtCols = `${dayLabelW}px ${rcLabelW}px repeat(${slotCount}, ${slotColW}px)`;
-    sched.style.gridTemplateColumns = gtCols;
-    
-    let html = '';
-    
-    html += `<div class="h-corner" style="grid-column: span 2; height: 40px;">Время →</div>`;
-    for (const slotHr of TIME_SLOTS) {
-        const isBr = (slotHr >= 10.5 && slotHr < 11) || (slotHr >= 11.5 && slotHr < 12);
-        const label = Number.isInteger(slotHr) ? `${pad(slotHr)}:00` : `${pad(Math.floor(slotHr))}:30`;
-        html += `<div class="h-hour-head${isBr ? ' break-time' : ''}" style="height: 40px;">${label}</div>`;
-    }
-    
-    dates.forEach((d, dayIdx) => {
-        const ds = dateUtils.format(d);
-        const rcList = getReceiversForDate(ds);
-        const rcCount = rcList.length;
-        const isTd = dateUtils.isToday(d);
-        
-        const staffBtn = state.isEditMode ? 
-            `<button class="staff-btn" onclick="openStaffModal('${ds}')" title="Изменить количество приемщиков">👥 ${rcCount}</button>` : '';
-        
-        html += `<div class="h-day-label${isTd ? ' today' : ''}" style="grid-row: span ${rcCount}; min-height: ${rcCount * rowH}px;">
-            <div class="h-day-name">${CONFIG.dayNames[dayIdx % 7]}</div>
-            <div class="h-date-num">${d.getDate()}</div>
-            ${staffBtn}
-        </div>`;
-        
-        rcList.forEach(rc => {
-            html += `<div class="h-rc-label" style="height: ${rowH}px;">Пр.${rc}</div>`;
-            
-            for (const slotHr of TIME_SLOTS) {
-                const isBr = (slotHr >= 10.5 && slotHr < 11) || (slotHr >= 11.5 && slotHr < 12);
-                const brClass = isBr ? ' break-slot' : '';
-                
-                html += `<div class="h-slot${brClass}" style="height: ${rowH}px;" data-date="${ds}" data-hour="${slotHr}" data-receiver="${rc}"${state.isEditMode ? ` ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"` : ''}>`;
-                
-                const slotBookings = getBookingsAtSlot(ds, slotHr, rc);
-                slotBookings.forEach(b => {
-                    const wPx = (b.duration / 30) * slotColW - 2;
-                    const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type;
-                    const brHtml = b.breakMinutes > 0 ? `<span class="s-break">+${b.breakMinutes}м</span>` : '';
-                    const endLabel = formatTimeLabel(b.endHourDecimal);
-                    const mobileClick = state.isEditMode ? `onclick="handleMobileCardClick(event, '${b.id}')"` : '';
-                    
-                    html += `<div class="supplier-card type-${tc}" style="left:2px; width:${wPx}px;"${state.isEditMode ? ` draggable="true" ondragstart="startDrag(event, '${b.id}')" ondragend="endDrag()"` : ''} ${mobileClick} title="${escapeHtml(b.name)} | ${formatTimeLabel(b.startHourDecimal)}-${endLabel} | ${b.pallets}п">
+    const sw=$('scrollWrapper'), sched=$('hSchedule');
+    const dayLabelW=window.innerWidth<=768?70:90, rcLabelW=window.innerWidth<=768?45:50, slotCount=TIME_SLOTS.length;
+    const availW=sw.clientWidth-dayLabelW-rcLabelW, slotColW=Math.max(50,Math.floor(availW/slotCount));
+    let totalRows=0; dates.forEach(d=>{totalRows+=getReceiversForDate(dateUtils.format(d)).length;});
+    const availH=sw.clientHeight-40, rowH=Math.max(44,Math.floor(availH/totalRows));
+    sched.style.gridTemplateColumns=`${dayLabelW}px ${rcLabelW}px repeat(${slotCount},${slotColW}px)`;
+    let html=`<div class="h-corner" style="grid-column:span 2;height:40px;">Время →</div>`;
+    for(const sh of TIME_SLOTS){const isBr=(sh>=10.5&&sh<11)||(sh>=11.5&&sh<12);const lbl=Number.isInteger(sh)?`${pad(sh)}:00`:`${pad(Math.floor(sh))}:30`;html+=`<div class="h-hour-head${isBr?' break-time':''}" style="height:40px;">${lbl}</div>`;}
+    dates.forEach((d,di)=>{
+        const ds=dateUtils.format(d),rcList=getReceiversForDate(ds),rcCount=rcList.length,isTd=dateUtils.isToday(d);
+        const staffBtn=state.isEditMode?`<button class="staff-btn" onclick="openStaffModal('${ds}')" title="Изменить количество приемщиков">👥 ${rcCount}</button>`:'';
+        html+=`<div class="h-day-label${isTd?' today':''}" style="grid-row:span ${rcCount};min-height:${rcCount*rowH}px;"><div class="h-day-name">${CONFIG.dayNames[di%7]}</div><div class="h-date-num">${d.getDate()}</div>${staffBtn}</div>`;
+        rcList.forEach(rc=>{
+            html+=`<div class="h-rc-label" style="height:${rowH}px;">Пр.${rc}</div>`;
+            for(const sh of TIME_SLOTS){
+                const isBr=(sh>=10.5&&sh<11)||(sh>=11.5&&sh<12);
+                html+=`<div class="h-slot${isBr?' break-slot':''}" style="height:${rowH}px;" data-date="${ds}" data-hour="${sh}" data-receiver="${rc}"${state.isEditMode?` ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"`:''}>`;
+                getBookingsAtSlot(ds,sh,rc).forEach(b=>{
+                    const wPx=(b.duration/30)*slotColW-2, tc=b.type==='транспортная компания'?'транспортная-компания':b.type;
+                    const brHtml=b.breakMinutes>0?`<span class="s-break">+${b.breakMinutes}м</span>`:'';
+                    const endLbl=formatTimeLabel(b.endHourDecimal);
+                    const mobileClick=state.isEditMode?`onclick="handleMobileCardClick(event,'${b.id}')"`:'';
+                    html+=`<div class="supplier-card type-${tc}" style="left:2px;width:${wPx}px;"${state.isEditMode?` draggable="true" ondragstart="startDrag(event,'${b.id}')" ondragend="endDrag()"`:''} ${mobileClick} title="${escapeHtml(b.name)} | ${formatTimeLabel(b.startHourDecimal)}-${endLbl} | ${b.pallets}п">
                         <div class="s-name">${escapeHtml(b.name)}</div>
-                        <div class="s-details"><span class="s-type">${CONFIG.typeInfo[b.type]?.icon || ''} ${CONFIG.typeInfo[b.type]?.label || b.type}</span><span>${b.pallets}п</span>${brHtml}</div>
-                        ${state.isEditMode ? `<button class="delete-btn" onclick="event.stopPropagation();deleteBooking('${b.id}')">✕</button>` : ''}
+                        <div class="s-details"><span class="s-type">${CONFIG.typeInfo[b.type]?.icon||''} ${CONFIG.typeInfo[b.type]?.label||b.type}</span><span>${b.pallets}п</span>${brHtml}</div>
+                        ${state.isEditMode?`<button class="delete-btn" onclick="event.stopPropagation();deleteBooking('${b.id}')" title="Удалить запись">✕</button>`:''}
                     </div>`;
                 });
-                
-                html += '</div>';
+                html+='</div>';
             }
         });
     });
-    
-    sched.innerHTML = html;
+    sched.innerHTML=html;
 }
 
 function renderMonthView() {
-    const yr = state.currentDate.getFullYear();
-    const mo = state.currentDate.getMonth();
-    const fd = new Date(yr, mo, 1);
-    const so = (fd.getDay()+6)%7;
-    
-    $('monthHeader').innerHTML = CONFIG.dayNames.map(d => `<div class="month-day-header">${d}</div>`).join('');
-    
-    let g = '';
-    let cur = new Date(yr, mo, 1-so);
-    let w = 0;
-    
-    while (w < 6 && cur <= new Date(yr, mo+1, 0)) {
-        const isCur = cur.getMonth() === mo;
-        const isT = dateUtils.isToday(cur);
-        const ds = dateUtils.format(cur);
-        
-        g += `<div class="month-day-cell${isCur ? '' : ' other-month'}${isT ? ' today' : ''}" onclick="openDayModal('${ds}')"><div class="md-date">${cur.getDate()}</div>`;
-        
-        const db = [];
-        const rcList = getReceiversForDate(ds);
-        
-        for (const slotHr of TIME_SLOTS) {
-            rcList.forEach(r => {
-                getBookingsAtSlot(ds, slotHr, r).forEach(b => {
-                    if (!db.find(x => x.id === b.id)) db.push(b);
-                });
-            });
-        }
-        
-        db.sort((a, b) => a.startHourDecimal - b.startHourDecimal);
-        db.slice(0, 4).forEach(b => {
-            const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type;
-            g += `<div class="md-card type-${tc}">${formatTimeLabel(b.startHourDecimal)} ${escapeHtml(b.name)}</div>`;
-        });
-        
-        if (db.length > 4) g += `<div class="md-more">+${db.length-4} еще</div>`;
-        g += '</div>';
-        cur.setDate(cur.getDate()+1);
-        w++;
+    const yr=state.currentDate.getFullYear(),mo=state.currentDate.getMonth(),fd=new Date(yr,mo,1),so=(fd.getDay()+6)%7;
+    $('monthHeader').innerHTML=CONFIG.dayNames.map(d=>`<div class="month-day-header">${d}</div>`).join('');
+    let g='',cur=new Date(yr,mo,1-so),w=0;
+    while(w<6&&cur<=new Date(yr,mo+1,0)){
+        const isCur=cur.getMonth()===mo,isT=dateUtils.isToday(cur),ds=dateUtils.format(cur);
+        g+=`<div class="month-day-cell${isCur?'':' other-month'}${isT?' today':''}" onclick="openDayModal('${ds}')"><div class="md-date">${cur.getDate()}</div>`;
+        const db=[],rcList=getReceiversForDate(ds);
+        for(const sh of TIME_SLOTS)rcList.forEach(r=>{getBookingsAtSlot(ds,sh,r).forEach(b=>{if(!db.find(x=>x.id===b.id))db.push(b);});});
+        db.sort((a,b)=>a.startHourDecimal-b.startHourDecimal);
+        db.slice(0,4).forEach(b=>{const tc=b.type==='транспортная компания'?'транспортная-компания':b.type;g+=`<div class="md-card type-${tc}">${formatTimeLabel(b.startHourDecimal)} ${escapeHtml(b.name)}</div>`;});
+        if(db.length>4)g+=`<div class="md-more">+${db.length-4} еще</div>`;
+        g+='</div>';cur.setDate(cur.getDate()+1);w++;
     }
-    
-    $('monthGrid').innerHTML = g;
+    $('monthGrid').innerHTML=g;
 }
 
 function openDayModal(ds) {
-    const d = new Date(ds + 'T00:00:00');
-    $('dayModalTitle').textContent = `${CONFIG.dayNamesFull[(d.getDay()+6)%7]}, ${dateUtils.formatRu(d)}`;
-    
-    let html = '';
-    const rcList = getReceiversForDate(ds);
-    
-    rcList.forEach(rc => {
-        const rb = [];
-        for (const slotHr of TIME_SLOTS) {
-            getBookingsAtSlot(ds, slotHr, rc).forEach(b => {
-                if (!rb.find(x => x.id === b.id)) rb.push(b);
+    const d=new Date(ds+'T00:00:00'); $('dayModalTitle').textContent=`${CONFIG.dayNamesFull[(d.getDay()+6)%7]}, ${dateUtils.formatRu(d)}`;
+    let html='',rcList=getReceiversForDate(ds);
+    rcList.forEach(rc=>{
+        const rb=[]; for(const sh of TIME_SLOTS)getBookingsAtSlot(ds,sh,rc).forEach(b=>{if(!rb.find(x=>x.id===b.id))rb.push(b);});
+        rb.sort((a,b)=>a.startHourDecimal-b.startHourDecimal);
+        if(rb.length>0){
+            html+=`<div class="modal-receiver-section"><div class="modal-receiver-title">Приемщик ${rc} (${rb.length})</div>`;
+            rb.forEach(b=>{const tc=b.type==='транспортная компания'?'транспортная-компания':b.type;const endLbl=formatTimeLabel(b.endHourDecimal);
+                html+=`<div class="modal-card type-${tc}"><div class="mc-info"><div class="mc-name">${escapeHtml(b.name)}</div><div class="mc-details">${CONFIG.typeInfo[b.type]?.icon} ${b.pallets}п | ${formatTimeLabel(b.startHourDecimal)}-${endLbl}${b.breakMinutes>0?' (+'+b.breakMinutes+'м)':''}</div></div>${state.isEditMode?`<button class="mc-delete" onclick="deleteBooking('${b.id}')">✕</button>`:''}</div>`;
             });
-        }
-        
-        rb.sort((a, b) => a.startHourDecimal - b.startHourDecimal);
-        
-        if (rb.length > 0) {
-            html += `<div class="modal-receiver-section"><div class="modal-receiver-title">Приемщик ${rc} (${rb.length})</div>`;
-            rb.forEach(b => {
-                const tc = b.type === 'транспортная компания' ? 'транспортная-компания' : b.type;
-                const endLabel = formatTimeLabel(b.endHourDecimal);
-                html += `<div class="modal-card type-${tc}"><div class="mc-info"><div class="mc-name">${escapeHtml(b.name)}</div><div class="mc-details">${CONFIG.typeInfo[b.type]?.icon} ${b.pallets}п | ${formatTimeLabel(b.startHourDecimal)}-${endLabel}${b.breakMinutes > 0 ? ' (+'+b.breakMinutes+'м)' : ''}</div></div>${state.isEditMode ? `<button class="mc-delete" onclick="deleteBooking('${b.id}')">✕</button>` : ''}</div>`;
-            });
-            html += `</div>`;
+            html+='</div>';
         }
     });
-    
-    if (!html) html = `<div style="color:var(--text-muted);font-size:12px;text-align:center;padding:16px;">Нет записей на этот день</div>`;
-    
-    $('dayModalBody').innerHTML = html;
-    $('dayModal').classList.add('visible');
+    if(!html)html='<div style="color:var(--text-muted);font-size:12px;text-align:center;padding:16px;">Нет записей на этот день</div>';
+    $('dayModalBody').innerHTML=html; $('dayModal').classList.add('visible');
 }
 
-function closeModal(id) {
-    $(id).classList.remove('visible');
-}
+function closeModal(id) { $(id).classList.remove('visible'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('visible');});});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.visible').forEach(m=>m.classList.remove('visible'));});
 
-document.querySelectorAll('.modal-overlay').forEach(m => {
-    m.addEventListener('click', e => {
-        if (e.target === e.currentTarget) e.currentTarget.classList.remove('visible');
-    });
-});
+function openStaffModal(ds) { state.currentStaffDate=ds; $('staffModalDate').textContent=dateUtils.formatRu(new Date(ds+'T00:00:00')); $('staffCountInput').value=state.receiversPerDate[ds]||3; $('staffModal').classList.add('visible'); }
+function saveStaff() { const c=parseInt($('staffCountInput').value); if(c>=1&&c<=5){state.receiversPerDate[state.currentStaffDate]=c;closeModal('staffModal');saveToStorage();saveToCloud();renderSchedule();updateStats();showToast('Штат приемщиков обновлен','success');}else showToast('Введите число от 1 до 5','error'); }
 
-document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-        document.querySelectorAll('.modal-overlay.visible').forEach(m => m.classList.remove('visible'));
-    }
-});
-
-function openStaffModal(dateStr) {
-    state.currentStaffDate = dateStr;
-    const count = state.receiversPerDate[dateStr] || 3;
-    $('staffModalDate').textContent = dateUtils.formatRu(new Date(dateStr + 'T00:00:00'));
-    $('staffCountInput').value = count;
-    $('staffModal').classList.add('visible');
-}
-
-function saveStaff() {
-    const count = parseInt($('staffCountInput').value);
-    if (count >= 1 && count <= 5) {
-        state.receiversPerDate[state.currentStaffDate] = count;
-        closeModal('staffModal');
-        saveToStorage();
-        saveToCloud();
-        renderSchedule();
-        updateStats();
-        showToast('Штат приемщиков обновлен', 'success');
-    } else {
-        showToast('Введите число от 1 до 5', 'error');
-    }
-}
-
-function openNormativesPassword() {
-    $('normPwd').value = '';
-    $('pwdError').style.display = 'none';
-    $('pwdModal').classList.add('visible');
-    setTimeout(() => $('normPwd').focus(), 100);
-}
-
-function checkPwd() {
-    if ($('normPwd').value === '147963') {
-        closeModal('pwdModal');
-        openNormatives();
-    } else {
-        $('pwdError').style.display = 'block';
-        $('normPwd').value = '';
-        $('normPwd').focus();
-    }
-}
-
+function openNormativesPassword() { $('normPwd').value=''; $('pwdError').style.display='none'; $('pwdModal').classList.add('visible'); setTimeout(()=>$('normPwd').focus(),100); }
+function checkPwd() { if($('normPwd').value==='147963'){closeModal('pwdModal');openNormatives();}else{$('pwdError').style.display='block';$('normPwd').value='';$('normPwd').focus();} }
 function openNormatives() {
-    const applyDate = dateUtils.nextDay(dateUtils.format(new Date()));
-    $('normApplyDate').textContent = `${dateUtils.formatRu(new Date(applyDate + 'T00:00:00'))} (начиная с этой даты)`;
-    
-    let rows = '';
-    for (const [type, def] of Object.entries(CONFIG.defaultNorms)) {
-        const cur = getEffectiveDuration(type, applyDate);
-        const info = CONFIG.typeInfo[type];
-        rows += `<div class="norm-row"><div class="norm-icon">${info.icon}</div><div class="norm-name">${info.label}</div><div class="norm-cur">сейчас: ${cur} мин</div><input type="number" id="norm_${type}" value="${cur}" min="15" max="480" step="15"><div class="norm-unit">мин</div></div>`;
-    }
-    
-    $('normRows').innerHTML = rows;
-    
-    let hist = '';
-    if (state.normativeHistory.length > 0) {
-        hist = '<div class="norm-history"><h4>📜 История изменений</h4>';
-        [...state.normativeHistory].sort((a, b) => b.date.localeCompare(a.date)).forEach(entry => {
-            const ed = new Date(entry.date + 'T00:00:00');
-            const changes = Object.entries(entry.changes).map(([t, v]) => `${CONFIG.typeInfo[t]?.icon} ${CONFIG.typeInfo[t]?.label}: ${v} мин`).join(', ');
-            hist += `<div class="norm-history-item"><strong>${dateUtils.formatRu(ed)}</strong> — ${changes}</div>`;
-        });
-        hist += '</div>';
-    }
-    
-    $('normHistory').innerHTML = hist;
-    $('normModal').classList.add('visible');
+    const ad=dateUtils.nextDay(dateUtils.format(new Date())); $('normApplyDate').textContent=`${dateUtils.formatRu(new Date(ad+'T00:00:00'))} (начиная с этой даты)`;
+    let rows=''; for(const[type,def]of Object.entries(CONFIG.defaultNorms)){const cur=getEffectiveDuration(type,ad),info=CONFIG.typeInfo[type];rows+=`<div class="norm-row"><div class="norm-icon">${info.icon}</div><div class="norm-name">${info.label}</div><div class="norm-cur">сейчас: ${cur} мин</div><input type="number" id="norm_${type}" value="${cur}" min="15" max="480" step="15"><div class="norm-unit">мин</div></div>`;}
+    $('normRows').innerHTML=rows;
+    let hist=''; if(state.normativeHistory.length>0){hist='<div class="norm-history"><h4>📜 История изменений</h4>';[...state.normativeHistory].sort((a,b)=>b.date.localeCompare(a.date)).forEach(e=>{const ed=new Date(e.date+'T00:00:00');const ch=Object.entries(e.changes).map(([t,v])=>`${CONFIG.typeInfo[t]?.icon} ${CONFIG.typeInfo[t]?.label}: ${v} мин`).join(', ');hist+=`<div class="norm-history-item"><strong>${dateUtils.formatRu(ed)}</strong> — ${ch}</div>`;});hist+='</div>';}
+    $('normHistory').innerHTML=hist; $('normModal').classList.add('visible');
 }
-
 function saveNormatives() {
-    const changes = {};
-    let hasChange = false;
-    
-    for (const type of Object.keys(CONFIG.defaultNorms)) {
-        const input = $(`norm_${type}`);
-        const val = parseInt(input.value);
-        if (val >= 15 && val <= 480) {
-            changes[type] = val;
-            hasChange = true;
-        }
-    }
-    
-    if (!hasChange) {
-        showToast('Нет изменений', 'error');
-        return;
-    }
-    
-    const applyDate = dateUtils.nextDay(dateUtils.format(new Date()));
-    state.normativeHistory.push({ date: applyDate, changes });
-    
-    let updatedCount = 0;
-    for (const key in state.bookings) {
-        state.bookings[key].forEach(bk => {
-            if (bk.dateStr >= applyDate) {
-                const newDur = changes[bk.type];
-                if (newDur !== undefined && newDur !== bk.baseDuration) {
-                    const calc = calcBookingDuration(newDur, bk.startHourDecimal);
-                    if (calc.endHourDecimal <= CONFIG.endHour) {
-                        const oldSlot = Math.floor(bk.startHourDecimal * 2) / 2;
-                        removeBookingFromSlot(bk.dateStr, oldSlot, bk.receiver, bk.id);
-                        bk.baseDuration = newDur;
-                        bk.breakMinutes = calc.breakMinutes;
-                        bk.duration = calc.totalDuration;
-                        bk.endHourDecimal = calc.endHourDecimal;
-                        placeBooking(bk);
-                        updatedCount++;
-                    }
-                }
-            }
-        });
-    }
-    
-    saveToStorage();
-    saveToCloud();
-    closeModal('normModal');
-    showToast(`Нормативы сохранены! Обновлено: ${updatedCount}`, 'success');
-    renderSchedule();
-    updateStats();
-    onTypeChange();
+    const changes={},hasChange=false; for(const type of Object.keys(CONFIG.defaultNorms)){const val=parseInt($(`norm_${type}`).value);if(val>=15&&val<=480)changes[type]=val;}
+    if(!Object.keys(changes).length){showToast('Нет изменений','error');return;}
+    const ad=dateUtils.nextDay(dateUtils.format(new Date())); state.normativeHistory.push({date:ad,changes});
+    let uc=0; for(const key in state.bookings)state.bookings[key].forEach(bk=>{if(bk.dateStr>=ad){const nd=changes[bk.type];if(nd!==undefined&&nd!==bk.baseDuration){const calc=calcBookingDuration(nd,bk.startHourDecimal);if(calc.endHourDecimal<=CONFIG.endHour){const os=Math.floor(bk.startHourDecimal*2)/2;removeBookingFromSlot(bk.dateStr,os,bk.receiver,bk.id);bk.baseDuration=nd;bk.breakMinutes=calc.breakMinutes;bk.duration=calc.totalDuration;bk.endHourDecimal=calc.endHourDecimal;placeBooking(bk);uc++;}}}});
+    saveToStorage();saveToCloud();closeModal('normModal');showToast(`Нормативы сохранены! Обновлено: ${uc}`,'success');renderSchedule();updateStats();onTypeChange();
 }
 
 function updateStats() {
-    const dates = state.currentView === 'month' ? 
-        dateUtils.getDaysInMonth(state.currentDate) : 
-        getVisibleDates();
-    
-    let total = 0, pallets = 0, types = {};
-    const counted = new Set();
-    
-    dates.forEach(d => {
-        const ds = dateUtils.format(d);
-        const rcList = getReceiversForDate(ds);
-        
-        for (const slotHr of TIME_SLOTS) {
-            rcList.forEach(r => {
-                getBookingsAtSlot(ds, slotHr, r).forEach(b => {
-                    if (!counted.has(b.id)) {
-                        counted.add(b.id);
-                        total++;
-                        pallets += b.pallets;
-                        types[b.type] = (types[b.type] || 0) + 1;
-                    }
-                });
-            });
-        }
-    });
-    
-    let html = `<div class="stat-item">📦 Записей: <span class="stat-value">${total}</span></div>`;
-    html += `<div class="stat-item">🏗 Паллет: <span class="stat-value">${pallets}</span></div>`;
-    
-    for (const [t, c] of Object.entries(types)) {
-        if (CONFIG.typeInfo[t]) html += `<div class="stat-item">${CONFIG.typeInfo[t].icon} ${CONFIG.typeInfo[t].label}: ${c}</div>`;
-    }
-    
-    $('statsBar').innerHTML = html;
+    const dates=state.currentView==='month'?dateUtils.getDaysInMonth(state.currentDate):getVisibleDates();
+    let total=0,pallets=0,types={};const counted=new Set();
+    dates.forEach(d=>{const ds=dateUtils.format(d),rcList=getReceiversForDate(ds);for(const sh of TIME_SLOTS)rcList.forEach(r=>{getBookingsAtSlot(ds,sh,r).forEach(b=>{if(!counted.has(b.id)){counted.add(b.id);total++;pallets+=b.pallets;types[b.type]=(types[b.type]||0)+1;}});});});
+    let html=`<div class="stat-item">📦 Записей: <span class="stat-value">${total}</span></div><div class="stat-item">🏗 Паллет: <span class="stat-value">${pallets}</span></div>`;
+    for(const[t,c]of Object.entries(types))if(CONFIG.typeInfo[t])html+=`<div class="stat-item">${CONFIG.typeInfo[t].icon} ${CONFIG.typeInfo[t].label}: ${c}</div>`;
+    $('statsBar').innerHTML=html;
 }
 
-function showToast(msg, type) {
-    const t = $('toast');
-    t.textContent = msg;
-    t.className = `toast ${type} show`;
-    setTimeout(() => t.classList.remove('show'), 3500);
-}
+function showToast(msg,type) { const t=$('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),3500); }
 
 function createDemoData() {
-    const today = new Date();
-    const ds = dateUtils.format(today);
-    const demo = [
-        { n: 'ООО "Альфа"', p: 24, t: 'фура', h: 7, r: 1 },
-        { n: 'ИП Сидоров', p: 8, t: 'газель', h: 10, r: 2 },
-        { n: 'ООО "Бета"', p: 16, t: 'контейнер', h: 9, r: 1 },
-        { n: 'Фрукт-Трейд', p: 30, t: 'фрукты', h: 11, r: 2 },
-        { n: 'ТК-Логистик', p: 14, t: 'транспортная компания', h: 11, r: 3 },
-        { n: 'Собств. доставка "Гамма"', p: 10, t: 'собственная доставка', h: 14, r: 1 },
-        { n: 'Быстрая доставка', p: 5, t: 'газель', h: 10.5, r: 2 }
-    ];
-    
-    demo.forEach(b => {
-        const calc = calcBookingDuration(CONFIG.defaultNorms[b.t], b.h);
-        placeBooking({
-            id: generateId(),
-            name: b.n,
-            pallets: b.p,
-            type: b.t,
-            baseDuration: CONFIG.defaultNorms[b.t],
-            breakMinutes: calc.breakMinutes,
-            duration: calc.totalDuration,
-            startHourDecimal: b.h,
-            endHourDecimal: calc.endHourDecimal,
-            dateStr: ds,
-            receiver: b.r
-        });
-    });
-    
+    const today=new Date(),ds=dateUtils.format(today);
+    [{n:'ООО "Альфа"',p:24,t:'фура',h:7,r:1},{n:'ИП Сидоров',p:8,t:'газель',h:10,r:2},{n:'ООО "Бета"',p:16,t:'контейнер',h:9,r:1},{n:'Фрукт-Трейд',p:30,t:'фрукты',h:11,r:2},{n:'ТК-Логистик',p:14,t:'транспортная компания',h:11,r:3},{n:'Собств. доставка "Гамма"',p:10,t:'собственная доставка',h:14,r:1},{n:'Быстрая доставка',p:5,t:'газель',h:10.5,r:2}]
+    .forEach(b=>{const calc=calcBookingDuration(CONFIG.defaultNorms[b.t],b.h);placeBooking({id:generateId(),name:b.n,pallets:b.p,type:b.t,baseDuration:CONFIG.defaultNorms[b.t],breakMinutes:calc.breakMinutes,duration:calc.totalDuration,startHourDecimal:b.h,endHourDecimal:calc.endHourDecimal,dateStr:ds,receiver:b.r});});
     saveToStorage();
 }
 
-function toggleSupplierInput() {
-    const all = $('reportAllSuppliers').checked;
-    $('reportSupplier').disabled = all;
-    if (all) $('reportSupplier').value = '';
-}
-
-function toggleDaysOfWeekInput() {
-    const all = $('reportAllDaysOfWeek').checked;
-    $('reportDaysOfWeekGroup').style.display = all ? 'none' : 'block';
-}
-
+function toggleSupplierInput() { const a=$('reportAllSuppliers').checked;$('reportSupplier').disabled=a;if(a)$('reportSupplier').value=''; }
+function toggleDaysOfWeekInput() { $('reportDaysOfWeekGroup').style.display=$('reportAllDaysOfWeek').checked?'none':'block'; }
 function openReportsModal() {
-    const datalist = $('supplierList');
-    datalist.innerHTML = '';
-    const suppliers = new Set();
-    
-    for (const key in state.bookings) {
-        state.bookings[key].forEach(b => suppliers.add(b.name));
-    }
-    
-    Array.from(suppliers).sort().forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s;
-        datalist.appendChild(opt);
-    });
-    
-    const today = dateUtils.format(new Date());
-    $('reportDateFrom').value = today;
-    $('reportDateTo').value = today;
-    $('reportAllSuppliers').checked = true;
-    $('reportAllDaysOfWeek').checked = true;
-    toggleSupplierInput();
-    toggleDaysOfWeekInput();
-    $('reportResults').style.display = 'none';
-    $('downloadReportBtn').style.display = 'none';
-    $('reportsModal').classList.add('visible');
+    const dl=$('supplierList');dl.innerHTML='';const sups=new Set();for(const k in state.bookings)state.bookings[k].forEach(b=>sups.add(b.name));
+    Array.from(sups).sort().forEach(s=>{const o=document.createElement('option');o.value=s;dl.appendChild(o);});
+    const today=dateUtils.format(new Date());$('reportDateFrom').value=today;$('reportDateTo').value=today;
+    $('reportAllSuppliers').checked=true;$('reportAllDaysOfWeek').checked=true;toggleSupplierInput();toggleDaysOfWeekInput();
+    $('reportResults').style.display='none';$('downloadReportBtn').style.display='none';$('reportsModal').classList.add('visible');
 }
-
 function generateReport() {
-    const allSuppliers = $('reportAllSuppliers').checked;
-    const supplierFilter = $('reportSupplier').value.trim().toLowerCase();
-    const dateFrom = $('reportDateFrom').value;
-    const dateTo = $('reportDateTo').value;
-    const allDaysOfWeek = $('reportAllDaysOfWeek').checked;
-    
-    const selectedDaysOfWeek = [];
-    if (!allDaysOfWeek) {
-        document.querySelectorAll('.dow-checkbox:checked').forEach(cb => {
-            selectedDaysOfWeek.push(parseInt(cb.value));
-        });
-    }
-
-    if (!dateFrom || !dateTo) {
-        showToast('Укажите период', 'error');
-        return;
-    }
-
-    state.currentReportData = [];
-
-    for (const key in state.bookings) {
-        state.bookings[key].forEach(b => {
-            if (b.dateStr >= dateFrom && b.dateStr <= dateTo) {
-                const d = new Date(b.dateStr + 'T00:00:00');
-                const dayOfWeek = d.getDay();
-                
-                if (!allDaysOfWeek && !selectedDaysOfWeek.includes(dayOfWeek)) return;
-                if (!allSuppliers && supplierFilter && !b.name.toLowerCase().includes(supplierFilter)) return;
-
-                const endLabel = formatTimeLabel(b.endHourDecimal);
-                state.currentReportData.push({
-                    date: b.dateStr,
-                    dayName: CONFIG.dayNamesFull[(dayOfWeek + 6) % 7],
-                    time: `${formatTimeLabel(b.startHourDecimal)} - ${endLabel}`,
-                    supplier: b.name,
-                    type: CONFIG.typeInfo[b.type]?.label || b.type,
-                    pallets: b.pallets,
-                    receiver: b.receiver
-                });
-            }
-        });
-    }
-
-    state.currentReportData.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
-
-    const tbody = $('reportTableBody');
-    tbody.innerHTML = '';
-    state.currentReportData.forEach(row => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td style="padding:6px; border:1px solid var(--border); white-space:nowrap;">${dateUtils.formatRu(new Date(row.date + 'T00:00:00'))}</td>
-            <td style="padding:6px; border:1px solid var(--border); white-space:nowrap;">${row.dayName}</td>
-            <td style="padding:6px; border:1px solid var(--border); white-space:nowrap;">${row.time}</td>
-            <td style="padding:6px; border:1px solid var(--border);">${escapeHtml(row.supplier)}</td>
-            <td style="padding:6px; border:1px solid var(--border);">${row.type}</td>
-            <td style="padding:6px; border:1px solid var(--border); text-align:center;">${row.pallets}</td>
-            <td style="padding:6px; border:1px solid var(--border); text-align:center;">${row.receiver}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-
-    $('reportResults').style.display = 'block';
-    $('downloadReportBtn').style.display = state.currentReportData.length > 0 ? 'block' : 'none';
-    showToast(`Найдено записей: ${state.currentReportData.length}`, 'success');
+    const allSup=$('reportAllSuppliers').checked,sf=$('reportSupplier').value.trim().toLowerCase(),df=$('reportDateFrom').value,dt=$('reportDateTo').value,allDow=$('reportAllDaysOfWeek').checked;
+    const selDow=[];if(!allDow)document.querySelectorAll('.dow-checkbox:checked').forEach(cb=>selDow.push(parseInt(cb.value)));
+    if(!df||!dt){showToast('Укажите период','error');return;}
+    state.currentReportData=[];
+    for(const k in state.bookings)state.bookings[k].forEach(b=>{if(b.dateStr>=df&&b.dateStr<=dt){const d=new Date(b.dateStr+'T00:00:00'),dow=d.getDay();if(!allDow&&!selDow.includes(dow))return;if(!allSup&&sf&&!b.name.toLowerCase().includes(sf))return;state.currentReportData.push({date:b.dateStr,dayName:CONFIG.dayNamesFull[(dow+6)%7],time:`${formatTimeLabel(b.startHourDecimal)} - ${formatTimeLabel(b.endHourDecimal)}`,supplier:b.name,type:CONFIG.typeInfo[b.type]?.label||b.type,pallets:b.pallets,receiver:b.receiver});}});
+    state.currentReportData.sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
+    const tb=$('reportTableBody');tb.innerHTML='';state.currentReportData.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td style="padding:6px;border:1px solid var(--border);white-space:nowrap;">${dateUtils.formatRu(new Date(r.date+'T00:00:00'))}</td><td style="padding:6px;border:1px solid var(--border);white-space:nowrap;">${r.dayName}</td><td style="padding:6px;border:1px solid var(--border);white-space:nowrap;">${r.time}</td><td style="padding:6px;border:1px solid var(--border);">${escapeHtml(r.supplier)}</td><td style="padding:6px;border:1px solid var(--border);">${r.type}</td><td style="padding:6px;border:1px solid var(--border);text-align:center;">${r.pallets}</td><td style="padding:6px;border:1px solid var(--border);text-align:center;">${r.receiver}</td>`;tb.appendChild(tr);});
+    $('reportResults').style.display='block';$('downloadReportBtn').style.display=state.currentReportData.length>0?'block':'none';showToast(`Найдено записей: ${state.currentReportData.length}`,'success');
 }
-
 function downloadReport() {
-    if (state.currentReportData.length === 0) return;
-    
-    let csv = '\uFEFF';
-    csv += 'Дата;День недели;Время;Поставщик;Тип ТС;Паллеты;Приемщик\n';
-    state.currentReportData.forEach(row => {
-        csv += `${row.date};${row.dayName};${row.time};${row.supplier};${row.type};${row.pallets};${row.receiver}\n`;
-    });
-    
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Отчет_${$('reportDateFrom').value}_${$('reportDateTo').value}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('Отчет скачан', 'success');
+    if(!state.currentReportData.length)return;let csv='\uFEFFДата;День недели;Время;Поставщик;Тип ТС;Паллеты;Приемщик\n';
+    state.currentReportData.forEach(r=>{csv+=`${r.date};${r.dayName};${r.time};${r.supplier};${r.type};${r.pallets};${r.receiver}\n`;});
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`Отчет_${$('reportDateFrom').value}_${$('reportDateTo').value}.csv`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);showToast('Отчет скачан','success');
 }
 
-function openMobileSidebar() {
-    $('sidebar').classList.add('mobile-open');
-}
-
-function closeMobileSidebar() {
-    $('sidebar').classList.remove('mobile-open');
-}
-
-function handleMobileCardClick(event, id) {
-    if (window.innerWidth <= 768 && state.isEditMode) {
-        event.stopPropagation();
-        event.preventDefault();
-        handleMobileCardAction(id);
-    }
-}
-
+function openMobileSidebar() { $('sidebar').classList.add('mobile-open'); }
+function closeMobileSidebar() { $('sidebar').classList.remove('mobile-open'); }
+function handleMobileCardClick(e,id) { if(window.innerWidth<=768&&state.isEditMode){e.stopPropagation();e.preventDefault();handleMobileCardAction(id);} }
 function handleMobileCardAction(id) {
-    const res = getBookingById(id);
-    if (!res) return;
-    
-    const b = res.booking;
-    const body = $('mobileActionBody');
-    const endLabel = formatTimeLabel(b.endHourDecimal);
-    
-    body.innerHTML = `
-        <div class="modal-card type-${b.type === 'транспортная компания' ? 'транспортная-компания' : b.type}" style="margin-bottom: 16px;">
-            <div class="mc-info">
-                <div class="mc-name">${escapeHtml(b.name)}</div>
-                <div class="mc-details">${CONFIG.typeInfo[b.type]?.icon} ${b.pallets}п | ${formatTimeLabel(b.startHourDecimal)}-${endLabel} | Пр.${b.receiver}</div>
-            </div>
-        </div>
-        <button class="submit-btn" style="background: var(--warning); color: #1a1a2e; margin-bottom: 10px;" onclick="promptMoveBooking('${b.id}')">↔ Переместить</button>
-        <button class="submit-btn" style="background: var(--danger);" onclick="deleteBooking('${b.id}')">🗑 Удалить</button>
-    `;
-    
+    const res=getBookingById(id);if(!res)return;const b=res.booking,body=$('mobileActionBody'),endLbl=formatTimeLabel(b.endHourDecimal);
+    body.innerHTML=`<div class="modal-card type-${b.type==='транспортная компания'?'транспортная-компания':b.type}" style="margin-bottom:16px;"><div class="mc-info"><div class="mc-name">${escapeHtml(b.name)}</div><div class="mc-details">${CONFIG.typeInfo[b.type]?.icon} ${b.pallets}п | ${formatTimeLabel(b.startHourDecimal)}-${endLbl} | Пр.${b.receiver}</div></div></div><button class="submit-btn" style="background:var(--warning);color:#1a1a2e;margin-bottom:10px;" onclick="promptMoveBooking('${b.id}')">↔ Переместить</button><button class="submit-btn" style="background:var(--danger);" onclick="deleteBooking('${b.id}')">🗑 Удалить</button>`;
     $('mobileActionModal').classList.add('visible');
 }
-
 function promptMoveBooking(id) {
-    const res = getBookingById(id);
-    if (!res) return;
-    
-    const b = res.booking;
-    const newHrStr = prompt(`Текущее время: ${formatTimeLabel(b.startHourDecimal)}\nВведите новое время начала (например, 10 или 10.5):`, b.startHourDecimal);
-    
-    if (newHrStr === null) return;
-    
-    const newHr = parseFloat(newHrStr);
-    if (isNaN(newHr) || newHr < CONFIG.startHour || newHr >= CONFIG.endHour) {
-        showToast('Некорректное время', 'error');
-        return;
-    }
-    
-    const calc = calcBookingDuration(b.baseDuration, newHr);
-    if (calc.endHourDecimal > CONFIG.endHour) {
-        showToast('Выходит за рабочее время', 'error');
-        return;
-    }
-    
-    if (!isTimeRangeFree(b.dateStr, newHr, calc.totalDuration, b.receiver)) {
-        showToast(`Слот ${formatTimeLabel(newHr)} занят`, 'error');
-        return;
-    }
-    
-    const oldSlot = Math.floor(b.startHourDecimal * 2) / 2;
-    removeBookingFromSlot(b.dateStr, oldSlot, b.receiver, b.id);
-    
-    placeBooking({
-        ...b,
-        startHourDecimal: newHr,
-        endHourDecimal: calc.endHourDecimal,
-        breakMinutes: calc.breakMinutes,
-        duration: calc.totalDuration
-    });
-    
-    saveToStorage();
-    saveToCloud();
-    closeModal('mobileActionModal');
-    showToast('Запись перемещена', 'success');
-    renderSchedule();
-    updateStats();
+    const res=getBookingById(id);if(!res)return;const b=res.booking;
+    const newHrStr=prompt(`Текущее время: ${formatTimeLabel(b.startHourDecimal)}\nВведите новое время начала (например, 10 или 10.5):`,b.startHourDecimal);
+    if(newHrStr===null)return;const newHr=parseFloat(newHrStr);
+    if(isNaN(newHr)||newHr<CONFIG.startHour||newHr>=CONFIG.endHour){showToast('Некорректное время','error');return;}
+    const calc=calcBookingDuration(b.baseDuration,newHr);
+    if(calc.endHourDecimal>CONFIG.endHour){showToast('Выходит за рабочее время','error');return;}
+    if(!isTimeRangeFree(b.dateStr,newHr,calc.totalDuration,b.receiver,b.id)){showToast(`Слот ${formatTimeLabel(newHr)} занят`,'error');return;}
+    const os=Math.floor(b.startHourDecimal*2)/2;removeBookingFromSlot(b.dateStr,os,b.receiver,b.id);
+    placeBooking({...b,startHourDecimal:newHr,endHourDecimal:calc.endHourDecimal,breakMinutes:calc.breakMinutes,duration:calc.totalDuration});
+    saveToStorage();saveToCloud();closeModal('mobileActionModal');showToast('Запись перемещена','success');renderSchedule();updateStats();
 }
 
-window.addEventListener('resize', () => {
-    if (state.currentView !== 'month') {
-        renderHorizontalSchedule(getVisibleDates());
-    }
-});
-
-function init() {
-    if (!loadFromStorage()) createDemoData();
-    state.isEditMode = false;
-    initFirebase();
-}
-
+window.addEventListener('resize',()=>{if(state.currentView!=='month')renderHorizontalSchedule(getVisibleDates());});
+function init() { if(!loadFromStorage())createDemoData(); state.isEditMode=false; initFirebase(); }
 init();
 </script>
 </body>
